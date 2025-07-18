@@ -95,10 +95,10 @@ model Address {
   updatedAt    DateTime    @updatedAt @map("updated_at")
 
   // Relations
-  user               User        @relation(fields: [userId], references: [id], onDelete: Cascade)
-  businesses         Business[]
-  shippingOrders     Order[]     @relation("ShippingAddress")
-  billingOrders      Order[]     @relation("BillingAddress")
+  user           User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  businesses     Business[]
+  shippingOrders Order[]    @relation("ShippingAddress")
+  billingOrders  Order[]    @relation("BillingAddress")
 
   @@map("addresses")
 }
@@ -129,7 +129,7 @@ model Customer {
   updatedAt     DateTime @updatedAt @map("updated_at")
 
   // Relations
-  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   orders  Order[]
   reviews Review[]
   cart    Cart?
@@ -138,12 +138,12 @@ model Customer {
 }
 
 model Category {
-  id          String     @id @default(uuid())
+  id          String   @id @default(uuid())
   name        String
   description String?
-  parentId    String?    @map("parent_id")
-  createdAt   DateTime   @default(now()) @map("created_at")
-  updatedAt   DateTime   @updatedAt @map("updated_at")
+  parentId    String?  @map("parent_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
   // Relations
   parent   Category?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
@@ -159,7 +159,6 @@ model Product {
   description String?
   price       Decimal  @db.Decimal(10, 2)
   stock       Int      @default(0)
-  images      String[]
   sellerId    String?  @map("seller_id")
   categoryId  String?  @map("category_id")
   isApproved  Boolean  @default(false) @map("is_approved")
@@ -222,15 +221,15 @@ model Review {
 }
 
 model Order {
-  id                  String      @id @default(uuid())
-  customerId          String      @map("customer_id")
-  totalAmount         Decimal     @map("total_amount") @db.Decimal(10, 2)
-  status              OrderStatus @default(PENDING)
-  orderDate           DateTime    @default(now()) @map("order_date")
-  shippingAddressId   String?     @map("shipping_address_id")
-  billingAddressId    String?     @map("billing_address_id")
-  createdAt           DateTime    @default(now()) @map("created_at")
-  updatedAt           DateTime    @updatedAt @map("updated_at")
+  id                String      @id @default(uuid())
+  customerId        String      @map("customer_id")
+  totalAmount       Decimal     @map("total_amount") @db.Decimal(10, 2)
+  status            OrderStatus @default(PENDING)
+  orderDate         DateTime    @default(now()) @map("order_date")
+  shippingAddressId String?     @map("shipping_address_id")
+  billingAddressId  String?     @map("billing_address_id")
+  createdAt         DateTime    @default(now()) @map("created_at")
+  updatedAt         DateTime    @updatedAt @map("updated_at")
 
   // Relations
   customer        Customer    @relation(fields: [customerId], references: [id], onDelete: Cascade)
