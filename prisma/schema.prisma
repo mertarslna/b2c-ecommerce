@@ -55,8 +55,8 @@ model User {
   addresses  Address[]
   admin      Admin?
   customer   Customer?
-  business Business?
-  product   Product?
+  businesses Business[]
+  products   Product[]
 
   @@map("users")
 }

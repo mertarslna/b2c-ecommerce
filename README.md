@@ -1,5 +1,5 @@
 # E-commerce Platform
-# hiii i'm reeem 
+
 Modern, scalable e-commerce platform built with Next.js 14, TypeScript, PostgreSQL, and Redis.
 
 ## 🛠️ Tech Stack
