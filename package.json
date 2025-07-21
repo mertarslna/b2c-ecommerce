@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "docker:down" : "docker compose down",
+    "docker:down": "docker compose down",
     "docker:up": "docker compose up -d",
     "db:generate": "prisma generate",
     "db:push": "prisma db push",
@@ -17,7 +17,8 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^5.7.0",
+    "@faker-js/faker": "^9.9.0",
+    "@prisma/client": "^5.22.0",
     "@stripe/stripe-js": "^2.1.11",
     "@types/bcryptjs": "^2.4.6",
     "@types/jsonwebtoken": "^9.0.5",
