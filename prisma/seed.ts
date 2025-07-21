@@ -57,55 +57,47 @@ async function main() {
   // Ürün oluştur
   const product = await prisma.product.create({
     data: {
-      userId: johnDoe.id,
-      title: 'Home',
-      firstName: 'John',
-      lastName: 'Doe',
-      addressLine1: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      postalCode: '10001',
-      country: 'USA',
-      phone: '+1234567891',
-      isDefault: true,
-      type: 'HOME',
+      name: 'Test Ürünü',
+      description: 'Kaliteli bir ürün',
+      price: 999.99,
+      stock: 50,
+      sellerId: user.id,
+      categoryId: category.id,
+      isApproved: true,
     },
   });
 
   // Sepet oluştur
   await prisma.cart.create({
     data: {
-      userId: janeSmith.id,
-      title: 'Home',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      addressLine1: '456 Oak Ave',
-      city: 'Los Angeles',
-      state: 'CA',
-      postalCode: '90001',
-      country: 'USA',
-      phone: '+1234567892',
-      isDefault: true,
-      type: 'HOME',
+      customerId: customer.id,
+      items: {
+        create: [
+          {
+            productId: product.id,
+            quantity: 2,
+            unitPrice: product.price,
+          },
+        ],
+      },
     },
   });
 
   // Sipariş oluştur
   const order = await prisma.order.create({
     data: {
-      userId: janeSmith.id,
-      title: 'Work',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      companyName: 'Tech Corp',
-      addressLine1: '789 Business Blvd',
-      city: 'Los Angeles',
-      state: 'CA',
-      postalCode: '90002',
-      country: 'USA',
-      phone: '+1234567892',
-      isDefault: false,
-      type: 'WORK',
+      customerId: customer.id,
+      totalAmount: product.price,
+      shippingAddressId: address.id,
+      billingAddressId: address.id,
+      orderItems: {
+        create: [{
+          productId: product.id,
+          quantity: 1,
+          unitPrice: product.price,
+          totalPrice: product.price,
+        }],
+      },
     },
   });
 
