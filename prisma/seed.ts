@@ -1,208 +1,156 @@
 import { PrismaClient } from '@prisma/client';
-import bcrypt from 'bcryptjs';
+import { faker, tr } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting database seeding...');
-
-  // Clean database first (optional)
-  console.log('🧹 Cleaning existing data...');
-  await prisma.review.deleteMany({});
-  await prisma.payment.deleteMany({});
-  await prisma.orderItem.deleteMany({});
-  await prisma.order.deleteMany({});
-  await prisma.cartItem.deleteMany({});
-  await prisma.cart.deleteMany({});
-  await prisma.image.deleteMany({});
-  await prisma.product.deleteMany({});
-  await prisma.category.deleteMany({});
-  await prisma.customer.deleteMany({});
-  await prisma.business.deleteMany({});
-  await prisma.address.deleteMany({});
-  await prisma.admin.deleteMany({});
-  await prisma.user.deleteMany({});
-
-  // Hash passwords
-  const hashedPassword = await bcrypt.hash('admin123', 12);
-  const userPassword = await bcrypt.hash('user123', 12);
-
-  // Create Users
-  console.log('👤 Creating users...');
-  const adminUser = await prisma.user.upsert({
-    where: { email: 'admin@ecommerce.com' },
-    update: {},
-    create: {
-      email: 'admin@ecommerce.com',
-      password: hashedPassword,
-      firstName: 'Admin',
-      lastName: 'User',
-      phone: '+1234567890',
-      isActive: true,
+  // Kullanıcı oluştur
+  const user = await prisma.user.create({
+    data: {
+      email: faker.internet.email(),
+      password: faker.internet.password(),
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      phone: faker.phone.number(),
     },
   });
 
-  const johnDoe = await prisma.user.upsert({
-    where: { email: 'john.doe@example.com' },
-    update: {},
-    create: {
-      email: 'john.doe@example.com',
-      password: userPassword,
-      firstName: 'John',
-      lastName: 'Doe',
-      phone: '+1234567891',
-      isActive: true,
-    },
-  });
-
-  const janeSmith = await prisma.user.upsert({
-    where: { email: 'jane.smith@example.com' },
-    update: {},
-    create: {
-      email: 'jane.smith@example.com',
-      password: userPassword,
-      firstName: 'Jane',
-      lastName: 'Smith',
-      phone: '+1234567892',
-      isActive: true,
-    },
-  });
-
-  const sellerUser = await prisma.user.upsert({
-    where: { email: 'seller@example.com' },
-    update: {},
-    create: {
-      email: 'seller@example.com',
-      password: userPassword,
-      firstName: 'Seller',
-      lastName: 'Account',
-      phone: '+1234567893',
-      isActive: true,
-    },
-  });
-
-  // Create Admin
-  console.log('👑 Creating admin...');
-  await prisma.admin.upsert({
-    where: { userId: adminUser.id },
-    update: {},
-    create: {
-      userId: adminUser.id,
-      permissions: ['manage_users', 'manage_products', 'manage_orders', 'view_analytics'],
+  // Admin oluştur
+  const admin = await prisma.admin.create({
+    data: {
+      userId: user.id,
+      permissions: ['MANAGE_PRODUCTS', 'VIEW_USERS'],
       lastLogin: new Date(),
     },
   });
 
-  // Create Addresses
-  console.log('🏠 Creating addresses...');
-  const johnAddress = await prisma.address.create({
+  // Müşteri oluştur
+  const customer = await prisma.customer.create({
     data: {
-      userId: johnDoe.id,
-      title: 'Home',
-      firstName: 'John',
-      lastName: 'Doe',
-      addressLine1: '123 Main St',
-      city: 'New York',
-      state: 'NY',
-      postalCode: '10001',
-      country: 'USA',
-      phone: '+1234567891',
-      isDefault: true,
-      type: 'HOME',
+      userId: user.id,
     },
   });
 
-  const janeHomeAddress = await prisma.address.create({
+  // Adres oluştur
+  const address = await prisma.address.create({
     data: {
-      userId: janeSmith.id,
-      title: 'Home',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      addressLine1: '456 Oak Ave',
-      city: 'Los Angeles',
-      state: 'CA',
-      postalCode: '90001',
-      country: 'USA',
-      phone: '+1234567892',
-      isDefault: true,
-      type: 'HOME',
+      userId: user.id,
+      title: 'Ev',
+      firstName: user.firstName,
+      lastName: user.lastName,
+      addressLine1: faker.location.streetAddress(),
+      city: faker.location.city(),
+      state: faker.location.state(),
+      postalCode: faker.location.zipCode(),
+      country: faker.location.country(),
     },
   });
 
-  const janeWorkAddress = await prisma.address.create({
+  // Kategori oluştur
+  const category = await prisma.category.create({
     data: {
-      userId: janeSmith.id,
-      title: 'Work',
-      firstName: 'Jane',
-      lastName: 'Smith',
-      companyName: 'Tech Corp',
-      addressLine1: '789 Business Blvd',
-      city: 'Los Angeles',
-      state: 'CA',
-      postalCode: '90002',
-      country: 'USA',
-      phone: '+1234567892',
-      isDefault: false,
-      type: 'WORK',
+      name: 'Elektronik',
+      description: 'Elektronik ürünler',
     },
   });
 
-  // Create Business
-  console.log('🏢 Creating businesses...');
-  await prisma.business.create({
+  // Ürün oluştur
+  const product = await prisma.product.create({
     data: {
-      businessName: 'Tech Solutions Inc',
-      taxNumber: 'TAX123456789',
+      name: 'Test Ürünü',
+      description: 'Kaliteli bir ürün',
+      price: 999.99,
+      stock: 50,
+      sellerId: user.id,
+      categoryId: category.id,
+      isApproved: true,
+    },
+  });
+
+  // Sepet oluştur
+  await prisma.cart.create({
+    data: {
+      customerId: customer.id,
+      items: {
+        create: [
+          {
+            productId: product.id,
+            quantity: 2,
+            unitPrice: product.price,
+          },
+        ],
+      },
+    },
+  });
+
+  // Sipariş oluştur
+  const order = await prisma.order.create({
+    data: {
+      customerId: customer.id,
+      totalAmount: product.price,
+      shippingAddressId: address.id,
+      billingAddressId: address.id,
+      orderItems: {
+        create: [{
+          productId: product.id,
+          quantity: 1,
+          unitPrice: product.price,
+          totalPrice: product.price,
+        }],
+      },
+    },
+  });
+
+  // Ödeme
+  await prisma.payment.create({
+    data: {
+      orderId: order.id,
+      amount: product.price,
+      method: 'CREDIT_CARD',
+    },
+  });
+
+  // Yorum
+  await prisma.review.create({
+    data: {
+      customerId: customer.id,
+      productId: product.id,
+      orderId: order.id,
+      rating: 5,
+      pros: ['Kaliteli', 'Hızlı kargo'],
+      cons: [],
+      comment: 'Çok memnun kaldım!',
       isVerified: true,
-      addressId: janeWorkAddress.id,
-      userId: sellerUser.id,
+      isApproved: true,
     },
   });
 
-  // Create Customers
-  console.log('👥 Creating customers...');
-  const johnCustomer = await prisma.customer.upsert({
-    where: { userId: johnDoe.id },
-    update: {
-      loyaltyPoints: 100,
-    },
-    create: {
-      userId: johnDoe.id,
-      wishlist: [],
-      loyaltyPoints: 100,
-    },
-  });
-
-  const janeCustomer = await prisma.customer.upsert({
-    where: { userId: janeSmith.id },
-    update: {
-      loyaltyPoints: 250,
-    },
-    create: {
-      userId: janeSmith.id,
-      wishlist: [],
-      loyaltyPoints: 250,
-    },
-  });
-
-  // باقي الكود كما هو...
-  // Create Categories
-  console.log('📁 Creating categories...');
-  const electronicsCategory = await prisma.category.create({
+  // Business
+  const business = await prisma.business.create({
     data: {
-      name: 'Electronics',
-      description: 'Electronic devices and gadgets',
+      businessName: 'Test İşletmesi',
+      isVerified: true,  
     },
   });
 
-  // ... باقي الكود كما هو في الملف الأصلي
+  // Kargo
+  await prisma.shipping.create({
+    data: {
+      orderId: order.id,
+      customerId: customer.id,
+      sellerId: business.id,
+      shippingAddressId: address.id,
+      carrier: 'Yurtiçi Kargo',
+      shippingCost: 49.99,
+    },
+  });
 
-  console.log('✅ Database seeding completed successfully!');
+  console.log('Seed işlemi başarıyla tamamlandı.');
 }
 
 main()
   .catch((e) => {
-    console.error('❌ Error during seeding:', e);
+    console.error('Seed error:', e);
     process.exit(1);
   })
   .finally(async () => {
