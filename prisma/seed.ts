@@ -108,7 +108,6 @@ async function main() {
       country: 'USA',
       phone: '+1234567891',
       isDefault: true,
-      type: 'HOME',
     },
   });
 
@@ -125,7 +124,6 @@ async function main() {
       country: 'USA',
       phone: '+1234567892',
       isDefault: true,
-      type: 'HOME',
     },
   });
 
@@ -143,7 +141,6 @@ async function main() {
       country: 'USA',
       phone: '+1234567892',
       isDefault: false,
-      type: 'WORK',
     },
   });
 
