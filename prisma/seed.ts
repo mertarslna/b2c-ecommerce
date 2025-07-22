@@ -19,10 +19,9 @@ async function main() {
     await prisma.product.deleteMany();
     await prisma.category.deleteMany();
     await prisma.address.deleteMany();
-    // ✅ الأسماء الصحيحة:
-    await prisma.sellerProfile.deleteMany();     // ✅ camelCase
-    await prisma.customerProfile.deleteMany();   // ✅ camelCase  
-    await prisma.adminProfile.deleteMany();      // ✅ camelCase
+    await prisma.sellerProfile.deleteMany();
+    await prisma.customerProfile.deleteMany();
+    await prisma.adminProfile.deleteMany();
     await prisma.user.deleteMany();
 
     // 1. Create Users with specific roles
@@ -58,11 +57,20 @@ async function main() {
         },
         { 
           id: '550e8400-e29b-41d4-a716-446655440003', 
-          email: 'seller@example.com', 
+          email: 'seller1@example.com', 
           password: '$2b$10$hashedpassword', 
           first_name: 'Seller', 
-          last_name: 'Account', 
+          last_name: 'Account1', 
           phone: '+1234567893',
+          role: 'SELLER'
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440004', 
+          email: 'seller2@example.com', 
+          password: '$2b$10$hashedpassword', 
+          first_name: 'Seller', 
+          last_name: 'Account2', 
+          phone: '+1234567894',
           role: 'SELLER'
         },
       ],
@@ -100,15 +108,26 @@ async function main() {
     });
 
     console.log('🏪 Creating seller profile...');
-    await prisma.sellerProfile.create({
-      data: {
-        id: '550e8400-e29b-41d4-a716-446655440030',
-        user_id: '550e8400-e29b-41d4-a716-446655440003',
-        business_name: 'Tech Solutions Inc',
-        tax_number: 'TAX123456789',
-        is_verified: true,
-        business_address: '789 Business Blvd, Los Angeles, CA 90002, USA'
-      },
+    await prisma.sellerProfile.createMany({
+      data: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440030',
+          user_id: '550e8400-e29b-41d4-a716-446655440003',
+          business_name: 'Tech Solutions Inc',
+          tax_number: 'TAX123456789',
+          is_verified: true,
+          business_address: '789 Business Blvd, Los Angeles, CA 90002, USA'
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440031',
+          user_id: '550e8400-e29b-41d4-a716-446655440004',
+          business_name: 'Techno Market Inc',
+          tax_number: 'TAX987654321',
+          is_verified: true,
+          business_address: '987 Business Blvd, Los Santos, CA 90007, USA'
+        },
+      ],
+      skipDuplicates: true,
     });
 
     // 3. Create addresses for users
@@ -234,6 +253,7 @@ async function main() {
           is_approved: true,
           rating: 4.5,
         },
+        
         {
           id: '550e8400-e29b-41d4-a716-446655440063',
           name: 'Samsung Galaxy S24 Ultra',
@@ -251,7 +271,7 @@ async function main() {
           description: 'High-performance laptop for professionals',
           price: 2499.99,
           stock: 25,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
           category_id: '550e8400-e29b-41d4-a716-446655440052',
           is_approved: true,
           rating: 4.8,
@@ -273,7 +293,7 @@ async function main() {
           description: 'Comfortable cotton t-shirt',
           price: 29.99,
           stock: 100,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
           category_id: '550e8400-e29b-41d4-a716-446655440054',
           is_approved: true,
           rating: 4.2,
@@ -284,7 +304,7 @@ async function main() {
           description: 'Ergonomic mouse with customizable lighting',
           price: 49.99,
           stock: 150,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
           category_id: '550e8400-e29b-41d4-a716-446655440053',
           is_approved: true,
           rating: 4.7,
@@ -295,7 +315,7 @@ async function main() {
           description: 'Genuine leather wallet with RFID protection',
           price: 39.99,
           stock: 75,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
           category_id: '550e8400-e29b-41d4-a716-446655440054',
           is_approved: true,
           rating: 4.3,
@@ -306,7 +326,7 @@ async function main() {
           description: 'Over-ear headphones with active noise cancellation',
           price: 199.99,
           stock: 60,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
           category_id: '550e8400-e29b-41d4-a716-446655440053',
          is_approved: true,
          rating: 4.6,
