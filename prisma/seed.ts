@@ -19,10 +19,9 @@ async function main() {
     await prisma.product.deleteMany();
     await prisma.category.deleteMany();
     await prisma.address.deleteMany();
-    // ✅ الأسماء الصحيحة:
-    await prisma.sellerProfile.deleteMany();     // ✅ camelCase
-    await prisma.customerProfile.deleteMany();   // ✅ camelCase  
-    await prisma.adminProfile.deleteMany();      // ✅ camelCase
+    await prisma.sellerProfile.deleteMany();
+    await prisma.customerProfile.deleteMany();  
+    await prisma.adminProfile.deleteMany();
     await prisma.user.deleteMany();
 
     // 1. Create Users with specific roles
@@ -235,6 +234,17 @@ async function main() {
           rating: 4.5,
         },
         {
+          id: '550e8400-e29b-41d4-a716-446655440063',
+          name: 'Samsung Galaxy S24 Ultra',
+          description: 'Flagship Android phone with powerful performance',
+          price: 1099.99,
+          stock: 45,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: '550e8400-e29b-41d4-a716-446655440051',
+          is_approved: true,
+          rating: 4.6,
+        },
+        {
           id: '550e8400-e29b-41d4-a716-446655440061',
           name: 'MacBook Pro 16"',
           description: 'High-performance laptop for professionals',
@@ -244,6 +254,17 @@ async function main() {
           category_id: '550e8400-e29b-41d4-a716-446655440052',
           is_approved: true,
           rating: 4.8,
+        },
+            {
+          id: '550e8400-e29b-41d4-a716-446655440064',
+          name: 'Dell XPS 13',
+          description: 'Compact and powerful ultrabook for daily use',
+          price: 1399.99,
+          stock: 30,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: '550e8400-e29b-41d4-a716-446655440052',
+          is_approved: true,
+          rating: 4.4,
         },
         {
           id: '550e8400-e29b-41d4-a716-446655440062',
@@ -255,6 +276,39 @@ async function main() {
           category_id: '550e8400-e29b-41d4-a716-446655440054',
           is_approved: true,
           rating: 4.2,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440065',
+          name: 'Gaming Mouse RGB',
+          description: 'Ergonomic mouse with customizable lighting',
+          price: 49.99,
+          stock: 150,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: '550e8400-e29b-41d4-a716-446655440053',
+          is_approved: true,
+          rating: 4.7,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440066',
+          name: 'Leather Wallet',
+          description: 'Genuine leather wallet with RFID protection',
+          price: 39.99,
+          stock: 75,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: '550e8400-e29b-41d4-a716-446655440054',
+          is_approved: true,
+          rating: 4.3,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440067',
+          name: 'Noise Cancelling Headphones',
+          description: 'Over-ear headphones with active noise cancellation',
+          price: 199.99,
+          stock: 60,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: '550e8400-e29b-41d4-a716-446655440053',
+         is_approved: true,
+         rating: 4.6,
         },
       ],
       skipDuplicates: true,
