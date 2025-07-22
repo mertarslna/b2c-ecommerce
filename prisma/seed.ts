@@ -29,39 +29,39 @@ async function main() {
     console.log('👥 Creating users...');
     await prisma.user.createMany({
       data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440000', 
-          email: 'admin@ecommerce.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'Admin', 
-          last_name: 'User', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'admin@ecommerce.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Admin',
+          last_name: 'User',
           phone: '+1234567890',
           role: 'ADMIN'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440001', 
-          email: 'john.doe@example.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'John', 
-          last_name: 'Doe', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440001',
+          email: 'john.doe@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'John',
+          last_name: 'Doe',
           phone: '+1234567891',
           role: 'CUSTOMER'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440002', 
-          email: 'jane.smith@example.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'Jane', 
-          last_name: 'Smith', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440002',
+          email: 'jane.smith@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Jane',
+          last_name: 'Smith',
           phone: '+1234567892',
           role: 'CUSTOMER'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440003', 
-          email: 'seller@example.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'Seller', 
-          last_name: 'Account', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440003',
+          email: 'seller@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Seller',
+          last_name: 'Account',
           phone: '+1234567893',
           role: 'SELLER'
         },
@@ -83,17 +83,17 @@ async function main() {
     console.log('🛒 Creating customer profiles...');
     await prisma.customerProfile.createMany({
       data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440040', 
-          user_id: '550e8400-e29b-41d4-a716-446655440001', 
-          wishlist: [], 
-          loyalty_points: 100 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440040',
+          user_id: '550e8400-e29b-41d4-a716-446655440001',
+          wishlist: [],
+          loyalty_points: 100
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440041', 
-          user_id: '550e8400-e29b-41d4-a716-446655440002', 
-          wishlist: [], 
-          loyalty_points: 250 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440041',
+          user_id: '550e8400-e29b-41d4-a716-446655440002',
+          wishlist: [],
+          loyalty_points: 250
         }
       ],
       skipDuplicates: true,
@@ -181,39 +181,39 @@ async function main() {
     console.log('📂 Creating categories...');
     await prisma.category.createMany({
       data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440050', 
-          name: 'Electronics', 
-          description: 'Electronic devices and gadgets' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440050',
+          name: 'Electronics',
+          description: 'Electronic devices and gadgets'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440051', 
-          name: 'Smartphones', 
-          description: 'Mobile phones and accessories', 
-          parent_id: '550e8400-e29b-41d4-a716-446655440050' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440051',
+          name: 'Smartphones',
+          description: 'Mobile phones and accessories',
+          parent_id: '550e8400-e29b-41d4-a716-446655440050'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440052', 
-          name: 'Laptops', 
-          description: 'Laptop computers and accessories', 
-          parent_id: '550e8400-e29b-41d4-a716-446655440050' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440052',
+          name: 'Laptops',
+          description: 'kgkgkg accessories',
+          parent_id: '550e8400-e29b-41d4-a716-446655440050'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440053', 
-          name: 'Clothing', 
-          description: 'Apparel and fashion items' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440053',
+          name: 'Clothing',
+          description: 'Apparel and fashion items'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440054', 
-          name: "Men's Clothing", 
-          description: "Men's apparel", 
-          parent_id: '550e8400-e29b-41d4-a716-446655440053' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440054',
+          name: "Men's Clothing",
+          description: "Men's apparel",
+          parent_id: '550e8400-e29b-41d4-a716-446655440053'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440055', 
-          name: "Women's Clothing", 
-          description: "Women's apparel", 
-          parent_id: '550e8400-e29b-41d4-a716-446655440053' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440055',
+          name: "Women's Clothing",
+          description: "Women's apparel",
+          parent_id: '550e8400-e29b-41d4-a716-446655440053'
         },
       ],
       skipDuplicates: true,
@@ -296,15 +296,15 @@ async function main() {
     console.log('🛒 Creating shopping carts...');
     await prisma.cart.createMany({
       data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440080', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440080',
           customer_id: '550e8400-e29b-41d4-a716-446655440040', // Customer Profile ID
-          total_amount: 1029.98 
+          total_amount: 1029.98
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440081', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440081',
           customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
-          total_amount: 0.0 
+          total_amount: 0.0
         },
       ],
       skipDuplicates: true,
@@ -411,12 +411,12 @@ async function main() {
     });
 
     console.log('✅ Database seeding completed successfully!');
-    
+
     // Log summary
     const userCount = await prisma.user.count();
     const productCount = await prisma.product.count();
     const orderCount = await prisma.order.count();
-    
+
     console.log(`📊 Summary: ${userCount} users, ${productCount} products, ${orderCount} orders created`);
 
   } catch (error) {
