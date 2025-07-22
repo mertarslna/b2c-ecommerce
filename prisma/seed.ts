@@ -341,7 +341,7 @@ async function main() {
       data: [
         {
           id: '550e8400-e29b-41d4-a716-446655440070',
-          product_id: '550e8400-e29b-41d4-a716-446655440060',
+          product_id: '550e8400-e29b-41d4-a716-446655440060', // Product ID
           path: 'https://example.com/iphone15pro_main.jpg',
           size: 1024000,
           format: 'jpg',
@@ -378,7 +378,7 @@ async function main() {
         },
         { 
           id: '550e8400-e29b-41d4-a716-446655440081', 
-          customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
+          customer_id: '550e8400-e29b-41d4-a716-446655440041',
           total_amount: 0.0 
         },
       ],
@@ -391,7 +391,7 @@ async function main() {
       data: [
         {
           id: '550e8400-e29b-41d4-a716-446655440090',
-          cart_id: '550e8400-e29b-41d4-a716-446655440080',
+          cart_id: '550e8400-e29b-41d4-a716-446655440080', // Cart ID
           product_id: '550e8400-e29b-41d4-a716-446655440060',
           quantity: 1,
           unit_price: 999.99,

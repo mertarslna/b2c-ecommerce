@@ -100,7 +100,7 @@ model CustomerProfile {
   cart      Cart?
   orders    Order[]
   reviews   Review[]
-  shippings Shipping[]
+  shippings Shipping[] @relation("CustomerShipping")
 
   @@map("customer_profiles")
 }
@@ -325,7 +325,7 @@ model Shipping {
 
   // Relations
   order            Order           @relation(fields: [order_id], references: [id], onDelete: Cascade)
-  customer         CustomerProfile @relation(fields: [customer_id], references: [id], onDelete: Restrict)
+  customer         CustomerProfile @relation("CustomerShipping", fields: [customer_id], references: [id], onDelete: Restrict)
   seller           SellerProfile   @relation("SellerShippings", fields: [seller_id], references: [id], onDelete: Restrict)
   shipping_address Address         @relation(fields: [shipping_address_id], references: [id], onDelete: Restrict)
 
