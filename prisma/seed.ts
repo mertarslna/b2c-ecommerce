@@ -139,7 +139,7 @@ async function main() {
           city: 'Los Angeles',
           state: 'CA',
           postal_code: '90001',
-          country: 'antalya',
+          country: 'isntanbul',
           phone: '+1234567892',
           is_default: true,
         },
