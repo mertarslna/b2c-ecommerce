@@ -1,156 +1,433 @@
 import { PrismaClient } from '@prisma/client';
-import { faker, tr } from '@faker-js/faker';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  // Kullanıcı oluştur
-  const user = await prisma.user.create({
-    data: {
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-      firstName: faker.name.firstName(),
-      lastName: faker.name.lastName(),
-      phone: faker.phone.number(),
-    },
-  });
+  console.log('🌱 Starting database seeding...');
 
-  // Admin oluştur
-  const admin = await prisma.admin.create({
-    data: {
-      userId: user.id,
-      permissions: ['MANAGE_PRODUCTS', 'VIEW_USERS'],
-      lastLogin: new Date(),
-    },
-  });
+  try {
+    // Clear existing data in correct order (reverse of creation)
+    console.log('🧹 Cleaning existing data...');
+    await prisma.shipping.deleteMany();
+    await prisma.payment.deleteMany();
+    await prisma.orderItem.deleteMany();
+    await prisma.order.deleteMany();
+    await prisma.review.deleteMany();
+    await prisma.cartItem.deleteMany();
+    await prisma.cart.deleteMany();
+    await prisma.image.deleteMany();
+    await prisma.product.deleteMany();
+    await prisma.category.deleteMany();
+    await prisma.address.deleteMany();
+    // ✅ الأسماء الصحيحة:
+    await prisma.sellerProfile.deleteMany();     // ✅ camelCase
+    await prisma.customerProfile.deleteMany();   // ✅ camelCase  
+    await prisma.adminProfile.deleteMany();      // ✅ camelCase
+    await prisma.user.deleteMany();
 
-  // Müşteri oluştur
-  const customer = await prisma.customer.create({
-    data: {
-      userId: user.id,
-    },
-  });
+    // 1. Create Users with specific roles
+    console.log('👥 Creating users...');
+    await prisma.user.createMany({
+      data: [
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440000', 
+          email: 'admin@ecommerce.com', 
+          password: '$2b$10$hashedpassword', 
+          first_name: 'Admin', 
+          last_name: 'User', 
+          phone: '+1234567890',
+          role: 'ADMIN'
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440001', 
+          email: 'john.doe@example.com', 
+          password: '$2b$10$hashedpassword', 
+          first_name: 'John', 
+          last_name: 'Doe', 
+          phone: '+1234567891',
+          role: 'CUSTOMER'
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440002', 
+          email: 'jane.smith@example.com', 
+          password: '$2b$10$hashedpassword', 
+          first_name: 'Jane', 
+          last_name: 'Smith', 
+          phone: '+1234567892',
+          role: 'CUSTOMER'
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440003', 
+          email: 'seller@example.com', 
+          password: '$2b$10$hashedpassword', 
+          first_name: 'Seller', 
+          last_name: 'Account', 
+          phone: '+1234567893',
+          role: 'SELLER'
+        },
+      ],
+      skipDuplicates: true,
+    });
 
-  // Adres oluştur
-  const address = await prisma.address.create({
-    data: {
-      userId: user.id,
-      title: 'Ev',
-      firstName: user.firstName,
-      lastName: user.lastName,
-      addressLine1: faker.location.streetAddress(),
-      city: faker.location.city(),
-      state: faker.location.state(),
-      postalCode: faker.location.zipCode(),
-      country: faker.location.country(),
-    },
-  });
-
-  // Kategori oluştur
-  const category = await prisma.category.create({
-    data: {
-      name: 'Elektronik',
-      description: 'Elektronik ürünler',
-    },
-  });
-
-  // Ürün oluştur
-  const product = await prisma.product.create({
-    data: {
-      name: 'Test Ürünü',
-      description: 'Kaliteli bir ürün',
-      price: 999.99,
-      stock: 50,
-      sellerId: user.id,
-      categoryId: category.id,
-      isApproved: true,
-    },
-  });
-
-  // Sepet oluştur
-  await prisma.cart.create({
-    data: {
-      customerId: customer.id,
-      items: {
-        create: [
-          {
-            productId: product.id,
-            quantity: 2,
-            unitPrice: product.price,
-          },
-        ],
+    // 2. Create role-specific profiles
+    console.log('🔐 Creating admin profile...');
+    await prisma.adminProfile.create({
+      data: {
+        id: '550e8400-e29b-41d4-a716-446655440010',
+        user_id: '550e8400-e29b-41d4-a716-446655440000',
+        permissions: ['manage_users', 'manage_products', 'manage_orders', 'view_analytics'],
+        last_login: new Date(),
       },
-    },
-  });
+    });
 
-  // Sipariş oluştur
-  const order = await prisma.order.create({
-    data: {
-      customerId: customer.id,
-      totalAmount: product.price,
-      shippingAddressId: address.id,
-      billingAddressId: address.id,
-      orderItems: {
-        create: [{
-          productId: product.id,
+    console.log('🛒 Creating customer profiles...');
+    await prisma.customerProfile.createMany({
+      data: [
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440040', 
+          user_id: '550e8400-e29b-41d4-a716-446655440001', 
+          wishlist: [], 
+          loyalty_points: 100 
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440041', 
+          user_id: '550e8400-e29b-41d4-a716-446655440002', 
+          wishlist: [], 
+          loyalty_points: 250 
+        }
+      ],
+      skipDuplicates: true,
+    });
+
+    console.log('🏪 Creating seller profile...');
+    await prisma.sellerProfile.create({
+      data: {
+        id: '550e8400-e29b-41d4-a716-446655440030',
+        user_id: '550e8400-e29b-41d4-a716-446655440003',
+        business_name: 'Tech Solutions Inc',
+        tax_number: 'TAX123456789',
+        is_verified: true,
+        business_address: '789 Business Blvd, Los Angeles, CA 90002, USA'
+      },
+    });
+
+    // 3. Create addresses for users
+    console.log('📍 Creating addresses...');
+    await prisma.address.createMany({
+      data: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440020',
+          user_id: '550e8400-e29b-41d4-a716-446655440001', // John Doe
+          title: 'Home',
+          first_name: 'John',
+          last_name: 'Doe',
+          address_line1: '123 Main St',
+          city: 'New York',
+          state: 'NY',
+          postal_code: '10001',
+          country: 'USA',
+          phone: '+1234567891',
+          is_default: true,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440021',
+          user_id: '550e8400-e29b-41d4-a716-446655440002', // Jane Smith
+          title: 'Home',
+          first_name: 'Jane',
+          last_name: 'Smith',
+          address_line1: '456 Oak Ave',
+          city: 'Los Angeles',
+          state: 'CA',
+          postal_code: '90001',
+          country: 'USA',
+          phone: '+1234567892',
+          is_default: true,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440022',
+          user_id: '550e8400-e29b-41d4-a716-446655440002', // Jane Smith work address
+          title: 'Work',
+          first_name: 'Jane',
+          last_name: 'Smith',
+          company_name: 'Tech Corp',
+          address_line1: '789 Business Blvd',
+          city: 'Los Angeles',
+          state: 'CA',
+          postal_code: '90002',
+          country: 'USA',
+          phone: '+1234567892',
+          is_default: false,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440023',
+          user_id: '550e8400-e29b-41d4-a716-446655440003', // Seller address
+          title: 'Business',
+          first_name: 'Seller',
+          last_name: 'Account',
+          company_name: 'Tech Solutions Inc',
+          address_line1: '789 Business Blvd',
+          city: 'Los Angeles',
+          state: 'CA',
+          postal_code: '90002',
+          country: 'USA',
+          phone: '+1234567893',
+          is_default: true,
+        },
+      ],
+      skipDuplicates: true,
+    });
+
+    // 4. Create categories
+    console.log('📂 Creating categories...');
+    await prisma.category.createMany({
+      data: [
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440050', 
+          name: 'Electronics', 
+          description: 'Electronic devices and gadgets' 
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440051', 
+          name: 'Smartphones', 
+          description: 'Mobile phones and accessories', 
+          parent_id: '550e8400-e29b-41d4-a716-446655440050' 
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440052', 
+          name: 'Laptops', 
+          description: 'Laptop computers and accessories', 
+          parent_id: '550e8400-e29b-41d4-a716-446655440050' 
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440053', 
+          name: 'Clothing', 
+          description: 'Apparel and fashion items' 
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440054', 
+          name: "Men's Clothing", 
+          description: "Men's apparel", 
+          parent_id: '550e8400-e29b-41d4-a716-446655440053' 
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440055', 
+          name: "Women's Clothing", 
+          description: "Women's apparel", 
+          parent_id: '550e8400-e29b-41d4-a716-446655440053' 
+        },
+      ],
+      skipDuplicates: true,
+    });
+
+    // 5. Create products linked to seller profile
+    console.log('📦 Creating products...');
+    await prisma.product.createMany({
+      data: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440060',
+          name: 'iPhone 15 Pro',
+          description: 'Latest iPhone with advanced features',
+          price: 999.99,
+          stock: 50,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
+          category_id: '550e8400-e29b-41d4-a716-446655440051',
+          is_approved: true,
+          rating: 4.5,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440061',
+          name: 'MacBook Pro 16"',
+          description: 'High-performance laptop for professionals',
+          price: 2499.99,
+          stock: 25,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
+          category_id: '550e8400-e29b-41d4-a716-446655440052',
+          is_approved: true,
+          rating: 4.8,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440062',
+          name: 'Premium T-Shirt',
+          description: 'Comfortable cotton t-shirt',
+          price: 29.99,
+          stock: 100,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
+          category_id: '550e8400-e29b-41d4-a716-446655440054',
+          is_approved: true,
+          rating: 4.2,
+        },
+      ],
+      skipDuplicates: true,
+    });
+
+    // 6. Create images
+    console.log('🖼️ Creating product images...');
+    await prisma.image.createMany({
+      data: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440070',
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
+          path: 'https://example.com/iphone15pro_main.jpg',
+          size: 1024000,
+          format: 'jpg',
+          is_main: true,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440071',
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
+          path: 'https://example.com/iphone15pro_side.jpg',
+          size: 812000,
+          format: 'jpg',
+          is_main: false,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440072',
+          product_id: '550e8400-e29b-41d4-a716-446655440061',
+          path: 'https://example.com/macbookpro_main.jpg',
+          size: 1536000,
+          format: 'jpg',
+          is_main: true,
+        },
+      ],
+      skipDuplicates: true,
+    });
+
+    // 7. Create carts for customers
+    console.log('🛒 Creating shopping carts...');
+    await prisma.cart.createMany({
+      data: [
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440080', 
+          customer_id: '550e8400-e29b-41d4-a716-446655440040', // Customer Profile ID
+          total_amount: 1029.98 
+        },
+        { 
+          id: '550e8400-e29b-41d4-a716-446655440081', 
+          customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
+          total_amount: 0.0 
+        },
+      ],
+      skipDuplicates: true,
+    });
+
+    // 8. Create cart items
+    console.log('🛍️ Creating cart items...');
+    await prisma.cartItem.createMany({
+      data: [
+        {
+          id: '550e8400-e29b-41d4-a716-446655440090',
+          cart_id: '550e8400-e29b-41d4-a716-446655440080',
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
           quantity: 1,
-          unitPrice: product.price,
-          totalPrice: product.price,
-        }],
+          unit_price: 999.99,
+        },
+        {
+          id: '550e8400-e29b-41d4-a716-446655440091',
+          cart_id: '550e8400-e29b-41d4-a716-446655440080',
+          product_id: '550e8400-e29b-41d4-a716-446655440062',
+          quantity: 1,
+          unit_price: 29.99,
+        },
+      ],
+      skipDuplicates: true,
+    });
+
+    // 9. Create orders
+    console.log('📋 Creating orders...');
+    await prisma.order.create({
+      data: {
+        id: '550e8400-e29b-41d4-a716-446655440100',
+        customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
+        total_amount: 2499.99,
+        status: 'DELIVERED',
+        shipping_address_id: '550e8400-e29b-41d4-a716-446655440021',
+        billing_address_id: '550e8400-e29b-41d4-a716-446655440021',
       },
-    },
-  });
+    });
 
-  // Ödeme
-  await prisma.payment.create({
-    data: {
-      orderId: order.id,
-      amount: product.price,
-      method: 'CREDIT_CARD',
-    },
-  });
+    // 10. Create order items
+    console.log('📦 Creating order items...');
+    await prisma.orderItem.create({
+      data: {
+        id: '550e8400-e29b-41d4-a716-446655440110',
+        order_id: '550e8400-e29b-41d4-a716-446655440100',
+        product_id: '550e8400-e29b-41d4-a716-446655440061',
+        quantity: 1,
+        unit_price: 2499.99,
+        total_price: 2499.99,
+      },
+    });
 
-  // Yorum
-  await prisma.review.create({
-    data: {
-      customerId: customer.id,
-      productId: product.id,
-      orderId: order.id,
-      rating: 5,
-      pros: ['Kaliteli', 'Hızlı kargo'],
-      cons: [],
-      comment: 'Çok memnun kaldım!',
-      isVerified: true,
-      isApproved: true,
-    },
-  });
+    // 11. Create payments
+    console.log('💳 Creating payments...');
+    await prisma.payment.create({
+      data: {
+        id: '550e8400-e29b-41d4-a716-446655440120',
+        order_id: '550e8400-e29b-41d4-a716-446655440100',
+        amount: 2499.99,
+        method: 'STRIPE',
+        status: 'COMPLETED',
+        transaction_id: 'txn_1234567890',
+      },
+    });
 
-  // Business
-  const business = await prisma.business.create({
-    data: {
-      businessName: 'Test İşletmesi',
-      isVerified: true,  
-    },
-  });
+    // 12. Create reviews
+    console.log('⭐ Creating reviews...');
+    await prisma.review.create({
+      data: {
+        id: '550e8400-e29b-41d4-a716-446655440130',
+        product_id: '550e8400-e29b-41d4-a716-446655440061',
+        customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
+        order_id: '550e8400-e29b-41d4-a716-446655440100',
+        rating: 5,
+        title: 'Excellent laptop!',
+        comment: 'Amazing performance and build quality. Perfect for professional work.',
+        pros: ['Fast performance', 'Great display', 'Excellent build quality'],
+        cons: ['Expensive', 'Heavy'],
+        is_verified: true,
+        is_approved: true,
+        helpful_count: 15,
+      },
+    });
 
-  // Kargo
-  await prisma.shipping.create({
-    data: {
-      orderId: order.id,
-      customerId: customer.id,
-      sellerId: business.id,
-      shippingAddressId: address.id,
-      carrier: 'Yurtiçi Kargo',
-      shippingCost: 49.99,
-    },
-  });
+    // 13. Create shipping
+    console.log('🚚 Creating shipping records...');
+    await prisma.shipping.create({
+      data: {
+        id: '550e8400-e29b-41d4-a716-446655440140',
+        order_id: '550e8400-e29b-41d4-a716-446655440100',
+        customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
+        seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
+        shipping_address_id: '550e8400-e29b-41d4-a716-446655440021',
+        tracking_number: 'TRK123456789',
+        carrier: 'FedEx',
+        shipping_date: new Date(),
+        estimated_delivery_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
+        actual_delivery_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        shipping_cost: 15.5,
+        status: 'DELIVERED',
+        last_status_update: new Date(),
+      },
+    });
 
-  console.log('Seed işlemi başarıyla tamamlandı.');
+    console.log('✅ Database seeding completed successfully!');
+    
+    // Log summary
+    const userCount = await prisma.user.count();
+    const productCount = await prisma.product.count();
+    const orderCount = await prisma.order.count();
+    
+    console.log(`📊 Summary: ${userCount} users, ${productCount} products, ${orderCount} orders created`);
+
+  } catch (error) {
+    console.error('❌ Error during seeding:', error);
+    throw error;
+  }
 }
 
 main()
   .catch((e) => {
-    console.error('Seed error:', e);
+    console.error('Seeding failed:', e);
     process.exit(1);
   })
   .finally(async () => {
