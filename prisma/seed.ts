@@ -116,7 +116,7 @@ async function main() {
           business_name: 'Tech Solutions Inc',
           tax_number: 'TAX123456789',
           is_verified: true,
-          business_address: '789 Business Blvd, Los Angeles, CA 90002, USA'
+          business_address: '780 Business Blvd, Los Angeles, CA 90002, USA'
         },
         {
           id: '550e8400-e29b-41d4-a716-446655440031',
