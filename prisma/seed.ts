@@ -117,7 +117,7 @@ async function main() {
       productId: product.id,
       orderId: order.id,
       rating: 5,
-      pros: ['Kaliteli', 'Hızlı kargo'],
+      pros: ['Kaliteli', 'Hızlı Kargo'],
       cons: [],
       comment: 'Çok memnun kaldım!',
       isVerified: true,
