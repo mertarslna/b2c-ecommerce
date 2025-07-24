@@ -1,21 +1,26 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { Lock, User, Eye, EyeOff, Check, AlertCircle, Key } from 'lucide-react';
 import PayThorAuth from '@/lib/paythor-auth-direct';
 
 export default function PayThorLoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [auth] = useState(() => PayThorAuth.getInstance());
   const [currentStep, setCurrentStep] = useState('login');
+  
+  // Yönlendirme hedefini belirle (query param'dan veya varsayılan)
+  const redirectTo = searchParams.get('redirect') || '/';
+  
   const [formData, setFormData] = useState({
-    email: 'f.rizaergin@eticsoft.com',
-    password: '12345678Aa.'
+    email: '',
+    password: ''
   });
   
   const [otpData, setOtpData] = useState({
-    otp: '123456',
+    otp: '',
     email: ''
   });
   
@@ -23,16 +28,45 @@ export default function PayThorLoginPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+  const [showLoginForm, setShowLoginForm] = useState(false);
 
   useEffect(() => {
-    // Check if already authenticated
+    // Check if already authenticated and get user info
     if (auth.isAuthenticated()) {
-      setSuccess('Zaten giriş yapmışsınız!');
-      setTimeout(() => {
-        router.push('/checkout-paythor');
-      }, 2000);
+      // Token'dan kullanıcı bilgilerini çıkarmaya çalış
+      const token = auth.getToken();
+      
+      // Varsayılan kullanıcı bilgisi (email localStorage'dan alınabilir)
+      const userEmail = localStorage.getItem('paythor_user_email') || 'Kullanıcı';
+      
+      setCurrentUser({
+        email: userEmail,
+        token: token,
+        loginTime: localStorage.getItem('paythor_login_time') || new Date().toISOString()
+      });
+      
+      setSuccess('PayThor hesabınız aktif!');
+    } else {
+      setShowLoginForm(true);
     }
-  }, [auth, router]);
+  }, [auth, router, redirectTo]);
+
+  const handleLogout = () => {
+    auth.logout();
+    localStorage.removeItem('paythor_user_email');
+    localStorage.removeItem('paythor_login_time');
+    setCurrentUser(null);
+    setShowLoginForm(true);
+    setSuccess('');
+    setError('');
+  };
+
+  const handleSwitchAccount = () => {
+    setShowLoginForm(true);
+    setError('');
+    setSuccess('');
+  };
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -64,7 +98,7 @@ export default function PayThorLoginPage() {
         } else {
           setSuccess('Giriş başarılı! Yönlendiriliyorsunuz...');
           setTimeout(() => {
-            router.push('/checkout-paythor');
+            router.push(redirectTo); // Dinamik yönlendirme
           }, 2000);
         }
       } else {
@@ -91,10 +125,26 @@ export default function PayThorLoginPage() {
       console.log('OTP doğrulama sonucu:', result);
       
       if (result.status === 'success') {
-        setSuccess('OTP doğrulandı! Yönlendiriliyorsunuz...');
-        setTimeout(() => {
-          router.push('/checkout-paythor');
-        }, 2000);
+        // Kullanıcı bilgilerini kaydet
+        localStorage.setItem('paythor_user_email', otpData.email);
+        localStorage.setItem('paythor_login_time', new Date().toISOString());
+        
+        // Kullanıcı bilgilerini state'e kaydet
+        setCurrentUser({
+          email: otpData.email,
+          token: auth.getToken(),
+          loginTime: new Date().toISOString()
+        });
+        
+        setShowLoginForm(false);
+        setSuccess('PayThor hesabınız başarıyla bağlandı!');
+        
+        // Eğer redirect varsa bekle, yoksa kullanıcı bilgilerini göster
+        if (redirectTo !== '/') {
+          setTimeout(() => {
+            router.push(redirectTo);
+          }, 2000);
+        }
       } else {
         setError(result.message || 'OTP doğrulama başarısız. Lütfen kodu kontrol edin.');
       }
@@ -104,14 +154,6 @@ export default function PayThorLoginPage() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleLogout = () => {
-    auth.logout();
-    setSuccess('Çıkış yapıldı');
-    setTimeout(() => {
-      window.location.reload();
-    }, 1000);
   };
 
   const getUserData = () => {
@@ -175,10 +217,10 @@ export default function PayThorLoginPage() {
 
               <div className="flex space-x-3 pt-4">
                 <button
-                  onClick={() => router.push('/checkout-paythor')}
+                  onClick={() => router.push(redirectTo)}
                   className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-blue-700 transition-colors"
                 >
-                  Ödeme Sayfasına Git
+                  {redirectTo === '/checkout-paythor' ? 'Ödeme Sayfasına Git' : 'Devam Et'}
                 </button>
                 
                 <button
@@ -188,8 +230,128 @@ export default function PayThorLoginPage() {
                   Çıkış Yap
                 </button>
               </div>
+              
+              <div className="pt-2">
+                <button
+                  onClick={() => {
+                    console.log('Token testi başlıyor...')
+                    const auth = PayThorAuth.getInstance();
+                    
+                    console.log('=== TOKEN TEST ===')
+                    console.log('1. auth.isAuthenticated():', auth.isAuthenticated())
+                    console.log('2. auth.getToken():', auth.getToken() ? auth.getToken().substring(0, 20) + '...' : 'null')
+                    console.log('3. auth.getTokenWithHeaders():', auth.getTokenWithHeaders())
+                    
+                    if (typeof window !== 'undefined') {
+                      console.log('4. localStorage paythor_token:', localStorage.getItem('paythor_token') ? localStorage.getItem('paythor_token').substring(0, 20) + '...' : 'null')
+                      console.log('5. localStorage paythor_token_expiry:', localStorage.getItem('paythor_token_expiry'))
+                      console.log('6. localStorage paythor_user_data:', !!localStorage.getItem('paythor_user_data'))
+                    }
+                    
+                    alert('Token test sonuçları konsola yazdırıldı. F12 ile kontrol edin.')
+                  }}
+                  className="w-full bg-yellow-600 text-white py-2 px-4 rounded-lg font-medium hover:bg-yellow-700 transition-colors text-sm"
+                >
+                  🔍 Token Test (Debug)
+                </button>
+              </div>
             </div>
           </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Mevcut kullanıcı bilgileri gösterimi
+  if (currentUser && !showLoginForm) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="mx-auto h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+              <Check className="h-6 w-6 text-green-600" />
+            </div>
+            <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
+              PayThor Aktif
+            </h2>
+            <p className="mt-2 text-sm text-gray-600">
+              PayThor hesabınız bağlı ve aktif durumda
+            </p>
+          </div>
+
+          <div className="bg-white shadow rounded-lg p-6 space-y-4">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="flex-shrink-0">
+                <User className="h-8 w-8 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-medium text-gray-900">Hesap Bilgileri</h3>
+                <p className="text-sm text-gray-500">Aktif PayThor hesabı</p>
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">E-posta</label>
+                <p className="text-gray-900 break-all">{currentUser.email}</p>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Giriş Tarihi</label>
+                <p className="text-gray-900">
+                  {new Date(currentUser.loginTime).toLocaleDateString('tr-TR', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Token Durumu</label>
+                <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                  ✅ Aktif
+                </span>
+              </div>
+            </div>
+
+            <div className="pt-4 border-t border-gray-200 space-y-3">
+              <button
+                onClick={handleSwitchAccount}
+                className="w-full flex justify-center py-2 px-4 border border-blue-600 rounded-md shadow-sm text-sm font-medium text-blue-600 bg-white hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                <Key className="w-4 h-4 mr-2" />
+                Farklı Hesap ile Giriş Yap
+              </button>
+              
+              <button
+                onClick={handleLogout}
+                className="w-full flex justify-center py-2 px-4 border border-red-600 rounded-md shadow-sm text-sm font-medium text-red-600 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              >
+                Çıkış Yap
+              </button>
+
+              <button
+                onClick={() => router.push(redirectTo)}
+                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              >
+                Devam Et
+              </button>
+            </div>
+          </div>
+
+          {success && (
+            <div className="bg-green-50 border border-green-200 rounded-md p-4">
+              <div className="flex">
+                <Check className="h-5 w-5 text-green-400" />
+                <div className="ml-3">
+                  <p className="text-sm text-green-800">{success}</p>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -201,10 +363,11 @@ export default function PayThorLoginPage() {
         <div className="text-center">
           <Lock className="mx-auto h-12 w-12 text-blue-600" />
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900">
-            PayThor Giriş
+            {currentUser ? 'Hesap Değiştir' : 'PayThor Giriş'}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            {currentStep === 'login' 
+            {currentUser ? 'Farklı bir PayThor hesabı ile giriş yapın' : 
+             currentStep === 'login' 
               ? 'PayThor API erişimi için giriş yapın'
               : 'E-postanıza gelen doğrulama kodunu girin'
             }
@@ -378,23 +541,6 @@ export default function PayThorLoginPage() {
             </div>
           </form>
         )}
-
-        <div className="mt-6 bg-blue-50 rounded-lg p-4">
-          <h3 className="text-sm font-medium text-blue-900 mb-2">
-            Test Modu: Gerçek API Bağlantısı
-          </h3>
-          <div className="text-xs text-blue-700 space-y-1">
-            <div><strong>E-posta:</strong> f.rizaergin@eticsoft.com</div>
-            <div><strong>Şifre:</strong> 12345678Aa.</div>
-            <div><strong>Test OTP:</strong> 123456</div>
-            <div className="mt-2 text-green-700 font-medium">
-              ℹ️ Gerçek PayThor API kullanılıyor - Yanlış şifre ile hata alacaksınız
-            </div>
-            <div className="mt-1 text-orange-700 font-medium">
-              ⚠️ Console'da API yanıtlarını görebilirsiniz
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

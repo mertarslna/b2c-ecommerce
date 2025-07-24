@@ -1,6 +1,6 @@
 import { prisma } from '../prisma'
 import { stripe, STRIPE_CONFIG } from '../stripe'
-import { payThorService, PayThorPaymentRequest } from '../paythor'
+import { payThorAPI, PayThorCreatePaymentRequest } from '../paythor-api'
 import { PaymentMethod, PaymentStatus } from '@prisma/client'
 
 export interface CreatePaymentRequest {
@@ -20,6 +20,7 @@ export interface CreatePaymentResponse {
     clientSecret?: string
     paymentUrl?: string
     status: PaymentStatus
+    merchantReference?: string
   }
   error?: {
     code: string
@@ -144,52 +145,71 @@ export class PaymentService {
    */
   private async createPayThorPayment(paymentId: string, request: CreatePaymentRequest): Promise<CreatePaymentResponse> {
     try {
-      const payThorRequest: PayThorPaymentRequest = {
-        amount: request.amount,
-        currency: request.currency || 'TRY',
-        orderId: request.orderId,
-        customerId: request.customerId,
-        description: request.description,
-        metadata: {
-          paymentId,
-          ...request.metadata
-        }
+      // PayThor Auth'u kontrol et
+      if (!payThorAPI.isAuthenticated()) {
+        throw new Error('PayThor authentication required')
       }
 
-      const result = await payThorService.createPayment(payThorRequest)
+      const merchantReference = `ORDER-${request.orderId}-${Date.now()}`
+      
+      // PayThor API format (Laravel working example)
+      const payThorRequest: PayThorCreatePaymentRequest = {
+        amount: (request.amount / 100).toFixed(2), // PayThor expects TL format
+        currency: "TRY",
+        buyer_fee: "0",
+        method: "creditcard",
+        merchant_reference: merchantReference,
+        return_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-success`,
+        cancel_url: `${process.env.NEXT_PUBLIC_BASE_URL}/payment-cancel`,
+        callback_url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/webhooks/paythor`,
+        
+        // Customer info - geçici olarak basit değerler
+        first_name: 'Test',
+        last_name: 'User',
+        email: 'test@example.com',
+        phone: '+905551234567',
+        
+        // Address info - geçici olarak basit değerler
+        address_line_1: 'Test Address',
+        city: 'Istanbul',
+        postal_code: "34000",
+        country: "TR",
+        
+        // Order info
+        order_id: request.orderId,
+        description: request.description || `Payment for order ${request.orderId}`
+      }
 
-      if (!result.success) {
+      console.log('PayThor API Request:', payThorRequest)
+
+      const result = await payThorAPI.createPayment(payThorRequest)
+
+      if (result.status === 'success' && result.data && result.data.payment_url) {
         // Veritabanını güncelle
         await prisma.payment.update({
           where: { id: paymentId },
-          data: { status: 'FAILED' }
+          data: {
+            transaction_id: result.data.id?.toString() || merchantReference,
+            status: 'PROCESSING',
+            metadata: {
+              merchant_reference: merchantReference,
+              payment_token: result.data.payment_token,
+              paythor_payment_id: result.data.id
+            }
+          }
         })
 
         return {
-          success: false,
-          error: {
-            code: 'PAYTHOR_ERROR',
-            message: result.error || 'PayThor payment failed'
+          success: true,
+          data: {
+            paymentId,
+            paymentUrl: result.data.payment_url,
+            status: 'PROCESSING',
+            merchantReference
           }
         }
-      }
-
-      // Veritabanını güncelle
-      await prisma.payment.update({
-        where: { id: paymentId },
-        data: {
-          transaction_id: result.payment_token,
-          status: 'PROCESSING'
-        }
-      })
-
-      return {
-        success: true,
-        data: {
-          paymentId,
-          paymentUrl: result.payment_url || '',
-          status: 'PROCESSING'
-        }
+      } else {
+        throw new Error(result.message || 'Payment URL not received from PayThor')
       }
     } catch (error) {
       console.error('PayThor payment error:', error)
@@ -197,14 +217,19 @@ export class PaymentService {
       // Veritabanını güncelle
       await prisma.payment.update({
         where: { id: paymentId },
-        data: { status: 'FAILED' }
+        data: { 
+          status: 'FAILED',
+          metadata: {
+            error: error instanceof Error ? error.message : 'Unknown error'
+          }
+        }
       })
 
       return {
         success: false,
         error: {
           code: 'PAYTHOR_ERROR',
-          message: 'PayThor ödeme hatası'
+          message: error instanceof Error ? error.message : 'PayThor ödeme hatası'
         }
       }
     }

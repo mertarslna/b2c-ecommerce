@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { payThorService } from '@/lib/paythor'
+import { payThorAPI } from '@/lib/paythor-api'
 
 export async function GET(
   request: NextRequest,
@@ -15,26 +15,26 @@ export async function GET(
       )
     }
 
-    if (!payThorService.isConfigured()) {
+    if (!payThorAPI.isAuthenticated()) {
       return NextResponse.json(
-        { error: 'PayThor is not configured' },
-        { status: 500 }
+        { error: 'PayThor authentication required' },
+        { status: 401 }
       )
     }
 
-    const paymentStatus = await payThorService.getPaymentStatus(token)
+    const result = await payThorAPI.getPaymentStatus(token)
 
-    if (!paymentStatus) {
+    if (result.status === 'success' && result.data) {
+      return NextResponse.json({
+        success: true,
+        data: result.data
+      })
+    } else {
       return NextResponse.json(
-        { error: 'Payment not found or error occurred' },
+        { error: result.message || 'Payment status check failed' },
         { status: 404 }
       )
     }
-
-    return NextResponse.json({
-      success: true,
-      data: paymentStatus
-    })
   } catch (error) {
     console.error('PayThor payment status error:', error)
     return NextResponse.json(

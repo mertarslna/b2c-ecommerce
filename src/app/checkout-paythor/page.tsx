@@ -3,6 +3,8 @@
 import React, { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { CreditCard, Lock, ArrowLeft, Check, AlertCircle } from 'lucide-react'
+import { payThorAPI, PayThorCreatePaymentRequest } from '@/lib/paythor-api'
+import PayThorAuth from '@/lib/paythor-auth-direct'
 
 interface CheckoutData {
   orderId: string
@@ -43,6 +45,7 @@ export default function PayThorCheckoutPage() {
   const searchParams = useSearchParams()
   
   const [checkoutData, setCheckoutData] = useState<CheckoutData | null>(null)
+  const [authToken, setAuthToken] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [cardInfo, setCardInfo] = useState<CardInfo>({
     cardNumber: '',
@@ -76,20 +79,61 @@ export default function PayThorCheckoutPage() {
     }
   }, [router])
 
+  // PayThor auth kontrolü için ayrı useEffect
+  useEffect(() => {
+    console.log('=== PAYTHOR AUTH KONTROL useEffect ===')
+    
+    // PayThor auth instance'ını al ve refresh et
+    const auth = PayThorAuth.getInstance();
+    console.log('1. Auth instance alındı')
+    
+    // Token'ı localStorage'dan tekrar yükle
+    auth.refreshToken();
+    console.log('2. Token refresh edildi')
+    
+    // Kimlik doğrulama durumunu kontrol et
+    const isAuth = auth.isAuthenticated();
+    console.log('3. isAuthenticated():', isAuth)
+    
+    if (!isAuth) {
+      console.log('4. Kullanıcı authenticated değil, login sayfasına yönlendiriliyor')
+      router.push('/paythor-login?redirect=/checkout-paythor');
+      return;
+    }
+    
+    // Token kontrolü
+    const token = auth.getToken();
+    console.log('5. getToken():', token ? token.substring(0, 20) + '...' : 'null')
+    
+    // Headers kontrolü
+    const headers = auth.getTokenWithHeaders();
+    console.log('6. getTokenWithHeaders():', headers)
+    
+    // localStorage kontrolü
+    if (typeof window !== 'undefined') {
+      const localToken = localStorage.getItem('paythor_token');
+      console.log('7. localStorage direct token:', localToken ? localToken.substring(0, 20) + '...' : 'null')
+    }
+    
+    setAuthToken(token);
+    console.log('8. Auth token state set edildi:', token ? 'var' : 'yok')
+    
+    console.log('=== PAYTHOR AUTH KONTROL useEffect TAMAM ===')
+  }, [router]);
+
   const initializePayThorSession = async (data: CheckoutData) => {
     try {
       console.log('PayThor token kontrol ediliyor...')
       
-      // PayThor token'ını kontrol et
-      const token = localStorage.getItem('paythor_token')
-      if (!token) {
-        console.error('PayThor token bulunamadı')
-        alert('PayThor oturumu bulunamadı. Lütfen giriş yapın.')
+      // PayThor Auth service ile token kontrolü
+      if (!payThorAPI.isAuthenticated()) {
+        console.error('PayThor oturumu geçersiz veya süresi dolmuş')
+        alert('PayThor oturumu bulunamadı veya süresi dolmuş. Lütfen giriş yapın.')
         router.push('/paythor-login')
         return
       }
 
-      console.log('PayThor token mevcut, ödeme sistemi hazır.')
+      console.log('PayThor token mevcut ve geçerli, ödeme sistemi hazır.')
       console.log('Laravel çalışan PayThor sistemi kullanılıyor - dev-api.paythor.com')
     } catch (error) {
       console.error('PayThor token kontrolü hatası:', error)
@@ -170,21 +214,29 @@ export default function PayThorCheckoutPage() {
     setLoading(true)
 
     try {
-      const token = localStorage.getItem('paythor_token')
+      // PayThor Auth service ile token al
+      console.log('PayThor authentication kontrolü yapılıyor...')
       
-      if (!token) {
-        alert('PayThor oturumu bulunamadı. Lütfen giriş yapın.')
-        router.push('/paythor-login')
+      // localStorage'dan token kontrolü
+      const storedToken = localStorage.getItem('paythor_token')
+      const storedExpiry = localStorage.getItem('paythor_token_expiry')
+      
+      console.log('Stored token:', storedToken ? 'EXISTS' : 'NOT_FOUND')
+      console.log('Stored expiry:', storedExpiry)
+      
+      if (!payThorAPI.isAuthenticated()) {
+        alert('PayThor oturumu bulunamadı veya süresi dolmuş. Lütfen giriş yapın.')
+        console.log('Redirecting to PayThor login...')
+        router.push('/paythor-login?returnUrl=' + encodeURIComponent('/checkout-paythor'))
         return
       }
 
       console.log('PayThor ödeme işlemi başlatılıyor...')
-      console.log('Token:', token.substring(0, 20) + '...') // Token'ın ilk 20 karakteri
 
-      // PayThor ödeme isteği (basitleştirilmiş format)
+      // PayThor ödeme isteği (modern format)
       const merchantReference = `ORDER-${checkoutData.orderId}-${Date.now()}`
       
-      const paymentRequest = {
+      const paymentRequest: PayThorCreatePaymentRequest = {
         amount: (checkoutData.total / 100).toFixed(2),
         currency: "TRY",
         buyer_fee: "0",
@@ -192,7 +244,7 @@ export default function PayThorCheckoutPage() {
         merchant_reference: merchantReference,
         return_url: `${window.location.origin}/payment-success`,
         cancel_url: `${window.location.origin}/payment-cancel`,
-        callback_url: `${window.location.origin}/api/payment/callback`,
+        callback_url: `${window.location.origin}/api/webhooks/paythor`,
         
         // Müşteri bilgileri
         first_name: checkoutData.customerInfo.firstName,
@@ -213,60 +265,63 @@ export default function PayThorCheckoutPage() {
 
       console.log('PayThor payment request:', paymentRequest)
 
-      const response = await fetch('https://dev-api.paythor.com/payment/create', {
+      // PayThor token'ını al
+      const authInstance = PayThorAuth.getInstance()
+      console.log('PayThor auth instance created')
+      console.log('Is authenticated:', authInstance.isAuthenticated())
+      
+      const tokenData = authInstance.getTokenWithHeaders()
+      console.log('Token data from getTokenWithHeaders:', tokenData)
+      
+      const directToken = authInstance.getToken()
+      console.log('Direct token from getToken:', directToken)
+      
+      // localStorage'dan da kontrol et
+      const localStorageToken = localStorage.getItem('paythor_token')
+      console.log('Token from localStorage:', localStorageToken)
+      
+      const { token } = tokenData
+      
+      if (!token) {
+        console.error('Token bulunamadı. Debugging info:')
+        console.error('- authInstance.isAuthenticated():', authInstance.isAuthenticated())
+        console.error('- directToken:', directToken)
+        console.error('- localStorageToken:', localStorageToken)
+        throw new Error('PayThor token not found')
+      }
+
+      console.log('Token found, using:', token.substring(0, 20) + '...')
+
+      const response = await fetch('/api/paythor/create-payment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
           'Authorization': `Bearer ${token}`,
-          'X-API-Key': token, // Alternative header
-          'Api-Key': token,   // Another alternative
         },
         body: JSON.stringify(paymentRequest)
       })
 
-      const result = await response.json()
-      console.log('PayThor payment response:', result)
+      const data = await response.json()
+      console.log('PayThor payment response:', data)
 
-      if (!response.ok) {
-        console.error('PayThor Payment API Error:', response.status, response.statusText, result)
-        console.error('Payment request was:', paymentRequest)
-        throw new Error(`PayThor Payment API Error: ${response.status} - ${result.message || result.error || 'Unknown error'}`)
-      }
-
-      if ((response.status === 200 || response.status === 201) && result.data) {
-        // PayThor'dan gelen payment URL'ini bul
-        const paymentUrl = result.data.payment_url || result.data.url || result.payment_url
+      if (response.ok && data.status === 'success' && data.data && data.data.payment_url) {
+        // Merchant reference'ı localStorage'da sakla
+        localStorage.setItem('paythor_merchant_reference', merchantReference)
         
-        if (paymentUrl) {
-          // Merchant reference'ı localStorage'da sakla
-          localStorage.setItem('paythor_merchant_reference', merchantReference)
-          
-          // PayThor ödeme sayfasına yönlendir
-          window.location.href = paymentUrl
-        } else {
-          throw new Error('Payment URL not received from PayThor')
-        }
+        // PayThor ödeme sayfasına yönlendir
+        window.location.href = data.data.payment_url
       } else {
-        // Ödeme başarısız
-        let errorMessage = "Ödeme işlemi başarısız oldu."
-        if (result.message) {
-          errorMessage = result.message
-        } else if (result.error) {
-          errorMessage = result.error
-        } else if (result.details) {
-          if (Array.isArray(result.details)) {
-            errorMessage = result.details.join(", ")
-          } else {
-            errorMessage = result.details
-          }
-        }
-        
-        alert(`Ödeme Hatası: ${errorMessage}`)
+        throw new Error(data.message || 'Payment URL not received from PayThor')
       }
     } catch (error) {
       console.error('Payment error:', error)
-      alert('Ödeme işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.')
+      let errorMessage = 'Ödeme işlemi sırasında bir hata oluştu. Lütfen tekrar deneyin.'
+      
+      if (error instanceof Error) {
+        errorMessage = error.message
+      }
+      
+      alert(`Ödeme Hatası: ${errorMessage}`)
     } finally {
       setLoading(false)
     }

@@ -34,28 +34,39 @@ export default function PaymentSuccessPage() {
       return
     }
 
+    // Fetch payment details
     const fetchPaymentDetails = async () => {
       try {
-        let response
+        let response;
         
         if (sessionId) {
+          // Stripe Checkout Session success
           response = await fetch(`/api/stripe/session/${sessionId}`)
         } else if (paymentId) {
+          // Legacy payment success
           response = await fetch(`/api/payments/${paymentId}`)
         } else if (intentId) {
+          // Payment Intent success - get data from localStorage
           let paymentDetails = null
           let checkoutData = null
           
           try {
+            // First try to get saved payment details
             const lastPayment = localStorage.getItem('lastPayment')
+            console.log('lastPayment from localStorage:', lastPayment)
+            
             if (lastPayment) {
               paymentDetails = JSON.parse(lastPayment)
+              console.log('Parsed payment details:', paymentDetails)
             }
             
+            // Fallback: try to get checkout data
             if (!paymentDetails) {
               const storedData = localStorage.getItem('checkoutData')
+              console.log('checkoutData from localStorage:', storedData)
               if (storedData) {
                 checkoutData = JSON.parse(storedData)
+                console.log('Parsed checkout data:', checkoutData)
               }
             }
           } catch (error) {
@@ -63,6 +74,7 @@ export default function PaymentSuccessPage() {
           }
 
           const finalAmount = paymentDetails?.amount || checkoutData?.total || parseInt(amountParam || '0') || 0
+          console.log('Final amount to display:', finalAmount)
 
           setPaymentDetails({
             paymentId: intentId,
@@ -74,6 +86,7 @@ export default function PaymentSuccessPage() {
             createdAt: paymentDetails?.timestamp || new Date().toISOString()
           })
           
+          // Clean up localStorage
           localStorage.removeItem('lastPayment')
           localStorage.removeItem('checkoutData')
           
@@ -137,6 +150,7 @@ export default function PaymentSuccessPage() {
       <div className="container mx-auto px-4">
         <div className="max-w-2xl mx-auto">
           
+          {/* Success Animation */}
           <div className="text-center mb-8">
             <div className="relative inline-block">
               <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -149,13 +163,16 @@ export default function PaymentSuccessPage() {
             <p className="text-gray-600">Siparişiniz alınmıştır ve en kısa sürede işleme alınacaktır.</p>
             <div className="mt-4 p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-800">
-                <strong>Not:</strong> Stripe test kartları kullanıldığında ödeme terminalinde POS görünebilir. 
+                <strong>Not:</strong> Stripe test kartları kullanıldığında ödeme terminalinde "POS" görünebilir. 
                 Bu test ortamında normal bir durumdur ve gerçek ödemelerinizi etkilemez.
               </p>
             </div>
           </div>
 
+          {/* Payment Details Card */}
           <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            
+            {/* Header */}
             <div className="bg-green-50 px-6 py-4 border-b border-green-200">
               <div className="flex items-center justify-between">
                 <h2 className="text-lg font-semibold text-green-800">Ödeme Detayları</h2>
@@ -165,6 +182,7 @@ export default function PaymentSuccessPage() {
               </div>
             </div>
 
+            {/* Details */}
             <div className="p-6 space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -183,48 +201,82 @@ export default function PaymentSuccessPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-500 mb-1">Ödeme Yöntemi</label>
-                  <p className="text-gray-900">Kredi Kartı (Stripe)</p>
+                  <p className="text-gray-900">
+                    Kredi Kartı (Stripe)
+                  </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    Test kartlarında terminal POS gösterebilir - bu normaldir
+                    Test kartlarında terminal "POS" gösterebilir - bu normaldir
                   </p>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-500 mb-1">Durum</label>
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                    {paymentDetails.status === 'succeeded' ? 'Başarılı' : paymentDetails.status}
-                  </span>
                 </div>
-                <div>
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-500 mb-1">İşlem Tarihi</label>
                   <p className="text-gray-900">
-                    {new Date(paymentDetails.createdAt).toLocaleDateString('tr-TR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })}
+                    {new Date(paymentDetails.createdAt).toLocaleString('tr-TR')}
                   </p>
+                </div>
+              </div>
+
+              {intentId && (
+                <div className="pt-4 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Stripe Intent ID</label>
+                  <p className="text-gray-900 font-mono text-sm">{intentId}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next Steps */}
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sıradaki Adımlar</h3>
+            <div className="space-y-3">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm font-medium">1</span>
+                </div>
+                <div>
+                  <p className="text-gray-900 font-medium">Sipariş Onayı</p>
+                  <p className="text-gray-600 text-sm">E-posta adresinize sipariş onay mailiniz gönderilecektir.</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm font-medium">2</span>
+                </div>
+                <div>
+                  <p className="text-gray-900 font-medium">Hazırlık</p>
+                  <p className="text-gray-600 text-sm">Siparişiniz 1-2 iş günü içerisinde hazırlanacaktır.</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm font-medium">3</span>
+                </div>
+                <div>
+                  <p className="text-gray-900 font-medium">Kargo</p>
+                  <p className="text-gray-600 text-sm">Siparişiniz kargoya verildikten sonra takip bilgileri gönderilecektir.</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-4 mb-8">
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/"
-              className="flex-1 bg-blue-600 text-white text-center py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center"
             >
-              🏠 Ana Sayfaya Dön
+              Alışverişe Devam Et
             </Link>
             <Link
               href="/orders"
-              className="flex-1 bg-gray-600 text-white text-center py-3 px-6 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+              className="bg-white text-blue-600 border border-blue-600 px-8 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors text-center"
             >
-              📦 Siparişlerim
+              Siparişlerimi Görüntüle
             </Link>
           </div>
 
+          {/* Support */}
           <div className="text-center mt-8 p-4 bg-gray-100 rounded-lg">
             <p className="text-gray-600 text-sm mb-2">Herhangi bir sorunuz mu var?</p>
             <div className="flex justify-center space-x-4 text-sm">

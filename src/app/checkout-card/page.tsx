@@ -55,7 +55,7 @@ const CheckoutForm: React.FC = () => {
     // Get order data from localStorage
     const storedData = localStorage.getItem('checkoutData')
     if (!storedData) {
-      router.push('/checkout-new')
+      router.push('/checkout')
       return
     }
     
@@ -64,7 +64,7 @@ const CheckoutForm: React.FC = () => {
       setOrderData(parsed)
     } catch (error) {
       console.error('Error parsing checkout data:', error)
-      router.push('/checkout-new')
+      router.push('/checkout')
     }
   }, [router])
 
@@ -210,7 +210,7 @@ const CheckoutForm: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <button
-            onClick={() => router.push('/checkout-new')}
+            onClick={() => router.push('/checkout')}
             className="flex items-center text-blue-600 hover:text-blue-700 mb-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -317,6 +317,16 @@ const CheckoutForm: React.FC = () => {
                 <div className="flex items-center text-sm text-gray-600 mb-4">
                   <Lock className="h-4 w-4 mr-2" />
                   Ödeme bilgileriniz SSL ile şifrelenerek korunmaktadır
+                </div>
+
+                <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mb-4">
+                  <p className="text-sm text-blue-800">
+                    <strong>Test Kartı Bilgisi:</strong> Stripe test kartları kullanırken ödeme terminalinde "POS" görünebilir. 
+                    Bu test ortamında normal bir durumdur.
+                  </p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Test kartı: 4242 4242 4242 4242, Son kullanma: herhangi gelecek tarih, CVC: herhangi 3 rakam
+                  </p>
                 </div>
 
                 <button
