@@ -276,13 +276,15 @@ model Cart {
 }
 
 model CartItem {
-  id         String   @id @default(uuid())
-  cart_id    String
-  product_id String
-  quantity   Int
-  unit_price Decimal  @db.Decimal(10, 2)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  id            String   @id @default(uuid())
+  cart_id       String
+  product_id    String
+  quantity      Int
+  unit_price    Decimal  @db.Decimal(10, 2)
+  selected_size String?  // ✅ 
+  selected_color String? // ✅ 
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
 
   // Relations
   cart    Cart    @relation(fields: [cart_id], references: [id], onDelete: Cascade)

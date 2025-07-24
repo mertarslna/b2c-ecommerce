@@ -28,39 +28,39 @@ async function main() {
     console.log('👥 Creating users...');
     await prisma.user.createMany({
       data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440000', 
-          email: 'admin@ecommerce.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'Admin', 
-          last_name: 'User', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440000',
+          email: 'admin@ecommerce.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Admin',
+          last_name: 'User',
           phone: '+1234567890',
           role: 'ADMIN'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440001', 
-          email: 'john.doe@example.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'John', 
-          last_name: 'Doe', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440001',
+          email: 'john.doe@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'John',
+          last_name: 'Doe',
           phone: '+1234567891',
           role: 'CUSTOMER'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440002', 
-          email: 'jane.smith@example.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'Jane', 
-          last_name: 'Smith', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440002',
+          email: 'jane.smith@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Jane',
+          last_name: 'Smith',
           phone: '+1234567892',
           role: 'CUSTOMER'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440003', 
-          email: 'seller1@example.com', 
-          password: '$2b$10$hashedpassword', 
-          first_name: 'Seller', 
-          last_name: 'Account1', 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440003',
+          email: 'seller@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Seller',
+          last_name: 'Account',
           phone: '+1234567893',
           role: 'SELLER'
         },
@@ -73,6 +73,16 @@ async function main() {
           phone: '+1234567894',
           role: 'SELLER'
         },
+        // ✅ Test user for cart testing
+        {
+          id: 'user-1',
+          email: 'test@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Test',
+          last_name: 'User',
+          phone: '+1234567899',
+          role: 'CUSTOMER'
+        }
       ],
       skipDuplicates: true,
     });
@@ -91,23 +101,30 @@ async function main() {
     console.log('🛒 Creating customer profiles...');
     await prisma.customerProfile.createMany({
       data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440040', 
-          user_id: '550e8400-e29b-41d4-a716-446655440001', 
-          wishlist: [], 
-          loyalty_points: 100 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440040',
+          user_id: '550e8400-e29b-41d4-a716-446655440001',
+          wishlist: [],
+          loyalty_points: 100
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440041', 
-          user_id: '550e8400-e29b-41d4-a716-446655440002', 
-          wishlist: [], 
-          loyalty_points: 250 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440041',
+          user_id: '550e8400-e29b-41d4-a716-446655440002',
+          wishlist: [],
+          loyalty_points: 250
+        },
+        // ✅ Test customer profile for cart testing
+        {
+          id: 'customer-1',
+          user_id: 'user-1',
+          wishlist: [],
+          loyalty_points: 0
         }
       ],
       skipDuplicates: true,
     });
 
-    console.log('🏪 Creating seller profile...');
+    console.log('🏪 Creating seller profiles...');
     await prisma.sellerProfile.createMany({
       data: [
         {
@@ -116,7 +133,7 @@ async function main() {
           business_name: 'Tech Solutions Inc',
           tax_number: 'TAX123456789',
           is_verified: true,
-          business_address: '780 Business Blvd, Los Angeles, CA 90002, USA'
+          business_address: '789 Business Blvd, Los Angeles, CA 90002, USA'
         },
         {
           id: '550e8400-e29b-41d4-a716-446655440031',
@@ -192,6 +209,21 @@ async function main() {
           phone: '+1234567893',
           is_default: true,
         },
+        // ✅ Test user address
+        {
+          id: 'address-1',
+          user_id: 'user-1',
+          title: 'Home',
+          first_name: 'Test',
+          last_name: 'User',
+          address_line1: '123 Test St',
+          city: 'Test City',
+          state: 'TS',
+          postal_code: '12345',
+          country: 'USA',
+          phone: '+1234567899',
+          is_default: true,
+        },
       ],
       skipDuplicates: true,
     });
@@ -200,39 +232,39 @@ async function main() {
     console.log('📂 Creating categories...');
     await prisma.category.createMany({
       data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440050', 
-          name: 'Electronics', 
-          description: 'Electronic devices and gadgets' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440050',
+          name: 'Electronics',
+          description: 'Electronic devices and gadgets'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440051', 
-          name: 'Smartphones', 
-          description: 'Mobile phones and accessories', 
-          parent_id: '550e8400-e29b-41d4-a716-446655440050' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440051',
+          name: 'Smartphones',
+          description: 'Mobile phones and accessories',
+          parent_id: '550e8400-e29b-41d4-a716-446655440050'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440052', 
-          name: 'Laptops', 
-          description: 'Laptop computers and accessories', 
-          parent_id: '550e8400-e29b-41d4-a716-446655440050' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440052',
+          name: 'Laptops',
+          description: 'Laptops and computer accessories',
+          parent_id: '550e8400-e29b-41d4-a716-446655440050'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440053', 
-          name: 'Clothing', 
-          description: 'Apparel and fashion items' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440053',
+          name: 'Clothing',
+          description: 'Fashion and clothing items'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440054', 
-          name: "Men's Clothing", 
-          description: "Men's apparel", 
-          parent_id: '550e8400-e29b-41d4-a716-446655440053' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440054',
+          name: "Men's Clothing",
+          description: "Men's apparel",
+          parent_id: '550e8400-e29b-41d4-a716-446655440053'
         },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440055', 
-          name: "Women's Clothing", 
-          description: "Women's apparel", 
-          parent_id: '550e8400-e29b-41d4-a716-446655440053' 
+        {
+          id: '550e8400-e29b-41d4-a716-446655440055',
+          name: "Women's Clothing",
+          description: "Women's apparel",
+          parent_id: '550e8400-e29b-41d4-a716-446655440053'
         },
       ],
       skipDuplicates: true,
@@ -245,19 +277,18 @@ async function main() {
         {
           id: '550e8400-e29b-41d4-a716-446655440060',
           name: 'iPhone 15 Pro',
-          description: 'Latest iPhone with advanced features',
+          description: 'Latest iPhone with advanced features and A17 Pro chip',
           price: 999.99,
           stock: 50,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
           category_id: '550e8400-e29b-41d4-a716-446655440051',
           is_approved: true,
           rating: 4.5,
         },
-        
         {
           id: '550e8400-e29b-41d4-a716-446655440063',
           name: 'Samsung Galaxy S24 Ultra',
-          description: 'Flagship Android phone with powerful performance',
+          description: 'Flagship Android phone with powerful performance and S Pen',
           price: 1099.99,
           stock: 45,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
@@ -267,8 +298,8 @@ async function main() {
         },
         {
           id: '550e8400-e29b-41d4-a716-446655440061',
-          name: 'MacBook Pro 16"',
-          description: 'High-performance laptop for professionals',
+          name: 'MacBook Pro 16',
+          description: 'High-performance laptop for professionals with M3 chip',
           price: 2499.99,
           stock: 25,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
@@ -276,7 +307,7 @@ async function main() {
           is_approved: true,
           rating: 4.8,
         },
-            {
+        {
           id: '550e8400-e29b-41d4-a716-446655440064',
           name: 'Dell XPS 13',
           description: 'Compact and powerful ultrabook for daily use',
@@ -290,7 +321,7 @@ async function main() {
         {
           id: '550e8400-e29b-41d4-a716-446655440062',
           name: 'Premium T-Shirt',
-          description: 'Comfortable cotton t-shirt',
+          description: 'Comfortable premium cotton t-shirt',
           price: 29.99,
           stock: 100,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
@@ -301,11 +332,11 @@ async function main() {
         {
           id: '550e8400-e29b-41d4-a716-446655440065',
           name: 'Gaming Mouse RGB',
-          description: 'Ergonomic mouse with customizable lighting',
+          description: 'Ergonomic gaming mouse with customizable RGB lighting',
           price: 49.99,
           stock: 150,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: '550e8400-e29b-41d4-a716-446655440053',
+          category_id: '550e8400-e29b-41d4-a716-446655440050',
           is_approved: true,
           rating: 4.7,
         },
@@ -327,10 +358,10 @@ async function main() {
           price: 199.99,
           stock: 60,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: '550e8400-e29b-41d4-a716-446655440053',
-         is_approved: true,
-         rating: 4.6,
-        },
+          category_id: '550e8400-e29b-41d4-a716-446655440050',
+          is_approved: true,
+          rating: 4.6,
+        }
       ],
       skipDuplicates: true,
     });
@@ -339,10 +370,11 @@ async function main() {
     console.log('🖼️ Creating product images...');
     await prisma.image.createMany({
       data: [
+        // iPhone 15 Pro images
         {
           id: '550e8400-e29b-41d4-a716-446655440070',
-          product_id: '550e8400-e29b-41d4-a716-446655440060', // Product ID
-          path: 'https://example.com/iphone15pro_main.jpg',
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
+          path: 'https://images.unsplash.com/photo-1592899677977-9c10ca588bbd?w=600&h=600&fit=crop',
           size: 1024000,
           format: 'jpg',
           is_main: true,
@@ -350,16 +382,35 @@ async function main() {
         {
           id: '550e8400-e29b-41d4-a716-446655440071',
           product_id: '550e8400-e29b-41d4-a716-446655440060',
-          path: 'https://example.com/iphone15pro_side.jpg',
+          path: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&h=600&fit=crop',
           size: 812000,
           format: 'jpg',
           is_main: false,
         },
+        // MacBook Pro images
         {
           id: '550e8400-e29b-41d4-a716-446655440072',
           product_id: '550e8400-e29b-41d4-a716-446655440061',
-          path: 'https://example.com/macbookpro_main.jpg',
+          path: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=600&h=600&fit=crop',
           size: 1536000,
+          format: 'jpg',
+          is_main: true,
+        },
+        // Samsung Galaxy images
+        {
+          id: '550e8400-e29b-41d4-a716-446655440073',
+          product_id: '550e8400-e29b-41d4-a716-446655440063',
+          path: 'https://images.unsplash.com/photo-1565849904461-04a58ad377e0?w=600&h=600&fit=crop',
+          size: 924000,
+          format: 'jpg',
+          is_main: true,
+        },
+        // More product images
+        {
+          id: '550e8400-e29b-41d4-a716-446655440074',
+          product_id: '550e8400-e29b-41d4-a716-446655440062',
+          path: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop',
+          size: 512000,
           format: 'jpg',
           is_main: true,
         },
@@ -367,132 +418,15 @@ async function main() {
       skipDuplicates: true,
     });
 
-    // 7. Create carts for customers
-    console.log('🛒 Creating shopping carts...');
-    await prisma.cart.createMany({
-      data: [
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440080', 
-          customer_id: '550e8400-e29b-41d4-a716-446655440040', // Customer Profile ID
-          total_amount: 1029.98 
-        },
-        { 
-          id: '550e8400-e29b-41d4-a716-446655440081', 
-          customer_id: '550e8400-e29b-41d4-a716-446655440041',
-          total_amount: 0.0 
-        },
-      ],
-      skipDuplicates: true,
-    });
-
-    // 8. Create cart items
-    console.log('🛍️ Creating cart items...');
-    await prisma.cartItem.createMany({
-      data: [
-        {
-          id: '550e8400-e29b-41d4-a716-446655440090',
-          cart_id: '550e8400-e29b-41d4-a716-446655440080', // Cart ID
-          product_id: '550e8400-e29b-41d4-a716-446655440060',
-          quantity: 1,
-          unit_price: 999.99,
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440091',
-          cart_id: '550e8400-e29b-41d4-a716-446655440080',
-          product_id: '550e8400-e29b-41d4-a716-446655440062',
-          quantity: 1,
-          unit_price: 29.99,
-        },
-      ],
-      skipDuplicates: true,
-    });
-
-    // 9. Create orders
-    console.log('📋 Creating orders...');
-    await prisma.order.create({
-      data: {
-        id: '550e8400-e29b-41d4-a716-446655440100',
-        customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
-        total_amount: 2499.99,
-        status: 'DELIVERED',
-        shipping_address_id: '550e8400-e29b-41d4-a716-446655440021',
-        billing_address_id: '550e8400-e29b-41d4-a716-446655440021',
-      },
-    });
-
-    // 10. Create order items
-    console.log('📦 Creating order items...');
-    await prisma.orderItem.create({
-      data: {
-        id: '550e8400-e29b-41d4-a716-446655440110',
-        order_id: '550e8400-e29b-41d4-a716-446655440100',
-        product_id: '550e8400-e29b-41d4-a716-446655440061',
-        quantity: 1,
-        unit_price: 2499.99,
-        total_price: 2499.99,
-      },
-    });
-
-    // 11. Create payments
-    console.log('💳 Creating payments...');
-    await prisma.payment.create({
-      data: {
-        id: '550e8400-e29b-41d4-a716-446655440120',
-        order_id: '550e8400-e29b-41d4-a716-446655440100',
-        amount: 2499.99,
-        method: 'STRIPE',
-        status: 'COMPLETED',
-        transaction_id: 'txn_1234567890',
-      },
-    });
-
-    // 12. Create reviews
-    console.log('⭐ Creating reviews...');
-    await prisma.review.create({
-      data: {
-        id: '550e8400-e29b-41d4-a716-446655440130',
-        product_id: '550e8400-e29b-41d4-a716-446655440061',
-        customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
-        order_id: '550e8400-e29b-41d4-a716-446655440100',
-        rating: 5,
-        title: 'Excellent laptop!',
-        comment: 'Amazing performance and build quality. Perfect for professional work.',
-        pros: ['Fast performance', 'Great display', 'Excellent build quality'],
-        cons: ['Expensive', 'Heavy'],
-        is_verified: true,
-        is_approved: true,
-        helpful_count: 15,
-      },
-    });
-
-    // 13. Create shipping
-    console.log('🚚 Creating shipping records...');
-    await prisma.shipping.create({
-      data: {
-        id: '550e8400-e29b-41d4-a716-446655440140',
-        order_id: '550e8400-e29b-41d4-a716-446655440100',
-        customer_id: '550e8400-e29b-41d4-a716-446655440041', // Customer Profile ID
-        seller_id: '550e8400-e29b-41d4-a716-446655440030', // Seller Profile ID
-        shipping_address_id: '550e8400-e29b-41d4-a716-446655440021',
-        tracking_number: 'TRK123456789',
-        carrier: 'FedEx',
-        shipping_date: new Date(),
-        estimated_delivery_date: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000),
-        actual_delivery_date: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
-        shipping_cost: 15.5,
-        status: 'DELIVERED',
-        last_status_update: new Date(),
-      },
-    });
-
     console.log('✅ Database seeding completed successfully!');
-    
+
     // Log summary
     const userCount = await prisma.user.count();
     const productCount = await prisma.product.count();
-    const orderCount = await prisma.order.count();
-    
-    console.log(`📊 Summary: ${userCount} users, ${productCount} products, ${orderCount} orders created`);
+    const customerCount = await prisma.customerProfile.count();
+
+    console.log(`📊 Summary: ${userCount} users, ${productCount} products, ${customerCount} customers created`);
+    console.log('🛒 Test customer created: customer-1 (linked to test@example.com)');
 
   } catch (error) {
     console.error('❌ Error during seeding:', error);
