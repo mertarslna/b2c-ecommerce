@@ -293,17 +293,22 @@ model CartItem {
 
 model Payment {
   id             String        @id @default(uuid())
-  order_id       String
+  order_id       String?
+  orderId        String?       // For temporary order tracking
   amount         Decimal       @db.Decimal(10, 2)
+  currency       String        @default("TRY")
   method         PaymentMethod
+  provider       String?       // "stripe", "paythor", etc.
   status         PaymentStatus @default(PENDING)
   transaction_id String?
+  paymentToken   String?       // For tracking payment tokens
   payment_date   DateTime      @default(now())
+  metadata       Json?         // For storing additional payment data
   created_at     DateTime      @default(now())
   updated_at     DateTime      @updatedAt
 
   // Relations
-  order Order @relation(fields: [order_id], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [order_id], references: [id], onDelete: Cascade)
 
   @@map("payments")
 }

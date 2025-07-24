@@ -75,10 +75,44 @@ services:
     networks:
       - ecommerce_dev_network
 
+  # Next.js Application (Development)
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: ecommerce_app_dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgresql://postgres:postgres_dev_password@postgres:5432/ecommerce_db_dev?schema=public
+      - REDIS_URL=redis://redis:6379
+      - STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
+      - NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+      - PAYTR_MERCHANT_ID=your_paytr_merchant_id_here
+      - PAYTR_MERCHANT_KEY=your_paytr_merchant_key_here
+      - PAYTR_MERCHANT_SALT=your_paytr_merchant_salt_here
+      - NEXT_PUBLIC_PAYTR_ENABLED=true
+      - NEXTAUTH_URL=http://localhost:3000
+      - NEXTAUTH_SECRET=your-nextauth-secret-key-here
+      - OPENSSL_CONF=/dev/null
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - nextjs_cache:/app/.next
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ecommerce_dev_network
+
 volumes:
   postgres_dev_data:
   redis_dev_data:
   pgadmin_dev_data:
+  nextjs_cache:
 
 networks:
   ecommerce_dev_network:

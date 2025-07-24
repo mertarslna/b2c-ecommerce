@@ -1,0 +1,288 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
+import Link from 'next/link'
+
+interface PaymentDetails {
+  paymentId: string
+  orderId: string
+  amount: number
+  currency: string
+  status: string
+  method: string
+  createdAt: string
+}
+
+export default function PaymentSuccessPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+  
+  const [paymentDetails, setPaymentDetails] = useState<PaymentDetails | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
+
+  const sessionId = searchParams.get('session_id')
+  const orderId = searchParams.get('order_id')
+  const paymentId = searchParams.get('paymentId')
+  const intentId = searchParams.get('intentId')
+  const amountParam = searchParams.get('amount')
+
+  useEffect(() => {
+    if (!sessionId && !paymentId && !intentId) {
+      router.push('/')
+      return
+    }
+
+    // Fetch payment details
+    const fetchPaymentDetails = async () => {
+      try {
+        let response;
+        
+        if (sessionId) {
+          // Stripe Checkout Session success
+          response = await fetch(`/api/stripe/session/${sessionId}`)
+        } else if (paymentId) {
+          // Legacy payment success
+          response = await fetch(`/api/payments/${paymentId}`)
+        } else if (intentId) {
+          // Payment Intent success - get data from localStorage
+          let paymentDetails = null
+          let checkoutData = null
+          
+          try {
+            // First try to get saved payment details
+            const lastPayment = localStorage.getItem('lastPayment')
+            console.log('lastPayment from localStorage:', lastPayment)
+            
+            if (lastPayment) {
+              paymentDetails = JSON.parse(lastPayment)
+              console.log('Parsed payment details:', paymentDetails)
+            }
+            
+            // Fallback: try to get checkout data
+            if (!paymentDetails) {
+              const storedData = localStorage.getItem('checkoutData')
+              console.log('checkoutData from localStorage:', storedData)
+              if (storedData) {
+                checkoutData = JSON.parse(storedData)
+                console.log('Parsed checkout data:', checkoutData)
+              }
+            }
+          } catch (error) {
+            console.error('Error parsing localStorage data:', error)
+          }
+
+          const finalAmount = paymentDetails?.amount || checkoutData?.total || parseInt(amountParam || '0') || 0
+          console.log('Final amount to display:', finalAmount)
+
+          setPaymentDetails({
+            paymentId: intentId,
+            orderId: orderId || paymentDetails?.orderId || checkoutData?.orderId || 'N/A',
+            amount: finalAmount,
+            currency: 'TRY',
+            status: 'succeeded',
+            method: 'card',
+            createdAt: paymentDetails?.timestamp || new Date().toISOString()
+          })
+          
+          // Clean up localStorage
+          localStorage.removeItem('lastPayment')
+          localStorage.removeItem('checkoutData')
+          
+          setLoading(false)
+          return
+        } else {
+          throw new Error('No payment identifier found')
+        }
+
+        const result = await response.json()
+
+        if (result.success) {
+          setPaymentDetails(result.data)
+        } else {
+          setError('Ödeme bilgileri alınamadı')
+        }
+      } catch (err) {
+        console.error('Payment details fetch error:', err)
+        setError('Bir hata oluştu')
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchPaymentDetails()
+  }, [sessionId, paymentId, intentId, orderId, router])
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">Ödeme bilgileri kontrol ediliyor...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (error || !paymentDetails) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="max-w-md mx-auto text-center">
+          <div className="bg-white rounded-lg shadow-lg p-8">
+            <div className="text-red-500 text-6xl mb-4">❌</div>
+            <h1 className="text-2xl font-bold text-gray-900 mb-4">Bir Hata Oluştu</h1>
+            <p className="text-gray-600 mb-6">{error}</p>
+            <Link
+              href="/"
+              className="inline-block bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              Ana Sayfaya Dön
+            </Link>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-50 py-12">
+      <div className="container mx-auto px-4">
+        <div className="max-w-2xl mx-auto">
+          
+          {/* Success Animation */}
+          <div className="text-center mb-8">
+            <div className="relative inline-block">
+              <div className="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center animate-pulse">
+                  <span className="text-white text-3xl">✓</span>
+                </div>
+              </div>
+            </div>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">Ödemeniz Başarıyla Tamamlandı!</h1>
+            <p className="text-gray-600">Siparişiniz alınmıştır ve en kısa sürede işleme alınacaktır.</p>
+          </div>
+
+          {/* Payment Details Card */}
+          <div className="bg-white rounded-lg shadow-lg overflow-hidden mb-8">
+            
+            {/* Header */}
+            <div className="bg-green-50 px-6 py-4 border-b border-green-200">
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold text-green-800">Ödeme Detayları</h2>
+                <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                  ✅ Başarılı
+                </span>
+              </div>
+            </div>
+
+            {/* Details */}
+            <div className="p-6 space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Stripe Intent ID</label>
+                  <p className="text-gray-900 font-mono text-sm break-all">{paymentDetails.paymentId}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Sipariş ID</label>
+                  <p className="text-gray-900 font-mono text-sm">{paymentDetails.orderId}</p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Tutar</label>
+                  <p className="text-gray-900 font-semibold text-lg">
+                    {((paymentDetails.amount) / 100).toFixed(2)} TRY
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Ödeme Yöntemi</label>
+                  <p className="text-gray-900">
+                    Kredi Kartı (Stripe)
+                  </p>
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-500 mb-1">İşlem Tarihi</label>
+                  <p className="text-gray-900">
+                    {new Date(paymentDetails.createdAt).toLocaleString('tr-TR')}
+                  </p>
+                </div>
+              </div>
+
+              {intentId && (
+                <div className="pt-4 border-t border-gray-200">
+                  <label className="block text-sm font-medium text-gray-500 mb-1">Stripe Intent ID</label>
+                  <p className="text-gray-900 font-mono text-sm">{intentId}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Next Steps */}
+          <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">Sıradaki Adımlar</h3>
+            <div className="space-y-3">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm font-medium">1</span>
+                </div>
+                <div>
+                  <p className="text-gray-900 font-medium">Sipariş Onayı</p>
+                  <p className="text-gray-600 text-sm">E-posta adresinize sipariş onay mailiniz gönderilecektir.</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm font-medium">2</span>
+                </div>
+                <div>
+                  <p className="text-gray-900 font-medium">Hazırlık</p>
+                  <p className="text-gray-600 text-sm">Siparişiniz 1-2 iş günü içerisinde hazırlanacaktır.</p>
+                </div>
+              </div>
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0 w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center">
+                  <span className="text-blue-600 text-sm font-medium">3</span>
+                </div>
+                <div>
+                  <p className="text-gray-900 font-medium">Kargo</p>
+                  <p className="text-gray-600 text-sm">Siparişiniz kargoya verildikten sonra takip bilgileri gönderilecektir.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/"
+              className="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors text-center"
+            >
+              Alışverişe Devam Et
+            </Link>
+            <Link
+              href="/orders"
+              className="bg-white text-blue-600 border border-blue-600 px-8 py-3 rounded-lg font-medium hover:bg-blue-50 transition-colors text-center"
+            >
+              Siparişlerimi Görüntüle
+            </Link>
+          </div>
+
+          {/* Support */}
+          <div className="text-center mt-8 p-4 bg-gray-100 rounded-lg">
+            <p className="text-gray-600 text-sm mb-2">Herhangi bir sorunuz mu var?</p>
+            <div className="flex justify-center space-x-4 text-sm">
+              <a href="mailto:destek@ecommerce.com" className="text-blue-600 hover:text-blue-800">
+                📧 E-posta
+              </a>
+              <a href="tel:+905551234567" className="text-blue-600 hover:text-blue-800">
+                📞 Telefon
+              </a>
+              <a href="/help" className="text-blue-600 hover:text-blue-800">
+                ❓ Yardım Merkezi
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
