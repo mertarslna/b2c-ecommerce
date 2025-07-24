@@ -1,3 +1,4 @@
+
 // src/app/checkout/page.tsx
 'use client'
 
@@ -76,11 +77,14 @@ export default function CheckoutPage() {
   // Initialize user data
   useEffect(() => {
     if (user) {
+      const fullName = user.name || ''
+      const nameParts = fullName.split(' ')
+      
       setShippingInfo(prev => ({
         ...prev,
-        firstName: user.name.split(' ')[0] || '',
-        lastName: user.name.split(' ')[1] || '',
-        email: user.email
+        firstName: nameParts[0] || '',
+        lastName: nameParts[1] || '',
+        email: user.email || ''
       }))
     }
   }, [user])

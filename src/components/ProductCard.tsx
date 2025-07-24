@@ -2,27 +2,15 @@
 
 import Link from 'next/link'
 import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'  // 🔥 هذا المهم!
-
-interface Product {
-  id: number
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  category: string
-  rating: number
-  reviews: number
-}
+import { useWishlist } from '@/contexts/WishlistContext'
+import { Product } from '@/types/product'
 
 interface ProductCardProps {
   product: Product
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // 🔥 استخدام Cart Context (بس للإضافة فقط)
   const { addToCart } = useCart()
-  // 💖 استخدام Wishlist Context
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   // Calculate discount percentage
@@ -43,28 +31,28 @@ export default function ProductCard({ product }: ProductCardProps) {
     return stars
   }
 
-  // 🔥 دالة إضافة للسلة الحقيقية
+  // Handle add to cart
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
-    addToCart(product, 1)  // إضافة للسلة
+    addToCart(product, 1)
     console.log('Added to cart:', product.name)
   }
 
-  // 💖 دالة إدارة المفضلات
+  // Handle wishlist toggle
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id)
+    if (isInWishlist(Number(product.id))) {
+      removeFromWishlist(Number(product.id))
     } else {
       addToWishlist(product)
     }
   }
 
-  // 💖 فحص إذا المنتج في المفضلات
-  const inWishlist = isInWishlist(product.id)
+  // Check if product is in wishlist
+  const inWishlist = isInWishlist(Number(product.id))
 
   return (
     <div className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-pink-100 hover:border-pink-300 transform hover:-translate-y-2 relative">
@@ -96,10 +84,30 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Link href={`/product-details/${product.id}`} className="block">
         <div className="relative h-64 overflow-hidden rounded-t-2xl bg-gradient-to-br from-pink-50 to-purple-50">
           <img
-            src={product.image}
+            src={product.image || '/placeholder-product.jpg'}
             alt={product.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+            onError={(e) => {
+              // Fallback image if the original fails to load
+              e.currentTarget.src = '/placeholder-product.jpg'
+            }}
           />
+          
+          {/* Stock Badge */}
+          {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
+            <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
+              Only {product.stock} left!
+            </div>
+          )}
+
+          {/* Out of Stock Badge */}
+          {product.stock === 0 && (
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+              <div className="bg-red-500 text-white px-4 py-2 rounded-full font-bold">
+                Out of Stock
+              </div>
+            </div>
+          )}
           
           {/* Discount Badge */}
           {discountPercentage > 0 && (
@@ -121,7 +129,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="p-6">
         {/* Category */}
         <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-pink-600 mb-3">
-          {product.category}
+          {product.category.name}
         </div>
 
         {/* Product Name - Clickable */}
@@ -131,34 +139,48 @@ export default function ProductCard({ product }: ProductCardProps) {
           </h3>
         </Link>
 
+        {/* Seller Info (if available) */}
+        {product.seller && (
+          <div className="text-sm text-gray-500 mb-2">
+            by {product.seller.businessName || product.seller.name}
+          </div>
+        )}
+
         {/* Rating and Reviews */}
         <div className="flex items-center mb-4">
           <div className="flex items-center mr-3">
-            {renderStars(product.rating)}
+            {renderStars(Math.round(product.rating))}
           </div>
-          <span className="text-sm text-gray-500">({product.reviews} reviews)</span>
+          <span className="text-sm text-gray-500">
+            {product.rating.toFixed(1)} ({product.reviews} reviews)
+          </span>
         </div>
 
         {/* Price */}
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center space-x-2">
             <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">
-              ${product.price}
+              ${product.price.toFixed(2)}
             </span>
             {product.originalPrice && (
               <span className="text-lg text-gray-400 line-through">
-                ${product.originalPrice}
+                ${product.originalPrice.toFixed(2)}
               </span>
             )}
           </div>
         </div>
 
-        {/* Add to Cart Button - واقعي! */}
+        {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-          className="w-full bg-gradient-to-r from-pink-500 to-red-400 text-white py-3 px-6 rounded-xl hover:from-pink-600 hover:to-red-500 transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95"
+          disabled={product.stock === 0}
+          className={`w-full py-3 px-6 rounded-xl transition-all duration-300 font-semibold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 ${
+            product.stock === 0
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : 'bg-gradient-to-r from-pink-500 to-red-400 text-white hover:from-pink-600 hover:to-red-500'
+          }`}
         >
-          Add to Cart
+          {product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
         </button>
       </div>
 
