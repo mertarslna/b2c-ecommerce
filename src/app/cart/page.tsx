@@ -1,3 +1,4 @@
+
 // src/app/cart/page.tsx
 'use client'
 
@@ -143,9 +144,9 @@ export default function CartPage() {
                           </button>
                         </div>
 
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between  items-center">
                           {/* Quantity Controls */}
-                          <div className="flex items-center bg-gray-100 rounded-xl">
+                          <div className="flex items-center  shadow-lg text-davys-gray rounded-xl">
                             <button
                               onClick={() => updateQuantity(item.id, item.quantity - 1)}
                               className="p-3 hover:bg-pink-100 hover:text-pink-600 rounded-l-xl transition-colors"
@@ -190,7 +191,7 @@ export default function CartPage() {
 
           {/* Order Summary */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-3xl shadow-xl border border-pink-100 p-8 sticky top-6">
+            <div className="bg-white text-davys-gray rounded-3xl shadow-xl border border-pink-100 p-8 sticky top-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h2>
               
               <div className="space-y-4 mb-6">
@@ -217,9 +218,12 @@ export default function CartPage() {
               </div>
 
               <div className="space-y-4">
-                <button className="w-full bg-gradient-to-r from-pink-500 to-red-400 text-white py-4 px-6 rounded-xl font-bold text-lg hover:from-pink-600 hover:to-red-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
+                <Link 
+                  href="/checkout"
+                  className="block w-full bg-gradient-to-r from-pink-500 to-red-400 text-white py-4 px-6 rounded-xl font-bold text-lg hover:from-pink-600 hover:to-red-500 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-center"
+                >
                   Proceed to Checkout
-                </button>
+                </Link>
                 
                 <Link href="/" className="block w-full text-center bg-gradient-to-r from-gray-100 to-gray-200 text-gray-700 py-4 px-6 rounded-xl font-semibold hover:from-pink-100 hover:to-purple-100 hover:text-pink-600 transition-all duration-300">
                   Continue Shopping

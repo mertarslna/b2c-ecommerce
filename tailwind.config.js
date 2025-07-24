@@ -5,12 +5,10 @@ module.exports = {
     './pages/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
 
-    // Or if using `src` directory:
     './src/**/*.{js,ts,jsx,tsx,mdx}',
   ],
   theme: {
     extend: {
-      // هنا نقوم بتعريف الألوان المخصصة لـ Tailwind
       colors: {
         'spanish-gray': 'hsl(0, 0%, 60%)',
         'sonic-silver': 'hsl(0, 0%, 47%)',
@@ -24,11 +22,7 @@ module.exports = {
         'white': 'hsl(0, 100%, 100%)',
         'onyx': 'hsl(0, 0%, 27%)',
       },
-      // إذا كان لديك أي خطوط مخصصة، يمكنك تعريفها هنا أيضًا
-      // fontFamily: {
-      //   sans: ['var(--font-geist-sans)', 'sans-serif'],
-      //   mono: ['var(--font-geist-mono)', 'monospace'],
-      // },
+     
     },
   },
   plugins: [],

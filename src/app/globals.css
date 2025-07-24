@@ -1,5 +1,9 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 @import '../styles/colors.css';
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -25,31 +29,28 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-
-/* src/app/globals.css */
-
-/* ... (بقية الكود في الأعلى، بما في ذلك استيرادات tailwind و colors.css) ... */
-
-
 /* Custom Button Styles */
 .btn-primary-gradient {
   /* استخدام قيم HSL مباشرة من ملف colors.css */
   background-image: linear-gradient(to right, hsl(353, 100%, 78%), hsl(29, 90%, 65%));
   /* تأثير التمرير (hover effect) */
-  transition: background-image 0.3s ease; /* transition for gradient */
+  transition: all 0.3s ease;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  font-weight: 600;
+  color: white;
+  cursor: pointer;
 }
 
 .btn-primary-gradient:hover {
   /* عكس التدرج عند التمرير أو تغيير خفيف */
   background-image: linear-gradient(to right, hsl(29, 90%, 65%), hsl(353, 100%, 78%));
   /* تأكد أن ظل الزر يتغير مع الهوفر */
-  box-shadow: var(--tw-shadow-xl, 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04));
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  transform: scale(1.01);
 }
 
-/* إذا كنت تريد تأثير Scale على الزر نفسه، يمكنك إضافة هنا */
-.btn-primary-gradient:hover {
-    transform: scale(1.01);
-}
 .btn-primary-gradient:active {
-    transform: scale(0.95);
+  transform: scale(0.95);
 }
