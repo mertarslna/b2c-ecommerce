@@ -283,7 +283,7 @@ export default function CheckoutPage() {
                         type="email"
                         value={shippingInfo.email}
                         onChange={(e) => handleInputChange('email', e.target.value, 'shipping')}
-                        className={`w-full text-sonic-silver p-4 border-2 rounded-xl focus:outline-none transition-colors ${
+                        className={`w-full p-4 border-2 rounded-xl focus:outline-none transition-colors ${
                           errors.email ? 'border-red-300 focus:border-red-500' : 'border-pink-200 focus:border-pink-500'
                         }`}
                         placeholder="Enter email address"
