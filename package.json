@@ -48,7 +48,6 @@
     "@tailwindcss/typography": "^0.5.10",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/eslint": "^8.44.8",
-<<<<<<< HEAD
     "autoprefixer": "^10.4.21",
     "eslint": "^8.54.0",
     "eslint-config-next": "14.0.3",
@@ -57,16 +56,6 @@
     "prettier-plugin-tailwindcss": "^0.5.7",
     "prisma": "^5.7.0",
     "tailwindcss": "^3.4.17",
-=======
-    "autoprefixer": "^10.4.16",
-    "eslint": "^9.0.0",
-    "eslint-config-next": "15.4.2",
-    "@eslint/eslintrc": "^3.0.0",
-    "postcss": "^8.4.31",
-    "prettier": "^3.1.0",
-    "prettier-plugin-tailwindcss": "^0.5.7",
-    "prisma": "^5.7.0",
->>>>>>> 4b1ea94d9413edccc4e1ae5c29b06bcaaa712b57
     "tsx": "^4.6.1"
   },
   "prisma": {
