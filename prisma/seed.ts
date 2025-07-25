@@ -418,7 +418,7 @@ async function main() {
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
           category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
           is_approved: true,
-          rating: 4.3
+          rating: 2.3
         },
         {
           id: '550e8400-e29b-41d4-a716-446655440067',

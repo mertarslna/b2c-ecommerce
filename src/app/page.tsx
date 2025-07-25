@@ -18,22 +18,48 @@ export default function Home() {
   // Fetch categories for the categories section
   const { categories, loading: categoriesLoading } = useCategories(true, true)
 
+  // Random gradient color list
+  const randomGradientColors = [
+    'from-blue-400 to-blue-600',
+    'from-green-400 to-green-600',
+    'from-purple-400 to-purple-600',
+    'from-red-400 to-red-600',
+    'from-yellow-400 to-yellow-600',
+    'from-indigo-400 to-indigo-600',
+    'from-pink-400 to-pink-600',
+    'from-teal-400 to-teal-600',
+    'from-orange-400 to-orange-600',
+    'from-cyan-400 to-cyan-600',
+  ];
+  
+  const getRandomColor = () => {
+    const randomIndex = Math.floor(Math.random() * randomGradientColors.length);
+    return randomGradientColors[randomIndex];
+  };
+
   // Create static category icons mapping
   const categoryIcons: { [key: string]: { icon: string; color: string } } = {
-    'Electronics': { icon: '📱', color: 'from-blue-400 to-blue-600' },
-    'Smartphones': { icon: '📱', color: 'from-blue-400 to-blue-600' },
-    'Laptops': { icon: '💻', color: 'from-gray-400 to-gray-600' },
-    'Clothing': { icon: '👗', color: 'from-pink-400 to-pink-600' },
-    "Men's Clothing": { icon: '👔', color: 'from-indigo-400 to-indigo-600' },
-    "Women's Clothing": { icon: '👗', color: 'from-pink-400 to-pink-600' },
-    'Fashion': { icon: '👗', color: 'from-pink-400 to-pink-600' },
-    'Home & Garden': { icon: '🏠', color: 'from-green-400 to-green-600' },
-    'Sports': { icon: '⚽', color: 'from-orange-400 to-orange-600' },
-    'Beauty': { icon: '💄', color: 'from-purple-400 to-purple-600' },
-    'Books': { icon: '📚', color: 'from-yellow-400 to-yellow-600' },
-    'Toys & Games': { icon: '🎮', color: 'from-red-400 to-red-600' },
-    'Automotive': { icon: '🚗', color: 'from-teal-400 to-teal-600' }
+    'Electronics': { icon: '💻', color: 'from-blue-500 to-blue-700' },
+    'Smartphones': { icon: '📱', color: 'from-green-500 to-green-700' },
+    'Laptops': { icon: '💻', color: 'from-purple-500 to-purple-700' },
+    'Tablets': { icon: '📱', color: 'from-red-500 to-red-700' },
+    'Televisions & Audio': { icon: '📺', color: 'from-yellow-500 to-yellow-700' },
+    'Home & Living': { icon: '🏠', color: 'from-indigo-500 to-indigo-700' },
+    'Furniture': { icon: '🛋️', color: 'from-pink-500 to-pink-700' },
+    'Kitchenware': { icon: '🍳', color: 'from-teal-500 to-teal-700' },
+    'Apparel & Fashion': { icon: '👕', color: 'from-orange-500 to-orange-700' },
+    'Women\'s Apparel': { icon: '👗', color: 'from-cyan-500 to-cyan-700' }, // Escape karakteri kullanıldı
+    'Men\'s Apparel': { icon: '👔', color: 'from-lime-500 to-lime-700' },     // Escape karakteri kullanıldı
+    'Kids\' & Baby Apparel': { icon: '👶', color: 'from-rose-500 to-rose-700' }, // Escape karakteri kullanıldı
+    'Health & Beauty': { icon: '💖', color: 'from-fuchsia-500 to-fuchsia-700' },
+    'Skincare': { icon: '🧴', color: 'from-emerald-500 to-emerald-700' },
+    'Makeup': { icon: '💄', color: 'from-violet-500 to-violet-700' },
+    'Sports & Outdoors': { icon: '🏅', color: 'from-amber-500 to-amber-700' },
+    'Fitness Equipment': { icon: '🏋️', color: 'from-lightBlue-500 to-lightBlue-700' },
+    'Outdoor Gear': { icon: '🏕️', color: 'from-warmGray-500 to-warmGray-700' },
+    // Other categories can be added here
   }
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
@@ -134,7 +160,7 @@ export default function Home() {
               return uniqueCategories.map((category) => {
                 const categoryInfo = categoryIcons[category.name] || {
                   icon: '📦',
-                  color: 'from-gray-400 to-gray-600'
+                  color: getRandomColor()
                 }
 
                 return (
