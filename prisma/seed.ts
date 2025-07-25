@@ -350,7 +350,7 @@ async function main() {
           price: 999.99,
           stock: 50,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0',
+          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0', // Smartphones
           is_approved: true,
           rating: 4.5
         },
@@ -361,7 +361,7 @@ async function main() {
           price: 1099.99,
           stock: 45,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0',
+          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0', // Smartphones
           is_approved: true,
           rating: 4.6
         },
@@ -372,7 +372,7 @@ async function main() {
           price: 2499.99,
           stock: 25,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01',
+          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01', // Laptops
           is_approved: true,
           rating: 4.8
         },
@@ -383,7 +383,7 @@ async function main() {
           price: 1399.99,
           stock: 30,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01',
+          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01', // Laptops
           is_approved: true,
           rating: 4.4
         },
@@ -394,7 +394,7 @@ async function main() {
           price: 29.99,
           stock: 100,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
+          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789', // Men's Apparel
           is_approved: true,
           rating: 4.2
         },
@@ -405,7 +405,7 @@ async function main() {
           price: 49.99,
           stock: 150,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.7
         },
@@ -416,7 +416,7 @@ async function main() {
           price: 39.99,
           stock: 75,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
+          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789', // Men's Apparel
           is_approved: true,
           rating: 2.3
         },
@@ -427,7 +427,7 @@ async function main() {
           price: 199.99,
           stock: 60,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.6
         },
@@ -438,7 +438,7 @@ async function main() {
           price: 89.99,
           stock: 80,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.5
         },
@@ -449,7 +449,7 @@ async function main() {
           price: 399.99,
           stock: 55,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0',
+          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0', // Smartwatches
           is_approved: true,
           rating: 4.4
         },
@@ -460,7 +460,7 @@ async function main() {
           price: 499.99,
           stock: 40,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01',
+          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01', // Laptops
           is_approved: true,
           "rating": 4.6
         },
@@ -471,18 +471,18 @@ async function main() {
           price: 59.99,
           stock: 120,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.3
         },
         {
           id: '550e8400-e29b-41d4-a716-446655440074',
-          name: 'Slim Fit Jeans',
+          name: 'Women\'s Slim Fit Jeans',
           description: 'Stylish slim fit jeans made with stretchable denim',
           price: 49.99,
           stock: 90,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
+          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789', // Men's Apparel
           is_approved: true,
           rating: 4.1
         },
@@ -493,7 +493,7 @@ async function main() {
           price: 89.99,
           stock: 100,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.4
         },
@@ -504,7 +504,7 @@ async function main() {
           price: 129.99,
           stock: 35,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.2
         },
@@ -515,7 +515,7 @@ async function main() {
           price: 199.99,
           stock: 45,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'f6a7b8c9-d0e1-2345-6789-0abcdef01234',
+          category_id: 'f6a7b8c9-d0e1-2345-6789-0abcdef01234', // Furniture
           is_approved: true,
           rating: 4.5
         },
@@ -526,7 +526,7 @@ async function main() {
           price: 39.99,
           stock: 70,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
+          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789', // Men's Apparel
           is_approved: true,
           rating: 4.2
         },
@@ -537,9 +537,141 @@ async function main() {
           price: 34.99,
           stock: 110,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.3
+        },
+        {
+          id: '650e8400-e29b-41d4-a716-446655440081',
+          name: 'Dell XPS 15',
+          description: 'High-performance laptop for professionals with stunning display',
+          price: 1899.00,
+          stock: 30,
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
+          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01', // Laptops
+          is_approved: true,
+          rating: 4.7
+        },
+        {
+          id: '750e8400-e29b-41d4-a716-446655440082',
+          name: 'Samsung Galaxy Tab S8',
+          description: 'Versatile Android tablet for productivity and entertainment',
+          price: 699.00,
+          stock: 40,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: 'd4e5f6a7-b8c9-0123-4567-890abcdef012', // Tablets
+          is_approved: true,
+          rating: 4.3
+        },
+        {
+          id: '850e8400-e29b-41d4-a716-446655440083',
+          name: 'LG C2 OLED TV',
+          description: 'Stunning 4K OLED TV for an immersive viewing experience',
+          price: 1499.99,
+          stock: 25,
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
+          category_id: 'e5f6a7b8-c9d0-1234-5678-90abcdef0123', // Televisions & Audio
+          is_approved: true,
+          rating: 4.8
+        },
+        {
+          id: '950e8400-e29b-41d4-a716-446655440084',
+          name: 'Modern Sofa Set',
+          description: 'Comfortable and stylish sofa set for your living room',
+          price: 1200.00,
+          stock: 15,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: 'a7b8c9d0-e1f2-3456-7890-abcdef012345', // Furniture
+          is_approved: true,
+          rating: 4.2
+        },
+        {
+          id: 'a50e8400-e29b-41d4-a716-446655440085',
+          name: 'Non-stick Cookware Set',
+          description: 'Essential cookware set for everyday cooking needs',
+          price: 150.00,
+          stock: 60,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: 'b8c9d0e1-f2a3-4567-8901-bcdef0123456', // Kitchenware
+          is_approved: true,
+          rating: 4.6
+        },
+        {
+          id: 'b50e8400-e29b-41d4-a716-446655440086',
+          name: 'Floral Summer Dress',
+          description: 'Light and airy dress perfect for summer days',
+          price: 45.99,
+          stock: 100,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: 'd0e1f2a3-b4c5-6789-0123-def012345678', // Women's Apparel
+          is_approved: true,
+          rating: 4.1
+        },
+        {
+          id: 'c50e8400-e29b-41d4-a716-446655440087',
+          name: 'Men\'s Slim Fit Jeans',
+          description: 'Classic slim fit jeans for a modern look',
+          price: 59.99,
+          stock: 80,
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
+          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789', // Men's Apparel
+          is_approved: true,
+          rating: 4.4
+        },
+        {
+          id: 'd50e8400-e29b-41d4-a716-446655440088',
+          name: 'Baby Bodysuit Set',
+          description: 'Soft and comfortable bodysuits for infants',
+          price: 29.99,
+          stock: 120,
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
+          category_id: 'f2a3b4c5-d6e7-8901-2345-f0123456789a', // Kids' & Baby Apparel
+          is_approved: true,
+          rating: 4.7
+        },
+        {
+          id: 'e50e8400-e29b-41d4-a716-446655440089',
+          name: 'Hydrating Face Serum',
+          description: 'Nourishing serum for healthy and glowing skin',
+          price: 35.00,
+          stock: 75,
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
+          category_id: 'b4c5d6e7-f8a9-0123-4567-123456789abc', // Skincare
+          is_approved: true,
+          rating: 4.5
+        },
+        {
+          id: 'f50e8400-e29b-41d4-a716-446655440090',
+          name: 'Eyeshadow Palette',
+          description: 'Versatile eyeshadow palette with a range of colors',
+          price: 25.50,
+          stock: 90,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: 'c5d6e7f8-a9b0-1234-5678-23456789abcd', // Makeup
+          is_approved: true,
+          rating: 4.3
+        },
+        {
+          id: '150e8400-e29b-41d4-a716-446655440091',
+          name: 'Adjustable Dumbbell Set',
+          description: 'Compact and adjustable dumbbells for home workouts',
+          price: 199.99,
+          stock: 35,
+          seller_id: '550e8400-e29b-41d4-a716-446655440031',
+          category_id: 'e7f8a9b0-c1d2-3456-7890-456789abcdef', // Fitness Equipment
+          is_approved: true,
+          rating: 4.6
+        },
+        {
+          id: '250e8400-e29b-41d4-a716-446655440092',
+          name: 'Camping Tent (4-person)',
+          description: 'Durable and easy-to-set-up tent for outdoor adventures',
+          price: 120.00,
+          stock: 20,
+          seller_id: '550e8400-e29b-41d4-a716-446655440030',
+          category_id: 'f8a9b0c1-d2e3-4567-8901-56789abcdef0', // Outdoor Gear
+          is_approved: true,
+          rating: 4.4
         }
       ],
       skipDuplicates: true,
@@ -729,10 +861,10 @@ async function main() {
           format: 'jpg',
           is_main: false
         },
-        // Slim Fit Jeans images
+        // Women's Slim Fit Jeans images
         {
           id: '550e8400-e29b-41d4-a716-446655440091',
-          product_id: '550e8400-e29b-41d4-a716-446655440074', // Slim Fit Jeans
+          product_id: '550e8400-e29b-41d4-a716-446655440074', // Women's Slim Fit Jeans
           path: 'https://images.unsplash.com/photo-1714143136367-7bb68f3f0669?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8U2xpbSUyMEZpdCUyMEplYW5zfGVufDB8MnwwfHx8MA%3D%3D',
           size: 512000,
           format: 'jpg',
@@ -740,7 +872,7 @@ async function main() {
         },
         {
           id: '550e8400-e29b-41d4-a716-446655440092',
-          product_id: '550e8400-e29b-41d4-a716-446655440074', // Slim Fit Jeans
+          product_id: '550e8400-e29b-41d4-a716-446655440074', // Women's Slim Fit Jeans
           path: 'https://images.unsplash.com/photo-1588699767657-59562cd87205?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U2xpbSUyMEZpdCUyMEplYW5zfGVufDB8MnwwfHx8MA%3D%3D',
           size: 512000,
           format: 'jpg',
@@ -798,6 +930,122 @@ async function main() {
           size: 512000,
           format: 'jpg',
           is_main: true
+        },
+        // Dell XPS 15 images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440099',
+            product_id: '650e8400-e29b-41d4-a716-446655440081', // Dell XPS 15
+            path: 'https://www.notebookcheck-tr.com/uploads/tx_nbc2/DellXPS15-9510__1__03.jpg',
+            size: 1000000, // Varsayılan boyut
+            format: 'jpg',
+            is_main: true,
+        },
+        // Samsung Galaxy Tab S8 images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440100',
+            product_id: '750e8400-e29b-41d4-a716-446655440082', // Samsung Galaxy Tab S8
+            path: 'https://cdn.cimri.io/image/1200x1200/samsung-galaxy-tab-s8-ultra-sm-x900-wi-fi-256gb-14-6-inc-siyah-tablet-pc_647986451.jpg',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        {
+            id: '150e8400-e29b-41d4-a716-446655440111',
+            product_id: '750e8400-e29b-41d4-a716-446655440082', // Samsung Galaxy Tab S8
+            path: 'https://productimages.hepsiburada.net/s/178/375-375/110000142699060.jpg',
+            size: 1000000,
+            format: 'jpg',
+            is_main: false,
+        },
+        // LG C2 OLED TV images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440101',
+            product_id: '850e8400-e29b-41d4-a716-446655440083', // LG C2 OLED TV
+            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcREbfS0Y0r4sHK-n22mpoMXsKcuEqxrL_Cu7w&s',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Modern Sofa Set images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440102',
+            product_id: '950e8400-e29b-41d4-a716-446655440084', // Modern Sofa Set
+            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR3cPwoat3eZItNifTHBwN-buQt9wZntt-3yA&s',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Non-stick Cookware Set images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440103',
+            product_id: 'a50e8400-e29b-41d4-a716-446655440085', // Non-stick Cookware Set
+            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQQJE1k30Dq_wV0g2-s777cOVUqfclMYVfqgQ&s',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Floral Summer Dress images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440104',
+            product_id: 'b50e8400-e29b-41d4-a716-446655440086', // Floral Summer Dress
+            path: 'https://m.media-amazon.com/images/I/81MyEudgSwL._UY1000_.jpg',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Men's Slim Fit Jeans images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440105',
+            product_id: 'c50e8400-e29b-41d4-a716-446655440087', // Men's Slim Fit Jeans
+            path: 'https://shopduer.com/cdn/shop/files/Performance_Denim_Slim-Galactic_8110_R_FT-ECOM-445286.jpg?v=1747252752&width=1143',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Baby Bodysuit Set images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440106',
+            product_id: 'd50e8400-e29b-41d4-a716-446655440088', // Baby Bodysuit Set
+            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRMvDy-1g401G9DwvNe8Ig2UggcgMkYlM6M-g&s',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Hydrating Face Serum images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440107',
+            product_id: 'e50e8400-e29b-41d4-a716-446655440089', // Hydrating Face Serum
+            path: 'https://omegaskinlab.com/cdn/shop/files/no7_1400x.png?v=1698826302',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Eyeshadow Palette images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440108',
+            product_id: 'f50e8400-e29b-41d4-a716-446655440090', // Eyeshadow Palette
+            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQc7I7hq9l6zMwiRsB33LOQdyELeE1rRzcPEA&s',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Adjustable Dumbbell Set images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440109',
+            product_id: '150e8400-e29b-41d4-a716-446655440091', // Adjustable Dumbbell Set
+            path: 'https://www.theflexnest.com/cdn/shop/products/1_26f7cabd-aa5a-4256-9c47-24833f009086.jpg?v=1635230112',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
+        },
+        // Camping Tent images
+        {
+            id: '150e8400-e29b-41d4-a716-446655440112',
+            product_id: '250e8400-e29b-41d4-a716-446655440092', // Camping Tent (4-person)
+            path: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR-hGYKidzYB791nQ32cvl3GYZXiWmMRTcN9Q&s',
+            size: 1000000,
+            format: 'jpg',
+            is_main: true,
         }
       ],
       skipDuplicates: true,
