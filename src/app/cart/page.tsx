@@ -101,11 +101,7 @@ export default function CartPage() {
                             className="w-32 h-32 object-cover rounded-2xl bg-gradient-to-br from-pink-50 to-purple-50 cursor-pointer hover:scale-105 transition-transform duration-300"
                           />
                           {/* Hover Overlay */}
-                          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-center justify-center">
-                            <span className="text-white text-sm font-semibold bg-black/50 px-3 py-1 rounded-full">
-                              View Details
-                            </span>
-                          </div>
+                          
                         </Link>
                       </div>
 

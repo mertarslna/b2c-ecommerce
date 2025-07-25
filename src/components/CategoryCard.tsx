@@ -9,7 +9,6 @@ interface Category {
 }
 
 interface CategoryCardProps {
-  category: Category
   size?: 'small' | 'medium' | 'large'
   variant?: 'grid' | 'list'
 }

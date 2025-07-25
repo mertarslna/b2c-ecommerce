@@ -1,3 +1,4 @@
+// ✅ Updated ProductsPage - Add WishlistProvider wrapper
 'use client'
 
 import { useState } from 'react'
@@ -11,7 +12,10 @@ import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
 import { safeGetSearchParam } from '@/utils/queryParams'
 
-export default function ProductsPage() {
+// ✅ Import WishlistProvider
+import { WishlistProvider } from '@/contexts/WishlistContext'
+
+function ProductsPageContent() {
   // Get search params from URL
   const searchParams = useSearchParams();
   
@@ -314,7 +318,7 @@ export default function ProductsPage() {
                 </div>
               ) : (
                 <ProductFilter
-                  categories={categories.map(cat => cat.name)}
+                 categories={categories}
                   selectedCategory={filters.category || ''}
                   onCategoryChange={handleCategoryChange}
                   priceRange={[filters.minPrice || 0, filters.maxPrice || 2000]}
@@ -451,5 +455,14 @@ export default function ProductsPage() {
       {/* Footer */}
       <Footer />
     </div>
+  )
+}
+
+// ✅ Main export - Wrapped with WishlistProvider
+export default function ProductsPage() {
+  return (
+    <WishlistProvider>
+      <ProductsPageContent />
+    </WishlistProvider>
   )
 }
