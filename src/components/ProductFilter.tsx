@@ -106,7 +106,7 @@ export default function ProductFilter({
           </div>
         </div>
       </div>
-
+      
       {/* Rating Filter */}
       <div className="mb-8">
         <h4 className="text-lg font-semibold text-gray-800 mb-4 flex items-center">
@@ -139,20 +139,19 @@ export default function ProductFilter({
               />
               <div className="ml-3 flex items-center">
                 <div className="flex mr-2">
-                  {[...Array(5)].map((_, i) => (
-                    <span
-                      key={i}
-                      className={`text-sm ${
-                        i < rating ? 'text-yellow-400' : 'text-gray-300'
-                      }`}
-                    >
+                  {/* Render 'rating' number of yellow stars */}
+                  {[...Array(rating)].map((_, i) => (
+                    <span key={i} className="text-sm text-yellow-400">
                       ⭐
                     </span>
                   ))}
                 </div>
-                <span className="text-gray-700 group-hover:text-pink-600 transition-colors">
-                  & above
-                </span>
+                {/* Sadece 5 yıldız için "& above" eklemiyoruz */}
+                {rating < 5 && (
+                  <span className="text-gray-700 group-hover:text-pink-600 transition-colors">
+                    & above
+                  </span>
+                )}
               </div>
             </label>
           ))}

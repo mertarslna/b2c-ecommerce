@@ -1,106 +1,69 @@
 // hooks/useProducts.ts
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { Product, DetailedProduct, Category, ApiResponse, ProductsResponse, ProductFilters } from '@/types/product'
 
-// Helper function to build query parameters safely
-function buildQueryParams(filters: Record<string, any>): URLSearchParams {
-  const queryParams = new URLSearchParams()
-  
-  Object.entries(filters).forEach(([key, value]) => {
-    // Only add valid values
-    if (value !== undefined && value !== null && value !== '' && value !== 'all') {
-      const stringValue = String(value).trim()
-      if (stringValue) {
-        queryParams.append(key, stringValue)
-      }
-    }
-  })
-  
-  return queryParams
-}
-
 // Hook for fetching products with filters
-export const useProducts = (initialFilters: ProductFilters = {}) => {
+export const useProducts = (filters: ProductFilters = {}) => {
   const [products, setProducts] = useState<Product[]>([])
   const [pagination, setPagination] = useState<ProductsResponse['pagination'] | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filters, setFilters] = useState<ProductFilters>(initialFilters)
 
-  const fetchProducts = useCallback(async (newFilters?: ProductFilters) => {
-    const currentFilters = newFilters || filters
+  const fetchProducts = async () => {
     setLoading(true)
     setError(null)
     
     try {
-      // Build query string safely using helper
-      const queryParams = buildQueryParams(currentFilters)
-      const queryString = queryParams.toString()
+      // Build query string
+      const queryParams = new URLSearchParams()
       
-      console.log('🔍 Fetching products with:', currentFilters)
-      console.log('📡 API URL:', `/api/products?${queryString}`)
-      
-      const response = await fetch(`/api/products?${queryString}`)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      
-      const result: ApiResponse<ProductsResponse> = await response.json()
+      if (filters.page) queryParams.append('page', filters.page.toString())
+      if (filters.limit) queryParams.append('limit', filters.limit.toString())
+      if (filters.category && filters.category !== 'all') queryParams.append('category', filters.category)
+      if (filters.minPrice) queryParams.append('minPrice', filters.minPrice.toString())
+      if (filters.maxPrice) queryParams.append('maxPrice', filters.maxPrice.toString())
+      if (filters.rating) queryParams.append('rating', filters.rating.toString())
+      if (filters.search) queryParams.append('search', filters.search)
+      if (filters.sortBy) queryParams.append('sortBy', filters.sortBy)
+      if (filters.sortOrder) queryParams.append('sortOrder', filters.sortOrder)
 
-      console.log('📊 API Response:', result)
+      const response = await fetch(`/api/products?${queryParams.toString()}`)
+      const result: ApiResponse<ProductsResponse> = await response.json()
 
       if (result.success && result.data) {
         setProducts(result.data.products)
         setPagination(result.data.pagination)
       } else {
         setError(result.error || 'Failed to fetch products')
-        setProducts([])
-        setPagination(null)
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error occurred'
-      setError(errorMessage)
-      setProducts([])
-      setPagination(null)
+      setError('Network error occurred')
       console.error('Fetch products error:', err)
     } finally {
       setLoading(false)
     }
-  }, [filters])
-
-  // Update filters and refetch
-  const updateFilters = useCallback((newFilters: Partial<ProductFilters>) => {
-    const updatedFilters = { ...filters, ...newFilters }
-    setFilters(updatedFilters)
-    fetchProducts(updatedFilters)
-  }, [filters, fetchProducts])
-
-  // Reset filters
-  const resetFilters = useCallback(() => {
-    const defaultFilters: ProductFilters = {
-      page: 1,
-      limit: 12,
-      sortBy: 'created_at',
-      sortOrder: 'desc'
-    }
-    setFilters(defaultFilters)
-    fetchProducts(defaultFilters)
-  }, [fetchProducts])
+  }
 
   useEffect(() => {
     fetchProducts()
-  }, []) // Only run on mount
+  }, [
+    filters.page,
+    filters.limit,
+    filters.category,
+    filters.minPrice,
+    filters.maxPrice,
+    filters.rating,
+    filters.search,
+    filters.sortBy,
+    filters.sortOrder
+  ])
 
   return {
     products,
     pagination,
     loading,
     error,
-    filters,
-    updateFilters,
-    resetFilters,
-    refetch: () => fetchProducts(filters)
+    refetch: fetchProducts
   }
 }
 
@@ -110,7 +73,7 @@ export const useProduct = (productId: string | null) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchProduct = useCallback(async () => {
+  const fetchProduct = async () => {
     if (!productId) {
       setLoading(false)
       return
@@ -121,32 +84,24 @@ export const useProduct = (productId: string | null) => {
 
     try {
       const response = await fetch(`/api/products/${productId}`)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      
       const result: ApiResponse<DetailedProduct> = await response.json()
 
       if (result.success && result.data) {
         setProduct(result.data)
       } else {
         setError(result.error || 'Failed to fetch product')
-        setProduct(null)
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error occurred'
-      setError(errorMessage)
-      setProduct(null)
+      setError('Network error occurred')
       console.error('Fetch product error:', err)
     } finally {
       setLoading(false)
     }
-  }, [productId])
+  }
 
   useEffect(() => {
     fetchProduct()
-  }, [fetchProduct])
+  }, [productId])
 
   return {
     product,
@@ -162,7 +117,7 @@ export const useCategories = (includeCount = false, parentOnly = false) => {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchCategories = useCallback(async () => {
+  const fetchCategories = async () => {
     setLoading(true)
     setError(null)
 
@@ -172,32 +127,24 @@ export const useCategories = (includeCount = false, parentOnly = false) => {
       if (parentOnly) queryParams.append('parentOnly', 'true')
 
       const response = await fetch(`/api/categories?${queryParams.toString()}`)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      
       const result: ApiResponse<Category[]> = await response.json()
 
       if (result.success && result.data) {
         setCategories(result.data)
       } else {
         setError(result.error || 'Failed to fetch categories')
-        setCategories([])
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error occurred'
-      setError(errorMessage)
-      setCategories([])
+      setError('Network error occurred')
       console.error('Fetch categories error:', err)
     } finally {
       setLoading(false)
     }
-  }, [includeCount, parentOnly])
+  }
 
   useEffect(() => {
     fetchCategories()
-  }, [fetchCategories])
+  }, [includeCount, parentOnly])
 
   return {
     categories,
@@ -213,31 +160,18 @@ export const useRelatedProducts = (currentProductId: string, category: string, l
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
-  const fetchRelatedProducts = useCallback(async () => {
-    if (!currentProductId || !category) {
-      setLoading(false)
-      return
-    }
-
+  const fetchRelatedProducts = async () => {
     setLoading(true)
     setError(null)
 
     try {
-      // Build query parameters safely using helper
-      const relatedFilters = {
+      const queryParams = new URLSearchParams({
         category: category,
-        limit: limit + 2, // Get extra to filter out current product
-        page: 1
-      }
-      
-      const queryParams = buildQueryParams(relatedFilters)
-      const queryString = queryParams.toString()
-      const response = await fetch(`/api/products?${queryString}`)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      
+        limit: limit.toString(),
+        page: '1'
+      })
+
+      const response = await fetch(`/api/products?${queryParams.toString()}`)
       const result: ApiResponse<ProductsResponse> = await response.json()
 
       if (result.success && result.data) {
@@ -249,21 +183,20 @@ export const useRelatedProducts = (currentProductId: string, category: string, l
         setRelatedProducts(filtered)
       } else {
         setError(result.error || 'Failed to fetch related products')
-        setRelatedProducts([])
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error occurred'
-      setError(errorMessage)
-      setRelatedProducts([])
+      setError('Network error occurred')
       console.error('Fetch related products error:', err)
     } finally {
       setLoading(false)
     }
-  }, [currentProductId, category, limit])
+  }
 
   useEffect(() => {
-    fetchRelatedProducts()
-  }, [fetchRelatedProducts])
+    if (currentProductId && category) {
+      fetchRelatedProducts()
+    }
+  }, [currentProductId, category, limit])
 
   return {
     relatedProducts,
@@ -273,73 +206,29 @@ export const useRelatedProducts = (currentProductId: string, category: string, l
   }
 }
 
-// Hook for product search with suggestions
+// Hook for product search
 export const useProductSearch = () => {
   const [searchResults, setSearchResults] = useState<Product[]>([])
-  const [suggestions, setSuggestions] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const searchProducts = useCallback(async (query: string, filters: Partial<ProductFilters> = {}) => {
+  const searchProducts = async (query: string, filters: Partial<ProductFilters> = {}) => {
     if (!query.trim()) {
       setSearchResults([])
-      setSuggestions([])
       return
     }
 
     setLoading(true)
     setError(null)
+  }
 
-    try {
-      // Build query parameters safely using helper
-      const searchFilters = {
-        search: query.trim(),
-        limit: 10,
-        ...filters
-      }
-      
-      const queryParams = buildQueryParams(searchFilters)
-      const queryString = queryParams.toString()
-      const response = await fetch(`/api/products?${queryString}`)
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      
-      const result: ApiResponse<ProductsResponse> = await response.json()
-
-      if (result.success && result.data) {
-        setSearchResults(result.data.products)
-        // Generate suggestions from product names
-        const productSuggestions = result.data.products
-          .map(p => p.name)
-          .slice(0, 5)
-        setSuggestions(productSuggestions)
-      } else {
-        setError(result.error || 'Failed to search products')
-        setSearchResults([])
-        setSuggestions([])
-      }
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error occurred'
-      setError(errorMessage)
-      setSearchResults([])
-      setSuggestions([])
-      console.error('Search products error:', err)
-    } finally {
-      setLoading(false)
-    }
-  }, [])
-
-  const clearSearch = useCallback(() => {
+  const clearSearch = () => {
     setSearchResults([])
-    setSuggestions([])
     setError(null)
-  }, [])
+  }
 
   return {
     searchResults,
-    suggestions,
     loading,
     error,
     searchProducts,

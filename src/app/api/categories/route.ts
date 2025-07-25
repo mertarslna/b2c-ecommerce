@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
     const includeProductCount = searchParams.get('includeCount') === 'true'
-    const parentOnly = searchParams.get('parentOnly') === 'true'
+    const parentOnly = searchParams.get('parentOnly') === 'false'
 
     // Build where clause
     const where: any = {}
