@@ -1,18 +1,121 @@
 'use client'
 
 import Link from 'next/link'
+import { useRouter, useSearchParams, usePathname } from 'next/navigation'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { useUser } from '@/contexts/UserContext'
-import { useState } from 'react'
+import { useCategories } from '@/hooks/useProducts'
+import { useState, useRef, useEffect } from 'react'
 
 export default function Header() {
   const { getCartCount } = useCart()
   const { items: wishlistItems } = useWishlist()
   const { user, isAuthenticated, logout } = useUser()
+  const { categories } = useCategories(false, true) // Get parent categories only
+  const router = useRouter()
+  const pathname = usePathname()
+  const searchParams = useSearchParams()
+  
   const [showUserMenu, setShowUserMenu] = useState(false)
+  // Get current search from URL if we're on products/search page
+  const currentSearch = searchParams.get('q') || searchParams.get('search') || ''
+  const [searchQuery, setSearchQuery] = useState(currentSearch)
+  const [showSearchSuggestions, setShowSearchSuggestions] = useState(false)
+  const searchInputRef = useRef<HTMLInputElement>(null)
+  
   const cartCount = getCartCount()
   const wishlistCount = wishlistItems.length
+
+  // Update search query when URL changes
+  useEffect(() => {
+    const urlSearch = searchParams.get('q') || searchParams.get('search') || ''
+    setSearchQuery(urlSearch)
+  }, [searchParams])
+
+  // Handle search form submission - نفس المنطق من الكود الأصلي
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (searchQuery.trim()) {
+      // إذا كنا في صفحة المنتجات، ابقى فيها مع البحث
+      if (pathname === '/products') {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('search', searchQuery.trim())
+        params.delete('q') // استخدم search بدلاً من q
+        params.set('page', '1') // اعادة تعيين الصفحة
+        router.push(`/products?${params.toString()}`)
+      } else {
+        // اذهب إلى صفحة المنتجات مع البحث
+        router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+      }
+      setShowSearchSuggestions(false)
+      searchInputRef.current?.blur()
+    }
+  }
+
+  // Handle search input changes
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value
+    setSearchQuery(value)
+    setShowSearchSuggestions(value.length > 0)
+  }
+
+  // Handle suggestion click
+  const handleSuggestionClick = (suggestion: string) => {
+    setSearchQuery(suggestion)
+    setShowSearchSuggestions(false)
+    // نفس منطق البحث
+    if (pathname === '/products') {
+      const params = new URLSearchParams(searchParams.toString())
+      params.set('search', suggestion)
+      params.delete('q')
+      params.set('page', '1')
+      router.push(`/products?${params.toString()}`)
+    } else {
+      router.push(`/products?search=${encodeURIComponent(suggestion)}`)
+    }
+  }
+
+  // Handle direct search from suggestions
+  const handleDirectSearch = () => {
+    if (searchQuery.trim()) {
+      setShowSearchSuggestions(false)
+      if (pathname === '/products') {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('search', searchQuery.trim())
+        params.delete('q')
+        params.set('page', '1')
+        router.push(`/products?${params.toString()}`)
+      } else {
+        router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
+      }
+    }
+  }
+
+  // Quick search suggestions
+  const searchSuggestions = [
+    'iPhone 15 Pro',
+    'MacBook Pro',
+    'Samsung Galaxy',
+    'Wireless Headphones',
+    'Gaming Mouse',
+    'Smartwatch',
+    'Bluetooth Speaker'
+  ].filter(suggestion => 
+    suggestion.toLowerCase().includes(searchQuery.toLowerCase())
+  ).slice(0, 5)
+
+  // Close suggestions when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchInputRef.current && !searchInputRef.current.contains(event.target as Node)) {
+        setShowSearchSuggestions(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
 
   return (
     <header className="bg-white shadow-lg border-b border-pink-100">
@@ -24,9 +127,11 @@ export default function Header() {
             <Link href="/seller/auth" className="hover:text-pink-200 transition-colors">
               Become a Seller
             </Link>
-            <Link href="/auth/login" className="hover:text-pink-200 transition-colors">
-              Sign In
-            </Link>
+            {!isAuthenticated && (
+              <Link href="/auth/login" className="hover:text-pink-200 transition-colors">
+                Sign In
+              </Link>
+            )}
           </div>
         </div>
       </div>
@@ -41,19 +146,94 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Search Bar - Enhanced */}
-          <div className="flex-1 mx-12 max-w-2xl">
-            <div className="relative group">
-              <input
-                type="text"
-                placeholder="Search for products, brands and more..."
-                className="w-full px-6 py-4 text-lg border-2 border-pink-200 rounded-full focus:outline-none focus:border-pink-400 focus:shadow-lg transition-all duration-300 bg-pink-50/30 hover:bg-white"
-              />
-              <button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-pink-500 to-red-400 text-white p-3 rounded-full hover:scale-110 transition-transform">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </button>
+          {/* Search Bar - نفس منطق البحث من الكود الأصلي */}
+          <div className="flex-1 mx-12 max-w-3xl">
+            <form onSubmit={handleSearch} className="relative group">
+              <div className="relative">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  placeholder="Search for products, brands and more..."
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  onFocus={() => setShowSearchSuggestions(searchQuery.length > 0)}
+                  className="w-full px-6 py-4 text-lg border-2 border-pink-200 rounded-full focus:outline-none focus:border-pink-400 focus:shadow-lg transition-all duration-300 bg-pink-50/30 hover:bg-white pr-16"
+                />
+                <button 
+                  type="submit"
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-pink-500 to-red-400 text-white p-3 rounded-full hover:scale-110 transition-transform shadow-lg"
+                >
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Search Suggestions Dropdown */}
+              {showSearchSuggestions && (searchSuggestions.length > 0 || searchQuery.length > 0) && (
+                <div className="absolute top-full left-0 right-0 bg-white border border-pink-200 rounded-2xl shadow-xl z-50 mt-2 max-h-80 overflow-y-auto">
+                  {searchSuggestions.length > 0 ? (
+                    <>
+                      <div className="px-4 py-2 text-sm text-gray-500 border-b border-gray-100 bg-gray-50 rounded-t-2xl">
+                        Popular Searches
+                      </div>
+                      {searchSuggestions.map((suggestion, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleSuggestionClick(suggestion)}
+                          className="w-full px-4 py-3 text-left hover:bg-pink-50 transition-colors flex items-center group"
+                        >
+                          <svg className="w-4 h-4 text-gray-400 mr-3 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                          </svg>
+                          <span className="group-hover:text-pink-600">{suggestion}</span>
+                        </button>
+                      ))}
+                    </>
+                  ) : searchQuery.length > 0 && (
+                    <button
+                      onClick={handleDirectSearch}
+                      className="w-full px-4 py-3 text-left hover:bg-pink-50 transition-colors flex items-center group"
+                    >
+                      <svg className="w-4 h-4 text-gray-400 mr-3 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                      </svg>
+                      <span className="group-hover:text-pink-600">Search for "{searchQuery}"</span>
+                    </button>
+                  )}
+                  
+                  {/* Quick access to categories */}
+                  {searchQuery.length > 1 && categories.length > 0 && (
+                    <>
+                      <div className="px-4 py-2 text-sm text-gray-500 border-t border-gray-100 bg-gray-50">
+                        Browse Categories
+                      </div>
+                      {categories.slice(0, 3).map((category) => (
+                        <Link
+                          key={category.id}
+                          href={`/products?category=${encodeURIComponent(category.name)}`}
+                          onClick={() => setShowSearchSuggestions(false)}
+                          className="block px-4 py-2 text-left hover:bg-pink-50 transition-colors"
+                        >
+                          <span className="text-gray-600 hover:text-pink-600">
+                            📂 {category.name}
+                            {category.productCount && (
+                              <span className="text-xs text-gray-400 ml-2">({category.productCount} products)</span>
+                            )}
+                          </span>
+                        </Link>
+                      ))}
+                    </>
+                  )}
+                </div>
+              )}
+            </form>
+            
+            {/* Search hint text */}
+            <div className="text-center mt-2">
+              <p className="text-xs text-gray-500">
+                💡 Try searching for "iPhone", "laptop", "headphones" or browse categories below
+              </p>
             </div>
           </div>
 
@@ -65,7 +245,11 @@ export default function Header() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                       d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-             
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full h-6 w-6 flex items-center justify-center font-semibold">
+                  {wishlistCount}
+                </span>
+              )}
             </Link>
             
             {/* Cart */}
@@ -164,30 +348,31 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Categories Navigation - Sidebar Style */}
+      {/* Categories Navigation - Dynamic from Database */}
       <div className="bg-gradient-to-r from-pink-100 to-red-50 border-t border-pink-200">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold text-gray-700">Shop by Category</h3>
             <div className="flex space-x-8 overflow-x-auto">
-              <Link href="/category/electronics" className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all">
-                📱 Electronics
+              <Link href="/products" className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all">
+                🏠 All Products
               </Link>
-              <Link href="/category/fashion" className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all">
-                👗 Fashion
-              </Link>
-              <Link href="/category/home" className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all">
-                🏠 Home & Garden
-              </Link>
-              <Link href="/category/sports" className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all">
-                ⚽ Sports
-              </Link>
-              <Link href="/category/beauty" className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all">
-                💄 Beauty
-              </Link>
-              <Link href="/category/books" className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all">
-                📚 Books
-              </Link>
+              {categories.map(category => (
+                <Link 
+                  key={category.id}
+                  href={`/products?category=${encodeURIComponent(category.name)}`} 
+                  className="whitespace-nowrap px-4 py-2 text-gray-600 hover:text-pink-500 hover:bg-white rounded-full transition-all"
+                >
+                  {category.name === 'Electronics' && '📱 '}
+                  {category.name === 'Clothing' && '👗 '}
+                  {category.name === 'Smartphones' && '📱 '}
+                  {category.name === 'Laptops' && '💻 '}
+                  {category.name}
+                  {category.productCount !== undefined && (
+                    <span className="ml-1 text-xs text-gray-400">({category.productCount})</span>
+                  )}
+                </Link>
+              ))}
             </div>
           </div>
         </div>

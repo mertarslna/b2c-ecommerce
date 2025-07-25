@@ -9,21 +9,39 @@ import { useProducts, useCategories } from '@/hooks/useProducts'
 import { ProductFilters } from '@/types/product'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
+import { safeGetSearchParam } from '@/utils/queryParams'
 
 export default function ProductsPage() {
-  // Filters state
+  // Get search params from URL
   const searchParams = useSearchParams();
+  const searchQuery = safeGetSearchParam(searchParams, 'q') || ''
+  const categoryParam = safeGetSearchParam(searchParams, 'category') || ''
+  
+  // Filters state - initialized with URL params
   const [filters, setFilters] = useState<ProductFilters>({
     page: 1,
     limit: 12,
-    category: '',
+    category: categoryParam,
     minPrice: 0,
     maxPrice: 2000,
     rating: 0,
-    search: '',
+    search: searchQuery,
     sortBy: 'created_at',
     sortOrder: 'desc'
   })
+
+  // Update filters when URL params change (from Header search)
+  useEffect(() => {
+    const newSearch = safeGetSearchParam(searchParams, 'q') || ''
+    const newCategory = safeGetSearchParam(searchParams, 'category') || ''
+    
+    setFilters(prev => ({
+      ...prev,
+      search: newSearch,
+      category: newCategory,
+      page: 1 // Reset page when search/category changes
+    }))
+  }, [searchParams])
 
   // Handle filter changes (from sidebar)
   const handleFilterChange = (newFilters: Partial<ProductFilters>) => {
@@ -92,14 +110,6 @@ export default function ProductsPage() {
     }))
   }
 
-  const handleSearch = (searchTerm: string) => {
-    setFilters(prev => ({
-      ...prev,
-      search: searchTerm,
-      page: 1
-    }))
-  }
-
   // Clear all filters
   const clearAllFilters = () => {
     setFilters({
@@ -115,6 +125,25 @@ export default function ProductsPage() {
     })
   }
 
+  // Get display title based on search and category
+  const getPageTitle = () => {
+    if (filters.search) {
+      return `Search Results for "${filters.search}"`
+    } else if (filters.category) {
+      return `${filters.category} Products`
+    }
+    return 'Our Products'
+  }
+
+  const getPageDescription = () => {
+    if (filters.search) {
+      return `Found ${pagination?.totalCount || 0} products matching "${filters.search}"`
+    } else if (filters.category) {
+      return `Discover amazing ${filters.category.toLowerCase()} products from our database`
+    }
+    return 'Discover amazing products from our database with real-time filtering and search'
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-pink-50 to-purple-50">
       {/* Header */}
@@ -124,21 +153,32 @@ export default function ProductsPage() {
       <div className="pt-16"> {/* Add padding-top to account for fixed header */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 
-          {/* Header */}
+          {/* Page Header */}
           <div className="text-center mb-12">
             <h1 className="text-5xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
-              {filters.category ? `${filters.category} Products` : 'Our Products'}
+              {getPageTitle()}
             </h1>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              {filters.category
-                ? `Discover amazing ${filters.category.toLowerCase()} products from our database`
-                : 'Discover amazing products from our database with real-time filtering and search'
-              }
+              {getPageDescription()}
             </p>
-            {filters.category && (
-              <div className="mt-4">
+            
+            {/* Active filters display */}
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              {filters.search && (
+                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-blue-100 to-blue-200 text-blue-700">
+                  🔍 Search: "{filters.search}"
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, search: '', page: 1 }))}
+                    className="ml-2 hover:text-red-500 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              
+              {filters.category && (
                 <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-pink-600">
-                  Filtering by: {filters.category}
+                  📂 Category: {filters.category}
                   <button
                     onClick={() => setFilters(prev => ({ ...prev, category: '', page: 1 }))}
                     className="ml-2 hover:text-red-500 transition-colors"
@@ -146,25 +186,31 @@ export default function ProductsPage() {
                     ✕
                   </button>
                 </span>
-              </div>
-            )}
-          </div>
-
-          {/* Search Bar */}
-          <div className="max-w-2xl mx-auto mb-12">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Search products..."
-                value={filters.search || ''}
-                onChange={(e) => handleSearch(e.target.value)}
-                className="w-full px-6 py-4 text-lg rounded-2xl border border-pink-200 focus:border-pink-500 focus:outline-none focus:ring-4 focus:ring-pink-100 shadow-lg"
-              />
-              <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
+              )}
+              
+              {((filters.minPrice ?? 0) > 0 || (filters.maxPrice ?? 2000) < 2000) && (
+                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-green-100 to-green-200 text-green-700">
+                  💰 Price: ${(filters.minPrice ?? 0)} - ${(filters.maxPrice ?? 2000)}
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, minPrice: 0, maxPrice: 2000, page: 1 }))}
+                    className="ml-2 hover:text-red-500 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
+              
+              {(filters.rating ?? 0) > 0 && (
+                <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-yellow-100 to-yellow-200 text-yellow-700">
+                  ⭐ Rating: {filters.rating}+ stars
+                  <button
+                    onClick={() => setFilters(prev => ({ ...prev, rating: 0, page: 1 }))}
+                    className="ml-2 hover:text-red-500 transition-colors"
+                  >
+                    ✕
+                  </button>
+                </span>
+              )}
             </div>
           </div>
 
@@ -199,7 +245,7 @@ export default function ProductsPage() {
                 onClick={clearAllFilters}
                 className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-xl transition-colors"
               >
-                Clear Filters
+                Clear All Filters
               </button>
             </div>
           </div>
@@ -327,7 +373,10 @@ export default function ProductsPage() {
                         No Products Found
                       </h3>
                       <p className="text-gray-600 mb-6">
-                        Try adjusting your filters or search terms
+                        {filters.search 
+                          ? `No products match your search for "${filters.search}"`
+                          : "Try adjusting your filters or search terms"
+                        }
                       </p>
                       <button
                         onClick={clearAllFilters}

@@ -5,6 +5,8 @@ import Link from 'next/link'
 import Header from '@/components/Header'
 import ProductCard from '@/components/ProductCard'
 import { useProducts, useCategories } from '@/hooks/useProducts'
+import Footer from '@/components/Footer'
+
 
 export default function Home() {
   // Fetch featured products (limited to 10 for homepage)
@@ -308,6 +310,9 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+        {/* Footer */}
+            <Footer />
     </div>
   )
 }
