@@ -19,7 +19,10 @@
     "db:migrate": "prisma migrate dev",
     "db:reset": "prisma migrate reset",
     "db:seed": "tsx prisma/seed.ts",
-    "db:studio": "prisma studio"
+    "db:studio": "prisma studio",
+    "setup": "node -e \"console.log('🚀 Setup başlıyor...'); require('child_process').execSync('npm install && npx prisma generate && npx prisma db push', {stdio: 'inherit'}); console.log('✅ Setup tamamlandı!')\"",
+    "setup:full": "npm run docker:up && npm run db:generate && npm run db:push",
+    "dev:full": "npm run docker:up && npm run dev"
   },
   "dependencies": {
     "@faker-js/faker": "^9.9.0",

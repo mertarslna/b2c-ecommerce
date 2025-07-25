@@ -1,33 +1,53 @@
-# E-commerce Platform
+# 🛒 B2C E-commerce Platform
 
-Modern, scalable e-commerce platform built with Next.js 14, TypeScript, PostgreSQL, and Redis.
+Modern, scalable e-commerce platform with **Stripe** and **PayThor** payment integration.
 
 ## 🛠️ Tech Stack
 
 ### Backend
-- **Node.js** + **Express.js** + **Next.js API Routes**
+- **Next.js 14** with App Router + API Routes
 - **PostgreSQL** - Main database
 - **Redis** - Caching and session storage
 - **Prisma** - Database ORM
 
 ### Frontend
-- **Next.js 14** with App Router
 - **React 18** + **TypeScript**
 - **Tailwind CSS** - Styling
+- **Lucide React** - Icons
 
-### Authentication & Payments
-- **Payload CMS** + **JWT** - Authentication
-- **Stripe** + **PAYTHOR** - Payment processing
+### Payment Systems
+- **Stripe** - International payments
+- **PayThor** - Turkish payment gateway
+- **JWT** - Authentication
 
 ### Deployment
 - **Docker** - Containerization
-- **Vercel** - Hosting
+- **Vercel Ready** - Production deployment
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+
 - Docker & Docker Compose
+
+### 1️⃣ Hızlı Kurulum (Otomatik)
+```bash
+# Projeyi klon et
+git clone https://github.com/mertarslna/b2c-ecommerce.git
+cd b2c-ecommerce
+git checkout payment
+
+# Windows için
+./setup.ps1
+
+# Linux/Mac için  
+chmod +x setup.sh && ./setup.sh
+
+# Manuel kurulum
+npm run setup:full
+```
+
+### 2️⃣ Manuel Kurulum
 - Git
 
 ### 1. Clone Repository
