@@ -22,7 +22,7 @@ export default function Header() {
           <span>Welcome to REAL Marketplace</span>
           <div className="flex space-x-6">
             <Link href="/seller/auth" className="hover:text-pink-200 transition-colors">
-              Become a Sellerr
+              Become a Seller
             </Link>
             <Link href="/auth/login" className="hover:text-pink-200 transition-colors">
               Sign In

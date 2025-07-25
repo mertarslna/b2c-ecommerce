@@ -285,14 +285,6 @@ export default function ProductDetailsPage() {
             </div>
           )}
         </div>
-
-        {/* Related Products */}
-        {!relatedLoading && relatedProducts.length > 0 && (
-          <RelatedProducts 
-            currentProduct={product} 
-            allProducts={relatedProducts}
-          />
-        )}
       </div>
     </div>
   )
