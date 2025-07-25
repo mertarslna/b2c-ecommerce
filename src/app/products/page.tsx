@@ -5,7 +5,7 @@ import ProductCard from '@/components/ProductCard'
 import ProductFilter from '@/components/ProductFilter'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { useProducts, useCategories } from '@/hooks/useProducts' 
+import { useProducts, useCategories } from '@/hooks/useProducts'
 import { ProductFilters } from '@/types/product'
 import { useSearchParams } from 'next/navigation'
 import { useEffect } from 'react'
@@ -14,32 +14,60 @@ import { safeGetSearchParam } from '@/utils/queryParams'
 export default function ProductsPage() {
   // Get search params from URL
   const searchParams = useSearchParams();
-  const searchQuery = safeGetSearchParam(searchParams, 'q') || ''
-  const categoryParam = safeGetSearchParam(searchParams, 'category') || ''
+  
+  // تم إصلاح استخراج المعاملات من الرابط
+  const getInitialFilters = (): ProductFilters => {
+    // البحث في معاملات مختلفة للبحث
+    const searchQuery = safeGetSearchParam(searchParams, 'search') || 
+                       safeGetSearchParam(searchParams, 'q') || 
+                       ''
+    
+    const categoryParam = safeGetSearchParam(searchParams, 'category') || ''
+    const pageParam = safeGetSearchParam(searchParams, 'page') || '1'
+    
+    console.log('🔍 Initial URL params:', {
+      search: searchQuery,
+      category: categoryParam,
+      page: pageParam,
+      allParams: Object.fromEntries(searchParams.entries())
+    })
+    
+    return {
+      page: parseInt(pageParam, 10) || 1,
+      limit: 12,
+      category: categoryParam,
+      minPrice: 0,
+      maxPrice: 2000,
+      rating: 0,
+      search: searchQuery,
+      sortBy: 'created_at',
+      sortOrder: 'desc'
+    }
+  }
   
   // Filters state - initialized with URL params
-  const [filters, setFilters] = useState<ProductFilters>({
-    page: 1,
-    limit: 12,
-    category: categoryParam,
-    minPrice: 0,
-    maxPrice: 2000,
-    rating: 0,
-    search: searchQuery,
-    sortBy: 'created_at',
-    sortOrder: 'desc'
-  })
+  const [filters, setFilters] = useState<ProductFilters>(getInitialFilters)
 
   // Update filters when URL params change (from Header search)
   useEffect(() => {
-    const newSearch = safeGetSearchParam(searchParams, 'q') || ''
+    const newSearch = safeGetSearchParam(searchParams, 'search') || 
+                     safeGetSearchParam(searchParams, 'q') || 
+                     ''
     const newCategory = safeGetSearchParam(searchParams, 'category') || ''
+    const newPage = safeGetSearchParam(searchParams, 'page') || '1'
+    
+    console.log('🔄 URL changed, updating filters:', {
+      newSearch,
+      newCategory,
+      newPage,
+      currentFilters: filters
+    })
     
     setFilters(prev => ({
       ...prev,
       search: newSearch,
       category: newCategory,
-      page: 1 // Reset page when search/category changes
+      page: parseInt(newPage, 10) || 1
     }))
   }, [searchParams])
 
@@ -54,22 +82,30 @@ export default function ProductsPage() {
   }
 
   // Fetch data using hooks
-  const { products, pagination, loading: productsLoading, error: productsError } = useProducts(filters)
+  const { products, pagination, loading: productsLoading, error: productsError, refetch } = useProducts(filters)
   const { categories, loading: categoriesLoading } = useCategories(true, true)
 
   // Debug logging
   useEffect(() => {
-    console.log('🔍 Current filters:', filters)
+    console.log('🔍 Current filters in useEffect:', filters)
     console.log('📊 Products count:', products.length)
-    console.log('🔗 URL:', window.location.href)
+    console.log('🔗 Current URL:', typeof window !== 'undefined' ? window.location.href : 'SSR')
     console.log('🔗 Search Params:', Object.fromEntries(searchParams.entries()))
-  }, [filters, products, searchParams])
+    
+    // إضافة تحقق من المنتجات
+    if (products.length > 0) {
+      console.log('✅ Products loaded successfully:', products.map(p => p.name))
+    } else if (!productsLoading && !productsError) {
+      console.log('⚠️ No products found with current filters')
+    }
+  }, [filters, products, searchParams, productsLoading, productsError])
 
   // Loading state
   const isLoading = productsLoading || categoriesLoading
 
   // Handle filter changes
   const handleCategoryChange = (category: string) => {
+    console.log('🏷️ Category changed to:', category)
     setFilters(prev => ({
       ...prev,
       category,
@@ -78,6 +114,7 @@ export default function ProductsPage() {
   }
 
   const handlePriceChange = (range: [number, number]) => {
+    console.log('💰 Price range changed to:', range)
     setFilters(prev => ({
       ...prev,
       minPrice: range[0],
@@ -87,6 +124,7 @@ export default function ProductsPage() {
   }
 
   const handleRatingChange = (rating: number) => {
+    console.log('⭐ Rating filter changed to:', rating)
     setFilters(prev => ({
       ...prev,
       rating,
@@ -95,6 +133,7 @@ export default function ProductsPage() {
   }
 
   const handleSortChange = (sortBy: string, sortOrder: 'asc' | 'desc') => {
+    console.log('🔄 Sort changed to:', { sortBy, sortOrder })
     setFilters(prev => ({
       ...prev,
       sortBy: sortBy as ProductFilters['sortBy'],
@@ -104,6 +143,7 @@ export default function ProductsPage() {
   }
 
   const handlePageChange = (page: number) => {
+    console.log('📄 Page changed to:', page)
     setFilters(prev => ({
       ...prev,
       page
@@ -112,6 +152,7 @@ export default function ProductsPage() {
 
   // Clear all filters
   const clearAllFilters = () => {
+    console.log('🧹 Clearing all filters')
     setFilters({
       page: 1,
       limit: 12,
@@ -142,6 +183,12 @@ export default function ProductsPage() {
       return `Discover amazing ${filters.category.toLowerCase()} products from our database`
     }
     return 'Discover amazing products from our database with real-time filtering and search'
+  }
+
+  // دالة لإعادة المحاولة في حالة الخطأ
+  const handleRetry = () => {
+    console.log('🔄 Retrying to fetch products...')
+    refetch()
   }
 
   return (
@@ -289,7 +336,7 @@ export default function ProductsPage() {
                   </div>
                   <p className="text-red-500 mb-4">{productsError}</p>
                   <button
-                    onClick={() => window.location.reload()}
+                    onClick={handleRetry}
                     className="bg-red-500 text-white px-6 py-3 rounded-xl hover:bg-red-600 transition-colors"
                   >
                     Try Again
@@ -378,12 +425,20 @@ export default function ProductsPage() {
                           : "Try adjusting your filters or search terms"
                         }
                       </p>
-                      <button
-                        onClick={clearAllFilters}
-                        className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-3 rounded-xl font-semibold hover:from-pink-600 hover:to-purple-600 transition-all"
-                      >
-                        Clear All Filters
-                      </button>
+                      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button
+                          onClick={clearAllFilters}
+                          className="bg-gradient-to-r from-pink-500 to-purple-500 text-white px-8 py-3 rounded-xl font-semibold hover:from-pink-600 hover:to-purple-600 transition-all"
+                        >
+                          Clear All Filters
+                        </button>
+                        <button
+                          onClick={handleRetry}
+                          className="bg-gray-500 text-white px-8 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-all"
+                        >
+                          Retry Search
+                        </button>
+                      </div>
                     </div>
                   )}
                 </>

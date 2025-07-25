@@ -12,87 +12,27 @@ export default function Header() {
   const { getCartCount } = useCart()
   const { items: wishlistItems } = useWishlist()
   const { user, isAuthenticated, logout } = useUser()
-  const { categories } = useCategories(false, true) // Get parent categories only
+  const { categories } = useCategories(false, true)
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   
+  // States
   const [showUserMenu, setShowUserMenu] = useState(false)
-  // Get current search from URL if we're on products/search page
-  const currentSearch = searchParams.get('q') || searchParams.get('search') || ''
-  const [searchQuery, setSearchQuery] = useState(currentSearch)
+  const [searchQuery, setSearchQuery] = useState('')
   const [showSearchSuggestions, setShowSearchSuggestions] = useState(false)
   const searchInputRef = useRef<HTMLInputElement>(null)
   
   const cartCount = getCartCount()
   const wishlistCount = wishlistItems.length
 
-  // Update search query when URL changes
+  // Initialize search from URL - تم إصلاح المعامل
   useEffect(() => {
-    const urlSearch = searchParams.get('q') || searchParams.get('search') || ''
+    const urlSearch = searchParams.get('search') || searchParams.get('q') || ''
     setSearchQuery(urlSearch)
   }, [searchParams])
 
-  // Handle search form submission - نفس المنطق من الكود الأصلي
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (searchQuery.trim()) {
-      // إذا كنا في صفحة المنتجات، ابقى فيها مع البحث
-      if (pathname === '/products') {
-        const params = new URLSearchParams(searchParams.toString())
-        params.set('search', searchQuery.trim())
-        params.delete('q') // استخدم search بدلاً من q
-        params.set('page', '1') // اعادة تعيين الصفحة
-        router.push(`/products?${params.toString()}`)
-      } else {
-        // اذهب إلى صفحة المنتجات مع البحث
-        router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
-      }
-      setShowSearchSuggestions(false)
-      searchInputRef.current?.blur()
-    }
-  }
-
-  // Handle search input changes
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    setSearchQuery(value)
-    setShowSearchSuggestions(value.length > 0)
-  }
-
-  // Handle suggestion click
-  const handleSuggestionClick = (suggestion: string) => {
-    setSearchQuery(suggestion)
-    setShowSearchSuggestions(false)
-    // نفس منطق البحث
-    if (pathname === '/products') {
-      const params = new URLSearchParams(searchParams.toString())
-      params.set('search', suggestion)
-      params.delete('q')
-      params.set('page', '1')
-      router.push(`/products?${params.toString()}`)
-    } else {
-      router.push(`/products?search=${encodeURIComponent(suggestion)}`)
-    }
-  }
-
-  // Handle direct search from suggestions
-  const handleDirectSearch = () => {
-    if (searchQuery.trim()) {
-      setShowSearchSuggestions(false)
-      if (pathname === '/products') {
-        const params = new URLSearchParams(searchParams.toString())
-        params.set('search', searchQuery.trim())
-        params.delete('q')
-        params.set('page', '1')
-        router.push(`/products?${params.toString()}`)
-      } else {
-        router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`)
-      }
-    }
-  }
-
-  // Quick search suggestions
+  // Search suggestions
   const searchSuggestions = [
     'iPhone 15 Pro',
     'MacBook Pro',
@@ -112,10 +52,32 @@ export default function Header() {
         setShowSearchSuggestions(false)
       }
     }
-
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  // دالة للتنقل مع البحث - تم إصلاحها
+  const navigateToSearch = (query: string) => {
+    const trimmedQuery = query.trim()
+    console.log('🔍 Navigating with search:', trimmedQuery)
+    
+    if (trimmedQuery) {
+      // استخدام معامل search بدلاً من q
+      router.push(`/products?search=${encodeURIComponent(trimmedQuery)}&page=1`)
+    } else {
+      router.push('/products')
+    }
+    
+    setShowSearchSuggestions(false)
+    searchInputRef.current?.blur()
+  }
+
+  // دالة لاختيار الاقتراح - تم إصلاحها
+  const selectSuggestion = (suggestion: string) => {
+    console.log('✅ Suggestion selected:', suggestion)
+    setSearchQuery(suggestion) // تحديث النص في البار
+    navigateToSearch(suggestion) // التنقل للصفحة
+  }
 
   return (
     <header className="bg-white shadow-lg border-b border-pink-100">
@@ -146,16 +108,27 @@ export default function Header() {
             </Link>
           </div>
 
-          {/* Search Bar - نفس منطق البحث من الكود الأصلي */}
+          {/* Search Bar */}
           <div className="flex-1 mx-12 max-w-3xl">
-            <form onSubmit={handleSearch} className="relative group">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault()
+                navigateToSearch(searchQuery)
+              }} 
+              className="relative group"
+            >
               <div className="relative">
                 <input
                   ref={searchInputRef}
                   type="text"
-                  placeholder="Search for products, brands and more..."
+                  placeholder="Search products..."
                   value={searchQuery}
-                  onChange={handleSearchChange}
+                  onChange={(e) => {
+                    const value = e.target.value
+                    console.log('⌨️ Search input:', value)
+                    setSearchQuery(value)
+                    setShowSearchSuggestions(value.length > 0)
+                  }}
                   onFocus={() => setShowSearchSuggestions(searchQuery.length > 0)}
                   className="w-full px-6 py-4 text-lg border-2 border-pink-200 rounded-full focus:outline-none focus:border-pink-400 focus:shadow-lg transition-all duration-300 bg-pink-50/30 hover:bg-white pr-16"
                 />
@@ -169,7 +142,7 @@ export default function Header() {
                 </button>
               </div>
 
-              {/* Search Suggestions Dropdown */}
+              {/* Search Suggestions */}
               {showSearchSuggestions && (searchSuggestions.length > 0 || searchQuery.length > 0) && (
                 <div className="absolute top-full left-0 right-0 bg-white border border-pink-200 rounded-2xl shadow-xl z-50 mt-2 max-h-80 overflow-y-auto">
                   {searchSuggestions.length > 0 ? (
@@ -180,7 +153,7 @@ export default function Header() {
                       {searchSuggestions.map((suggestion, index) => (
                         <button
                           key={index}
-                          onClick={() => handleSuggestionClick(suggestion)}
+                          onClick={() => selectSuggestion(suggestion)}
                           className="w-full px-4 py-3 text-left hover:bg-pink-50 transition-colors flex items-center group"
                         >
                           <svg className="w-4 h-4 text-gray-400 mr-3 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -192,7 +165,7 @@ export default function Header() {
                     </>
                   ) : searchQuery.length > 0 && (
                     <button
-                      onClick={handleDirectSearch}
+                      onClick={() => navigateToSearch(searchQuery)}
                       className="w-full px-4 py-3 text-left hover:bg-pink-50 transition-colors flex items-center group"
                     >
                       <svg className="w-4 h-4 text-gray-400 mr-3 group-hover:text-pink-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,40 +174,9 @@ export default function Header() {
                       <span className="group-hover:text-pink-600">Search for "{searchQuery}"</span>
                     </button>
                   )}
-                  
-                  {/* Quick access to categories */}
-                  {searchQuery.length > 1 && categories.length > 0 && (
-                    <>
-                      <div className="px-4 py-2 text-sm text-gray-500 border-t border-gray-100 bg-gray-50">
-                        Browse Categories
-                      </div>
-                      {categories.slice(0, 3).map((category) => (
-                        <Link
-                          key={category.id}
-                          href={`/products?category=${encodeURIComponent(category.name)}`}
-                          onClick={() => setShowSearchSuggestions(false)}
-                          className="block px-4 py-2 text-left hover:bg-pink-50 transition-colors"
-                        >
-                          <span className="text-gray-600 hover:text-pink-600">
-                            📂 {category.name}
-                            {category.productCount && (
-                              <span className="text-xs text-gray-400 ml-2">({category.productCount} products)</span>
-                            )}
-                          </span>
-                        </Link>
-                      ))}
-                    </>
-                  )}
                 </div>
               )}
             </form>
-            
-            {/* Search hint text */}
-            <div className="text-center mt-2">
-              <p className="text-xs text-gray-500">
-                💡 Try searching for "iPhone", "laptop", "headphones" or browse categories below
-              </p>
-            </div>
           </div>
 
           {/* Cart & Wishlist & User */}
@@ -348,7 +290,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Categories Navigation - Dynamic from Database */}
+      {/* Categories Navigation */}
       <div className="bg-gradient-to-r from-pink-100 to-red-50 border-t border-pink-200">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
