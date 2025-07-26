@@ -13,7 +13,8 @@ export default function ProfilePage() {
   // Form states
   const [isEditing, setIsEditing] = useState(false)
   const [formData, setFormData] = useState({
-    name: '',
+    first_name: '',
+    last_name: '',
     email: '',
     phone: '',
     address: '',
@@ -35,7 +36,8 @@ export default function ProfilePage() {
   useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name || '',
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
         email: user.email || '',
         phone: '',
         address: '',
@@ -53,7 +55,8 @@ export default function ProfilePage() {
   const handleSaveProfile = async () => {
     setIsUpdating(true)
     const success = await updateProfile({
-      name: formData.name,
+      first_name: formData.first_name,
+      last_name: formData.last_name,
       email: formData.email
     })
     
@@ -66,7 +69,8 @@ export default function ProfilePage() {
   const handleCancelEdit = () => {
     if (user) {
       setFormData({
-        name: user.name || '',
+        first_name: user.first_name || '',
+        last_name: user.last_name || '',
         email: user.email || '',
         phone: '',
         address: '',
@@ -129,12 +133,12 @@ export default function ProfilePage() {
                     {user.avatar ? (
                       <img 
                         src={user.avatar} 
-                        alt={user.name}
+                        alt={user.first_name + ' ' + user.last_name}
                         className="w-full h-full object-cover"
                       />
                     ) : (
                       <span className="text-white text-4xl font-bold">
-                        {user.name.charAt(0).toUpperCase()}
+                        {user.first_name.charAt(0).toUpperCase()}
                       </span>
                     )}
                   </div>
@@ -153,14 +157,14 @@ export default function ProfilePage() {
 
                 {/* User Info */}
                 <div className="flex-1 text-center sm:text-left">
-                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{user.name}</h1>
+                  <h1 className="text-3xl font-bold text-gray-900 mb-2">{user.first_name + ' ' + user.last_name}</h1>
                   <p className="text-xl text-gray-600 mb-2">{user.email}</p>
                   <div className="flex items-center justify-center sm:justify-start gap-4 text-sm text-gray-500">
                     <span className="flex items-center">
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
-                      Member since {new Date(user.createdAt).toLocaleDateString()}
+                      Member since {new Date(user.created_at).toLocaleDateString()}
                     </span>
                     <span className="flex items-center">
                       <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -223,13 +227,13 @@ export default function ProfilePage() {
                     {isEditing ? (
                       <input
                         type="text"
-                        name="name"
-                        value={formData.name}
+                        name="first_name"
+                        value={formData.first_name}
                         onChange={handleInputChange}
                         className="w-full p-4 border-2 border-pink-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
                       />
                     ) : (
-                      <div className="p-4 bg-gray-50 rounded-xl text-gray-800">{user.name}</div>
+                      <div className="p-4 bg-gray-50 rounded-xl text-gray-800">{user.first_name + ' ' + user.last_name}</div>
                     )}
                   </div>
 
@@ -397,8 +401,7 @@ export default function ProfilePage() {
       {/* Avatar Change Modal */}
       {showAvatarModal && (
         <AvatarChangeModal 
-          currentAvatar={user.avatar}
-          userName={user.name}
+          userName={user.first_name + ' ' + user.last_name}
           onClose={() => setShowAvatarModal(false)} 
           onAvatarUpdate={(newAvatar) => {
             updateProfile({ avatar: newAvatar })
@@ -412,12 +415,10 @@ export default function ProfilePage() {
 
 // Avatar Change Modal Component
 function AvatarChangeModal({ 
-  currentAvatar, 
   userName, 
   onClose, 
   onAvatarUpdate 
 }: { 
-  currentAvatar?: string
   userName: string
   onClose: () => void
   onAvatarUpdate: (avatar: string) => void
@@ -503,8 +504,8 @@ function AvatarChangeModal({
         {/* Current Avatar */}
         <div className="text-center mb-8">
           <div className="w-24 h-24 rounded-full mx-auto mb-4 overflow-hidden bg-gradient-to-r from-pink-500 to-purple-500 flex items-center justify-center">
-            {currentAvatar ? (
-              <img src={currentAvatar} alt="Current" className="w-full h-full object-cover" />
+            {user.avatar ? (
+              <img src={user.avatar} alt="Current" className="w-full h-full object-cover" />
             ) : (
               <span className="text-white text-2xl font-bold">{userName.charAt(0).toUpperCase()}</span>
             )}
