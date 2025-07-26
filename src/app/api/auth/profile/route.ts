@@ -10,7 +10,7 @@ export async function PUT(request: NextRequest) {
     // Validation
     if (!id) {
       return NextResponse.json(
-        { error: 'Kullanıcı ID gerekli' },
+        { error: 'User ID is required' },
         { status: 400 }
       )
     }
@@ -36,7 +36,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(
       { 
-        message: 'Profil başarıyla güncellendi',
+        message: 'Profile updated successfully',
         user: userWithoutPassword
       },
       { status: 200 }
@@ -45,7 +45,7 @@ export async function PUT(request: NextRequest) {
   } catch (error) {
     console.error('Profile update error:', error)
     return NextResponse.json(
-      { error: 'Profil güncellenemedi. Lütfen tekrar deneyin.' },
+      { error: 'Profile update failed. Please try again.' },
       { status: 500 }
     )
   } finally {
