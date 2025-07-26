@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!email || !password) {
       return NextResponse.json(
-        { error: 'Email ve şifre zorunludur' },
+        { error: 'Email and password are required' },
         { status: 400 }
       )
     }
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: 'Geçersiz email veya şifre' },
+        { error: 'Invalid email or password' },
         { status: 401 }
       )
     }
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
     // Check if user is active
     if (!user.is_active) {
       return NextResponse.json(
-        { error: 'Hesabınız aktif değil. Lütfen yönetici ile iletişime geçin.' },
+        { error: 'Your account is not active. Please contact the administrator.' },
         { status: 401 }
       )
     }
@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     if (!isPasswordValid) {
       return NextResponse.json(
-        { error: 'Geçersiz email veya şifre' },
+        { error: 'Invalid email or password' },
         { status: 401 }
       )
     }
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { 
-        message: 'Giriş başarılı',
+        message: 'Login successful',
         user: userWithoutPassword
       },
       { status: 200 }
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Login error:', error)
     return NextResponse.json(
-      { error: 'Giriş işlemi başarısız oldu. Lütfen tekrar deneyin.' },
+      { error: 'Login failed. Please try again.' },
       { status: 500 }
     )
   } finally {

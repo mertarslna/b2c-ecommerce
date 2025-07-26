@@ -11,14 +11,14 @@ export async function POST(request: NextRequest) {
     // Validation
     if (!first_name || !last_name || !email || !password) {
       return NextResponse.json(
-        { error: 'Tüm alanlar zorunludur' },
+        { error: 'All fields are required' },
         { status: 400 }
       )
     }
 
     if (password.length < 6) {
       return NextResponse.json(
-        { error: 'Şifre en az 6 karakter olmalıdır' },
+        { error: 'Password must be at least 6 characters long' },
         { status: 400 }
       )
     }
@@ -27,7 +27,7 @@ export async function POST(request: NextRequest) {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     if (!emailRegex.test(email)) {
       return NextResponse.json(
-        { error: 'Geçersiz email formatı' },
+        { error: 'Invalid email format' },
         { status: 400 }
       )
     }
@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
 
     if (existingUser) {
       return NextResponse.json(
-        { error: 'Bu email adresi zaten kullanılıyor' },
+        { error: 'This email address is already in use' },
         { status: 409 }
       )
     }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { 
-        message: 'Hesap başarıyla oluşturuldu',
+        message: 'Account created successfully',
         user: userWithoutPassword
       },
       { status: 201 }
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error('Registration error:', error)
     return NextResponse.json(
-      { error: 'Kayıt olma işlemi başarısız oldu. Lütfen tekrar deneyin.' },
+      { error: 'Registration failed. Please try again.' },
       { status: 500 }
     )
   } finally {
