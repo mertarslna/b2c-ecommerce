@@ -1,5 +1,4 @@
-
-// src/app/checkout/page.tsx
+// src/app/checkout/page.tsx - COMPLETE FIXED VERSION TO SUPPORT BUY NOW
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -10,9 +9,13 @@ import { useUser } from '@/contexts/UserContext'
 import Link from 'next/link'
 
 export default function CheckoutPage() {
-  const { items, getCartTotal, clearCart } = useCart()
+  const { items: cartItems, getCartTotal, clearCart } = useCart()
   const { user, isAuthenticated, isLoading } = useUser()
   const router = useRouter()
+
+  // FIXED: Support both cart and buy now items
+  const [items, setItems] = useState<any[]>([])
+  const [isBuyNowCheckout, setIsBuyNowCheckout] = useState(false)
 
   // Form States
   const [step, setStep] = useState(1) // 1: Shipping, 2: Payment, 3: Review, 4: Confirmation
@@ -28,7 +31,7 @@ export default function CheckoutPage() {
     city: '',
     state: '',
     zipCode: '',
-    country: 'United States'
+    country: 'Turkey'
   })
 
   // Payment Information
@@ -60,19 +63,52 @@ export default function CheckoutPage() {
   // Error States
   const [errors, setErrors] = useState<any>({})
 
-  // Redirect if not authenticated or cart is empty
+  // FIXED: Load items from cart or sessionStorage (Buy Now)
+  useEffect(() => {
+    // Check if there's Buy Now data in sessionStorage
+    const checkoutData = sessionStorage.getItem('checkoutData')
+    
+    if (checkoutData) {
+      try {
+        const parsedData = JSON.parse(checkoutData)
+        if (parsedData.items && parsedData.items.length > 0) {
+          setItems(parsedData.items)
+          setIsBuyNowCheckout(true)
+          console.log('✅ Loaded Buy Now checkout data:', parsedData.items)
+          return
+        }
+      } catch (error) {
+        console.error('❌ Error parsing checkout data:', error)
+        sessionStorage.removeItem('checkoutData') // Clean up corrupted data
+      }
+    }
+    
+    // Fallback to cart items
+    if (cartItems.length > 0) {
+      setItems(cartItems)
+      setIsBuyNowCheckout(false)
+      console.log('✅ Loaded cart items for checkout:', cartItems)
+    }
+  }, [cartItems])
+
+  // FIXED: Redirect logic - check both cart and buy now items
   useEffect(() => {
     if (!isLoading) {
       if (!isAuthenticated) {
         router.push('/auth/login')
         return
       }
-      if (items.length === 0) {
-        router.push('/cart')
-        return
+      
+      // Only redirect if no items from either source
+      if (items.length === 0 && cartItems.length === 0) {
+        const checkoutData = sessionStorage.getItem('checkoutData')
+        if (!checkoutData) {
+          router.push('/cart')
+          return
+        }
       }
     }
-  }, [isAuthenticated, isLoading, items.length, router])
+  }, [isAuthenticated, isLoading, items.length, cartItems.length, router])
 
   // Initialize user data
   useEffect(() => {
@@ -89,9 +125,18 @@ export default function CheckoutPage() {
     }
   }, [user])
 
-  // Calculate order summary
+  // FIXED: Calculate order summary based on current items
   useEffect(() => {
-    const subtotal = getCartTotal()
+    let subtotal = 0
+    
+    if (isBuyNowCheckout) {
+      // Calculate from Buy Now items
+      subtotal = items.reduce((total, item) => total + (item.price * item.quantity), 0)
+    } else {
+      // Calculate from cart
+      subtotal = getCartTotal()
+    }
+    
     const selectedShipping = shippingOptions.find(option => option.id === shippingMethod)
     const shipping = selectedShipping?.price || 0
     const tax = subtotal * 0.1 // 10% tax
@@ -103,7 +148,7 @@ export default function CheckoutPage() {
       tax,
       total
     })
-  }, [getCartTotal, shippingMethod])
+  }, [items, isBuyNowCheckout, getCartTotal, shippingMethod])
 
   const validateStep = (stepNumber: number) => {
     const newErrors: any = {}
@@ -168,8 +213,14 @@ export default function CheckoutPage() {
       // Generate order ID
       const orderId = `ORD-${new Date().getFullYear()}-${String(Date.now()).slice(-6)}`
 
-      // Clear cart
-      clearCart()
+      // FIXED: Clear appropriate data based on checkout type
+      if (isBuyNowCheckout) {
+        // Clear Buy Now data from sessionStorage
+        sessionStorage.removeItem('checkoutData')
+      } else {
+        // Clear cart
+        clearCart()
+      }
 
       // Move to confirmation step
       setStep(4)
@@ -199,13 +250,21 @@ export default function CheckoutPage() {
     )
   }
 
-  if (!isAuthenticated || items.length === 0) {
+  // FIXED: Show loading while items are being determined
+  if (!isAuthenticated || (items.length === 0 && cartItems.length === 0)) {
     return null
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
       <Header />
+      
+      {/* FIXED: Show checkout type indicator */}
+      {isBuyNowCheckout && (
+        <div className="bg-gradient-to-r from-purple-500 to-pink-500 text-white text-center py-2">
+          <span className="font-semibold">🚀 Express Checkout - Buy Now</span>
+        </div>
+      )}
       
       {/* Progress Bar */}
       <div className="bg-white border-b border-pink-100">
@@ -372,10 +431,7 @@ export default function CheckoutPage() {
                       onChange={(e) => handleInputChange('country', e.target.value, 'shipping')}
                       className="w-full p-4 border-2 border-pink-200 rounded-xl focus:border-pink-500 focus:outline-none transition-colors"
                     >
-                      <option value="United States">United States</option>
-                      <option value="Canada">Canada</option>
-                      <option value="United Kingdom">United Kingdom</option>
-                      <option value="Australia">Australia</option>
+                      <option value="Turkey">Turkey 🇹🇷</option>
                     </select>
                   </div>
 
@@ -426,7 +482,7 @@ export default function CheckoutPage() {
                       {[
                         { id: 'credit_card', name: 'Credit Card', icon: '💳' },
                         { id: 'paypal', name: 'PayPal', icon: '🅿️' },
-                        { id: 'apple_pay', name: 'Apple Pay', icon: '🍎' }
+                        { id: 'apple_pay', name: 'Apple Pay', icon: '' }
                       ].map((method) => (
                         <label key={method.id} className="flex items-center p-4 border-2 border-gray-200 rounded-xl cursor-pointer hover:border-pink-300 transition-colors">
                           <input
@@ -595,8 +651,8 @@ export default function CheckoutPage() {
                   <div>
                     <h3 className="text-xl font-bold text-gray-900 mb-4">Order Items</h3>
                     <div className="space-y-4">
-                      {items.map((item) => (
-                        <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
+                      {items.map((item, index) => (
+                        <div key={`${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${index}`} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
                           <img
                             src={item.image}
                             alt={item.name}
@@ -640,6 +696,9 @@ export default function CheckoutPage() {
                     <p className="text-gray-600">
                       <strong>Items:</strong> {items.length} products
                     </p>
+                    <p className="text-gray-600">
+                      <strong>Type:</strong> {isBuyNowCheckout ? 'Express Checkout' : 'Cart Checkout'}
+                    </p>
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -671,10 +730,10 @@ export default function CheckoutPage() {
                     </button>
                   ) : (
                     <Link
-                      href="/cart"
+                      href={isBuyNowCheckout ? "/" : "/cart"}
                       className="flex items-center gap-2 bg-gray-500 text-white px-6 py-3 rounded-xl font-semibold hover:bg-gray-600 transition-all duration-300"
                     >
-                      ← Back to Cart
+                      ← {isBuyNowCheckout ? 'Back to Product' : 'Back to Cart'}
                     </Link>
                   )}
 
@@ -723,10 +782,17 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-3xl shadow-xl border border-pink-100 p-8 sticky top-6">
               <h3 className="text-2xl font-bold text-gray-900 mb-6">Order Summary</h3>
               
+              {/* FIXED: Checkout type indicator */}
+              {isBuyNowCheckout && (
+                <div className="bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl p-3 mb-6">
+                  <p className="text-center font-semibold text-purple-700">🚀 Express Checkout</p>
+                </div>
+              )}
+              
               {/* Cart Items */}
               <div className="space-y-4 mb-6">
-                {items.map((item) => (
-                  <div key={`${item.id}-${item.selectedSize}-${item.selectedColor}`} className="flex items-center gap-3">
+                {items.map((item, index) => (
+                  <div key={`summary-${item.id}-${item.selectedSize || ''}-${item.selectedColor || ''}-${index}`} className="flex items-center gap-3">
                     <img
                       src={item.image}
                       alt={item.name}

@@ -7,7 +7,6 @@ import ProductCard from '@/components/ProductCard'
 import { useProducts, useCategories } from '@/hooks/useProducts'
 import Footer from '@/components/Footer'
 
-
 export default function Home() {
   // Fetch featured products (limited to 10 for homepage)
   const { products: featuredProducts, loading: productsLoading } = useProducts({
@@ -20,48 +19,106 @@ export default function Home() {
   // Fetch categories for the categories section
   const { categories, loading: categoriesLoading } = useCategories(true, true)
 
-  // Random gradient color list
-  const randomGradientColors = [
-    'from-blue-400 to-blue-600',
-    'from-green-400 to-green-600',
-    'from-purple-400 to-purple-600',
-    'from-red-400 to-red-600',
-    'from-yellow-400 to-yellow-600',
-    'from-indigo-400 to-indigo-600',
-    'from-pink-400 to-pink-600',
-    'from-teal-400 to-teal-600',
-    'from-orange-400 to-orange-600',
-    'from-cyan-400 to-cyan-600',
-  ];
-  
-  const getRandomColor = () => {
-    const randomIndex = Math.floor(Math.random() * randomGradientColors.length);
-    return randomGradientColors[randomIndex];
-  };
-
-  // Create static category icons mapping
-  const categoryIcons: { [key: string]: { icon: string; color: string } } = {
-    'Electronics': { icon: '💻', color: 'from-blue-500 to-blue-700' },
-    'Smartphones': { icon: '📱', color: 'from-green-500 to-green-700' },
-    'Laptops': { icon: '💻', color: 'from-purple-500 to-purple-700' },
-    'Tablets': { icon: '📱', color: 'from-red-500 to-red-700' },
-    'Televisions & Audio': { icon: '📺', color: 'from-yellow-500 to-yellow-700' },
-    'Home & Living': { icon: '🏠', color: 'from-indigo-500 to-indigo-700' },
-    'Furniture': { icon: '🛋️', color: 'from-pink-500 to-pink-700' },
-    'Kitchenware': { icon: '🍳', color: 'from-teal-500 to-teal-700' },
-    'Apparel & Fashion': { icon: '👕', color: 'from-orange-500 to-orange-700' },
-    'Women\'s Apparel': { icon: '👗', color: 'from-cyan-500 to-cyan-700' }, // Escape karakteri kullanıldı
-    'Men\'s Apparel': { icon: '👔', color: 'from-lime-500 to-lime-700' },     // Escape karakteri kullanıldı
-    'Kids\' & Baby Apparel': { icon: '👶', color: 'from-rose-500 to-rose-700' }, // Escape karakteri kullanıldı
-    'Health & Beauty': { icon: '💖', color: 'from-fuchsia-500 to-fuchsia-700' },
-    'Skincare': { icon: '🧴', color: 'from-emerald-500 to-emerald-700' },
-    'Makeup': { icon: '💄', color: 'from-violet-500 to-violet-700' },
-    'Sports & Outdoors': { icon: '🏅', color: 'from-amber-500 to-amber-700' },
-    'Fitness Equipment': { icon: '🏋️', color: 'from-lightBlue-500 to-lightBlue-700' },
-    'Outdoor Gear': { icon: '🏕️', color: 'from-warmGray-500 to-warmGray-700' },
-    // Other categories can be added here
+  // Create static category icons and background images mapping
+  const categoryIcons: { [key: string]: { icon: string; bgImage: string; overlay: string } } = {
+    'Electronics': { 
+      icon: '💻', 
+      bgImage: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-blue-900/80 to-blue-700/60'
+    },
+    'Smartphones': { 
+      icon: '📱', 
+      bgImage: 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-gray-900/80 to-gray-700/60'
+    },
+    'Laptops': { 
+      icon: '💻', 
+      bgImage: 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-slate-900/80 to-slate-700/60'
+    },
+    'Tablets': { 
+      icon: '📱', 
+      bgImage: 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-indigo-900/80 to-indigo-700/60'
+    },
+    'Televisions & Audio': { 
+      icon: '📺', 
+      bgImage: 'https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-purple-900/80 to-purple-700/60'
+    },
+    'Home & Living': { 
+      icon: '🏠', 
+      bgImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-green-900/80 to-green-700/60'
+    },
+    'Furniture': { 
+      icon: '🛋️', 
+      bgImage: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-amber-900/80 to-amber-700/60'
+    },
+    'Kitchenware': { 
+      icon: '🍳', 
+      bgImage: 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-orange-900/80 to-orange-700/60'
+    },
+    'Apparel & Fashion': { 
+      icon: '👕', 
+      bgImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-pink-900/80 to-pink-700/60'
+    },
+    'Women\'s Apparel': { 
+      icon: '👗', 
+      bgImage: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-rose-900/80 to-rose-700/60'
+    },
+    'Men\'s Apparel': { 
+      icon: '👔', 
+      bgImage: 'https://images.unsplash.com/photo-1617127365659-c47fa864d8bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-blue-900/80 to-blue-700/60'
+    },
+    'Kids\' & Baby Apparel': { 
+      icon: '👶', 
+      bgImage: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-yellow-900/80 to-yellow-700/60'
+    },
+    'Health & Beauty': { 
+      icon: '💖', 
+      bgImage: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-pink-900/80 to-pink-700/60'
+    },
+    'Skincare': { 
+      icon: '🧴', 
+      bgImage: 'https://images.unsplash.com/photo-1556228453-efd6c1ff04f6?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-teal-900/80 to-teal-700/60'
+    },
+    'Makeup': { 
+      icon: '💄', 
+      bgImage: 'https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-purple-900/80 to-purple-700/60'
+    },
+    'Sports & Outdoors': { 
+      icon: '🏅', 
+      bgImage: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-green-900/80 to-green-700/60'
+    },
+    'Fitness Equipment': { 
+      icon: '🏋️', 
+      bgImage: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-red-900/80 to-red-700/60'
+    },
+    'Outdoor Gear': { 
+      icon: '🏕️', 
+      bgImage: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+      overlay: 'from-emerald-900/80 to-emerald-700/60'
+    },
   }
-  
+
+  // Default fallback for unknown categories
+  const getDefaultCategoryInfo = () => ({
+    icon: '📦',
+    bgImage: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80',
+    overlay: 'from-gray-900/80 to-gray-700/60'
+  })
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-purple-50">
@@ -100,7 +157,7 @@ export default function Home() {
         <div className="absolute top-1/2 right-10 w-12 h-12 bg-white/10 rounded-full animate-bounce"></div>
       </section>
 
-      {/* Categories Section - Real Data */}
+      {/* Categories Section - With Background Images */}
       <section className="container mx-auto px-6 py-16">
         <div className="text-center mb-12">
           <h2 className="text-5xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent mb-4">
@@ -121,7 +178,7 @@ export default function Home() {
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
             {(() => {
               // Get all categories with products (including subcategories)
               const displayCategories: Array<any> = []
@@ -160,10 +217,7 @@ export default function Home() {
                 .slice(0, 6)
 
               return uniqueCategories.map((category) => {
-                const categoryInfo = categoryIcons[category.name] || {
-                  icon: '📦',
-                  color: getRandomColor()
-                }
+                const categoryInfo = categoryIcons[category.name] || getDefaultCategoryInfo()
 
                 return (
                   <Link
@@ -173,31 +227,39 @@ export default function Home() {
                       query: {
                         category: category.name,
                         categoryId: category.id,
-                        filter: 'true' // Add this flag to indicate filtering is needed
+                        filter: 'true'
                       }
                     }}
                     className="group cursor-pointer"
                   >
-                    <div className={`relative bg-gradient-to-br ${categoryInfo.color} p-6 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:scale-105`}>
-                      {/* Icon */}
-                      <div className="text-center mb-3">
-                        <span className="text-3xl mb-2 block transform group-hover:scale-110 transition-transform duration-300">
+                    <div className="relative h-40 rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 hover:scale-105 overflow-hidden">
+                      {/* Background Image */}
+                      <div 
+                        className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
+                        style={{ backgroundImage: `url(${categoryInfo.bgImage})` }}
+                      ></div>
+                      
+                      {/* Gradient Overlay */}
+                      <div className={`absolute inset-0 bg-gradient-to-br ${categoryInfo.overlay} transition-opacity duration-300 group-hover:opacity-90`}></div>
+                      
+                      {/* Content */}
+                      <div className="relative z-10 p-6 h-full flex flex-col justify-center items-center text-center">
+                        {/* Icon */}
+                        <span className="text-4xl mb-3 block transform group-hover:scale-110 transition-transform duration-300 drop-shadow-lg">
                           {categoryInfo.icon}
                         </span>
-                      </div>
 
-                      {/* Category Info */}
-                      <div className="text-center">
-                        <h3 className="font-bold text-white text-sm mb-1 group-hover:text-yellow-100 transition-colors">
+                        {/* Category Info */}
+                        <h3 className="font-bold text-white text-sm mb-1 group-hover:text-yellow-200 transition-colors duration-300 drop-shadow-md">
                           {category.name}
                         </h3>
-                        <p className="text-white/80 text-xs font-medium">
+                        <p className="text-white/90 text-xs font-medium drop-shadow-sm">
                           {category.displayCount} items
                         </p>
                       </div>
 
-                      {/* Hover Glow Effect */}
-                      <div className="absolute inset-0 bg-white/20 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      {/* Shine Effect on Hover */}
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
                     </div>
                   </Link>
                 )
@@ -337,8 +399,8 @@ export default function Home() {
         </div>
       </section>
 
-        {/* Footer */}
-            <Footer />
+      {/* Footer */}
+      <Footer />
     </div>
   )
 }

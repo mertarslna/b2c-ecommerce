@@ -73,6 +73,7 @@ model User {
   // Common relations for all users
   addresses Address[]
 
+  @@index([email])
   @@map("users")
 }
 
@@ -96,11 +97,12 @@ model CustomerProfile {
   loyalty_points Int    @default(0)
 
   // Relations
-  user      User       @relation("UserCustomer", fields: [user_id], references: [id], onDelete: Cascade)
-  cart      Cart?
-  orders    Order[]
-  reviews   Review[]
-  shippings Shipping[] @relation("CustomerShipping")
+  user          User          @relation("UserCustomer", fields: [user_id], references: [id], onDelete: Cascade)
+  cart          Cart?
+  orders        Order[]
+  reviews       Review[]
+  shippings     Shipping[]    @relation("CustomerShipping")
+  helpful_votes HelpfulVote[]
 
   @@map("customer_profiles")
 }
@@ -181,6 +183,9 @@ model Product {
   cart_items  CartItem[]
   order_items OrderItem[]
 
+  @@index([seller_id])
+  @@index([category_id])
+  @@index([is_approved])
   @@map("products")
 }
 
@@ -202,7 +207,7 @@ model Image {
 model Review {
   id            String   @id @default(uuid())
   product_id    String
-  customer_id   String   // Links to CustomerProfile
+  customer_id   String
   order_id      String?
   rating        Int
   title         String?
@@ -216,9 +221,10 @@ model Review {
   created_at    DateTime @default(now())
 
   // Relations
-  product  Product         @relation(fields: [product_id], references: [id], onDelete: Cascade)
-  customer CustomerProfile @relation(fields: [customer_id], references: [id], onDelete: Cascade)
-  order    Order?          @relation(fields: [order_id], references: [id], onDelete: SetNull)
+  product       Product         @relation(fields: [product_id], references: [id], onDelete: Cascade)
+  customer      CustomerProfile @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  order         Order?          @relation(fields: [order_id], references: [id], onDelete: SetNull)
+  helpful_votes HelpfulVote[]
 
   @@map("reviews")
 }
@@ -242,6 +248,8 @@ model Order {
   reviews          Review[]
   shippings        Shipping[]
 
+  @@index([customer_id])
+  @@index([status])
   @@map("orders")
 }
 
@@ -281,8 +289,8 @@ model CartItem {
   product_id    String
   quantity      Int
   unit_price    Decimal  @db.Decimal(10, 2)
-  selected_size String?  // ✅ 
-  selected_color String? // ✅ 
+  selected_size String?
+  selected_color String?
   created_at    DateTime @default(now())
   updated_at    DateTime @updatedAt
 
@@ -332,4 +340,18 @@ model Shipping {
   shipping_address Address         @relation(fields: [shipping_address_id], references: [id], onDelete: Restrict)
 
   @@map("shippings")
+}
+model HelpfulVote {
+  id          String   @id @default(uuid())
+  review_id   String
+  customer_id String
+  created_at  DateTime @default(now())
+
+  // Relations - هذا ما كان مفقود!
+  review   Review          @relation(fields: [review_id], references: [id], onDelete: Cascade)
+  customer CustomerProfile @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+
+  // Ensure one vote per customer per review
+  @@unique([review_id, customer_id])
+  @@map("helpful_votes")
 }

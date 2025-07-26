@@ -82,6 +82,43 @@ async function main() {
           last_name: 'User',
           phone: '+1234567899',
           role: 'CUSTOMER'
+        },
+        // ✅ Additional users for reviews
+        {
+          id: 'user-2',
+          email: 'ahmed@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Ahmed',
+          last_name: 'Ali',
+          phone: '+1234567800',
+          role: 'CUSTOMER'
+        },
+        {
+          id: 'user-3',
+          email: 'sara@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Sara',
+          last_name: 'Hassan',
+          phone: '+1234567801',
+          role: 'CUSTOMER'
+        },
+        {
+          id: 'user-4',
+          email: 'omar@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Omar',
+          last_name: 'Khaled',
+          phone: '+1234567802',
+          role: 'CUSTOMER'
+        },
+        {
+          id: 'user-5',
+          email: 'noor@example.com',
+          password: '$2b$10$hashedpassword',
+          first_name: 'Noor',
+          last_name: 'Mohammed',
+          phone: '+1234567803',
+          role: 'CUSTOMER'
         }
       ],
       skipDuplicates: true,
@@ -119,6 +156,31 @@ async function main() {
           user_id: 'user-1',
           wishlist: [],
           loyalty_points: 0
+        },
+        // ✅ Additional customer profiles for reviews
+        {
+          id: 'customer-2',
+          user_id: 'user-2',
+          wishlist: [],
+          loyalty_points: 150
+        },
+        {
+          id: 'customer-3',
+          user_id: 'user-3',
+          wishlist: [],
+          loyalty_points: 300
+        },
+        {
+          id: 'customer-4',
+          user_id: 'user-4',
+          wishlist: [],
+          loyalty_points: 80
+        },
+        {
+          id: 'customer-5',
+          user_id: 'user-5',
+          wishlist: [],
+          loyalty_points: 200
         }
       ],
       skipDuplicates: true,
@@ -430,116 +492,6 @@ async function main() {
           category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
           is_approved: true,
           rating: 4.6
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440070',
-          name: 'Wireless Mechanical Keyboard',
-          description: 'Compact wireless keyboard with mechanical switches and RGB lighting',
-          price: 89.99,
-          stock: 80,
-          seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
-          is_approved: true,
-          rating: 4.5
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440071',
-          name: 'Smartwatch Series 9',
-          description: 'Latest smartwatch with health tracking and cellular support',
-          price: 399.99,
-          stock: 55,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0',
-          is_approved: true,
-          rating: 4.4
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440072',
-          name: 'Ultra HD 4K Monitor',
-          description: 'Professional 27-inch 4K UHD monitor for editing and gaming',
-          price: 499.99,
-          stock: 40,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01',
-          is_approved: true,
-          "rating": 4.6
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440073',
-          name: 'Bluetooth Speaker',
-          description: 'Portable speaker with deep bass and waterproof design',
-          price: 59.99,
-          stock: 120,
-          seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
-          is_approved: true,
-          rating: 4.3
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440074',
-          name: 'Slim Fit Jeans',
-          description: 'Stylish slim fit jeans made with stretchable denim',
-          price: 49.99,
-          stock: 90,
-          seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
-          is_approved: true,
-          rating: 4.1
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440075',
-          name: 'Wireless Earbuds',
-          description: 'Compact true wireless earbuds with long battery life',
-          price: 89.99,
-          stock: 100,
-          seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
-          is_approved: true,
-          rating: 4.4
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440076',
-          name: 'Smart Home Hub',
-          description: 'Control all your smart home devices with one hub',
-          price: 129.99,
-          stock: 35,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
-          is_approved: true,
-          rating: 4.2
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440077',
-          name: 'Office Chair Ergonomic',
-          description: 'Comfortable and adjustable ergonomic office chair',
-          price: 199.99,
-          stock: 45,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'f6a7b8c9-d0e1-2345-6789-0abcdef01234',
-          is_approved: true,
-          rating: 4.5
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440078',
-          name: 'Men\'s Hoodie',
-          description: 'Warm and stylish hoodie made from soft fleece',
-          price: 39.99,
-          stock: 70,
-          seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
-          is_approved: true,
-          rating: 4.2
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440079',
-          name: 'Laptop Cooling Pad',
-          description: 'Silent cooling pad with adjustable fan speed and RGB lights',
-          price: 34.99,
-          stock: 110,
-          seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
-          is_approved: true,
-          rating: 4.3
         }
       ],
       skipDuplicates: true,
@@ -552,57 +504,25 @@ async function main() {
         // iPhone 15 Pro images
         {
           id: '550e8400-e29b-41d4-a716-446655440070',
-          product_id: '550e8400-e29b-41d4-a716-446655440060', // iPhone 15 Pro
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
           path: 'https://www.apple.com/newsroom/images/2023/09/apple-unveils-iphone-15-pro-and-iphone-15-pro-max/tile/Apple-iPhone-15-Pro-lineup-hero-230912.jpg.landing-big_2x.jpg',
           size: 1024000,
           format: 'jpg',
           is_main: true
         },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440071',
-          product_id: '550e8400-e29b-41d4-a716-446655440060', // iPhone 15 Pro
-          path: 'https://images.unsplash.com/photo-1700805732158-6f1169780ca7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8aXBob25lJTIwMTUlMjBwcm98ZW58MHx8MHx8fDA%3D',
-          size: 812000,
-          format: 'jpg',
-          is_main: false
-        },
         // MacBook Pro 16 images
         {
           id: '550e8400-e29b-41d4-a716-446655440072',
-          product_id: '550e8400-e29b-41d4-a716-446655440061', // MacBook Pro 16
+          product_id: '550e8400-e29b-41d4-a716-446655440061',
           path: 'https://images.unsplash.com/photo-1639087595550-e9770a85f8c0?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
           size: 1536000,
           format: 'jpg',
           is_main: true
         },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440073',
-          product_id: '550e8400-e29b-41d4-a716-446655440061', // MacBook Pro 16
-          path: 'https://images.unsplash.com/photo-1675868374786-3edd36dddf04?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          size: 1536000,
-          format: 'jpg',
-          is_main: false
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440074',
-          product_id: '550e8400-e29b-41d4-a716-446655440061', // MacBook Pro 16
-          path: 'https://images.unsplash.com/photo-1675868373607-556b8fed6464?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          size: 1536000,
-          format: 'jpg',
-          is_main: false
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440075',
-          product_id: '550e8400-e29b-41d4-a716-446655440061', // MacBook Pro 16
-          path: 'https://images.unsplash.com/photo-1675868375089-4572db453949?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          size: 1536000,
-          format: 'jpg',
-          is_main: false
-        },
         // Samsung Galaxy S24 Ultra images
         {
           id: '550e8400-e29b-41d4-a716-446655440076',
-          product_id: '550e8400-e29b-41d4-a716-446655440063', // Samsung Galaxy S24 Ultra
+          product_id: '550e8400-e29b-41d4-a716-446655440063',
           path: 'https://images.unsplash.com/photo-1705530292519-ec81f2ace70d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8c2Ftc3VuZyUyMHMyNCUyMHVsdHJhfGVufDB8fDB8fHww',
           size: 924000,
           format: 'jpg',
@@ -611,7 +531,7 @@ async function main() {
         // Dell XPS 13 images
         {
           id: '550e8400-e29b-41d4-a716-446655440077',
-          product_id: '550e8400-e29b-41d4-a716-446655440064', // Dell XPS 13
+          product_id: '550e8400-e29b-41d4-a716-446655440064',
           path: 'https://images.unsplash.com/photo-1720556405438-d67f0f9ecd44?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8RGVsbCUyMFhQUyUyMDEzfGVufDB8fDB8fHww',
           size: 512000,
           format: 'jpg',
@@ -620,7 +540,7 @@ async function main() {
         // Premium T-Shirt images
         {
           id: '550e8400-e29b-41d4-a716-446655440078',
-          product_id: '550e8400-e29b-41d4-a716-446655440062', // Premium T-Shirt
+          product_id: '550e8400-e29b-41d4-a716-446655440062',
           path: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=600&h=600&fit=crop',
           size: 512000,
           format: 'jpg',
@@ -629,24 +549,16 @@ async function main() {
         // Gaming Mouse RGB images
         {
           id: '550e8400-e29b-41d4-a716-446655440079',
-          product_id: '550e8400-e29b-41d4-a716-446655440065', // Gaming Mouse RGB
+          product_id: '550e8400-e29b-41d4-a716-446655440065',
           path: 'https://images.unsplash.com/photo-1627745213598-51e38e5fc5f1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8R2FtaW5nJTIwUkdCJTIwTW91c2V8ZW58MHx8MHx8fDA%3D',
           size: 512000,
           format: 'jpg',
           is_main: true
         },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440080', // Adjusted ID to avoid duplicate with previous entry
-          product_id: '550e8400-e29b-41d4-a716-446655440065', // Gaming Mouse RGB
-          path: 'https://images.unsplash.com/photo-1627745214193-2bcefc681524?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8R2FtaW5nJTIwUkdCJTIwTW91c2V8ZW58MHx8MHx8fDA%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: false
-        },
         // Leather Wallet images
         {
           id: '550e8400-e29b-41d4-a716-446655440081',
-          product_id: '550e8400-e29b-41d4-a716-446655440066', // Leather Wallet
+          product_id: '550e8400-e29b-41d4-a716-446655440066',
           path: 'https://images.unsplash.com/photo-1637868796504-32f45a96d5a0?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8bGVhdGhlciUyMHdhbGxldHxlbnwwfHwwfHx8MA%3D%3D',
           size: 512000,
           format: 'jpg',
@@ -655,146 +567,8 @@ async function main() {
         // Noise Cancelling Headphones images
         {
           id: '550e8400-e29b-41d4-a716-446655440082',
-          product_id: '550e8400-e29b-41d4-a716-446655440067', // Noise Cancelling Headphones
+          product_id: '550e8400-e29b-41d4-a716-446655440067',
           path: 'https://images.unsplash.com/photo-1660391532247-4a8ad1060817?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8aGVhZHBob25lfGVufDB8MnwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440083',
-          product_id: '550e8400-e29b-41d4-a716-446655440067', // Noise Cancelling Headphones
-          path: 'https://images.unsplash.com/photo-1642622039751-f74f2d1a0280?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8aGVhZHBob25lfGVufDB8MnwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: false
-        },
-        // Wireless Mechanical Keyboard images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440084',
-          product_id: '550e8400-e29b-41d4-a716-446655440070', // Wireless Mechanical Keyboard
-          path: 'https://images.unsplash.com/photo-1694405156884-dea1ffb40ede?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8V2lyZWxlc3MlMjBNZWNoYW5pY2FsJTIwS2V5Ym9hcmR8ZW58MHx8MHx8fDA%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440085',
-          product_id: '550e8400-e29b-41d4-a716-446655440070', // Wireless Mechanical Keyboard
-          path: 'https://images.unsplash.com/photo-1694405145070-e58cc29771fa?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8V2lyZWxlc3MlMjBNZWNoYW5pY2FsJTIwS2V5Ym9hcmR8ZW58MHx8MHx8fDA%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: false
-        },
-        // Smartwatch Series 9 images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440086',
-          product_id: '550e8400-e29b-41d4-a716-446655440071', // Smartwatch Series 9
-          path: 'https://images.unsplash.com/photo-1546868871-7041f2a55e12?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8U21hcnQlMjBXYXRjaHxlbnwwfHwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440087',
-          product_id: '550e8400-e29b-41d4-a716-446655440071', // Smartwatch Series 9
-          path: 'https://images.unsplash.com/photo-1579586337278-3befd40fd17a?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8U21hcnQlMjBXYXRjaHxlbnwwfHwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: false
-        },
-        // Ultra HD 4K Monitor images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440088',
-          product_id: '550e8400-e29b-41d4-a716-446655440072', // Ultra HD 4K Monitor
-          path: 'https://images.unsplash.com/photo-1691480195680-144318cfa695?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8TW9uaXRvcnxlbnwwfDJ8MHx8fDA%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        // Bluetooth Speaker images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440089',
-          product_id: '550e8400-e29b-41d4-a716-446655440073', // Bluetooth Speaker
-          path: 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Ymx1ZXRvb3RoJTIwc3BlYWtlcnxlbnwwfHwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440090',
-          product_id: '550e8400-e29b-41d4-a716-446655440073', // Bluetooth Speaker
-          path: 'https://images.unsplash.com/photo-1632073383420-01461da1e082?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTh8fGJsdWV0b290aCUyMHNwZWFrZXJ8ZW58MHx8MHx8fDA%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: false
-        },
-        // Slim Fit Jeans images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440091',
-          product_id: '550e8400-e29b-41d4-a716-446655440074', // Slim Fit Jeans
-          path: 'https://images.unsplash.com/photo-1714143136367-7bb68f3f0669?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OHx8U2xpbSUyMEZpdCUyMEplYW5zfGVufDB8MnwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440092',
-          product_id: '550e8400-e29b-41d4-a716-446655440074', // Slim Fit Jeans
-          path: 'https://images.unsplash.com/photo-1588699767657-59562cd87205?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8U2xpbSUyMEZpdCUyMEplYW5zfGVufDB8MnwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: false
-        },
-        // Wireless Earbuds images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440093',
-          product_id: '550e8400-e29b-41d4-a716-446655440075', // Wireless Earbuds
-          path: 'https://images.unsplash.com/photo-1648447265709-67a4e785d7e2?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NHx8V2lyZWxlc3MlMjBFYXJidWRzfGVufDB8MnwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        {
-          id: '550e8400-e29b-41d4-a716-446655440094',
-          product_id: '550e8400-e29b-41d4-a716-446655440075', // Wireless Earbuds
-          path: 'https://images.unsplash.com/photo-1648447267722-77cb7cf4c292?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8V2lyZWxlc3MlMjBFYXJidWRzfGVufDB8MnwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: false
-        },
-        // Smart Home Hub images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440095',
-          product_id: '550e8400-e29b-41d4-a716-446655440076', // Smart Home Hub
-          path: 'https://plus.unsplash.com/premium_photo-1728681168863-2c62a62fbfda?q=80&w=1332&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        // Office Chair Ergonomic images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440096',
-          product_id: '550e8400-e29b-41d4-a716-446655440077', // Office Chair Ergonomic
-          path: 'https://images.unsplash.com/photo-1635427194796-f9fc252bbb7d?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8T2ZmaWNlJTIwQ2hhaXJ8ZW58MHwyfDB8fHww',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        // Men's Hoodie images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440097',
-          product_id: '550e8400-e29b-41d4-a716-446655440078', // Men's Hoodie
-          path: 'https://images.unsplash.com/photo-1586038693164-cb7ee3fb8e2c?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8SG9vZGllfGVufDB8MnwwfHx8MA%3D%3D',
-          size: 512000,
-          format: 'jpg',
-          is_main: true
-        },
-        // Laptop Cooling Pad images
-        {
-          id: '550e8400-e29b-41d4-a716-446655440098',
-          product_id: '550e8400-e29b-41d4-a716-446655440079', // Laptop Cooling Pad
-          path: 'https://m.media-amazon.com/images/I/81t9B5pBMBL._UF894%2C1000_QL80_.jpg',
           size: 512000,
           format: 'jpg',
           is_main: true
@@ -803,15 +577,315 @@ async function main() {
       skipDuplicates: true,
     });
 
+    // 7. ✅ CREATE REALISTIC REVIEWS FOR PRODUCTS
+    console.log('⭐ Creating reviews...');
+    await prisma.review.createMany({
+      data: [
+        // iPhone 15 Pro Reviews (ID: 550e8400-e29b-41d4-a716-446655440060)
+        {
+          id: 'review-iphone-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
+          customer_id: 'customer-1',
+          rating: 5,
+          title: 'Amazing phone, worth every penny!',
+          comment: 'The iPhone 15 Pro exceeded my expectations. The camera quality is incredible, especially the night mode. The titanium build feels premium and the battery lasts all day.',
+          pros: ['Excellent camera quality', 'Premium build materials', 'Great battery life', 'Fast performance'],
+          cons: ['Expensive', 'No USB-C cable in box'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 23,
+          review_date: new Date('2024-11-15'),
+        },
+        {
+          id: 'review-iphone-2',
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
+          customer_id: 'customer-2',
+          rating: 4,
+          title: 'Great upgrade from iPhone 12',
+          comment: 'Switched from iPhone 12 and the difference is noticeable. The Action Button is really useful and the cameras are much better in low light.',
+          pros: ['Better cameras', 'Action Button is handy', 'Faster processor'],
+          cons: ['Price is high', 'Not much different in daily use'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 15,
+          review_date: new Date('2024-11-20'),
+        },
+        {
+          id: 'review-iphone-3',
+          product_id: '550e8400-e29b-41d4-a716-446655440060',
+          customer_id: 'customer-3',
+          rating: 4,
+          title: 'Solid phone but expensive',
+          comment: 'Great performance and camera, but the price is quite steep. The titanium feels nice but I miss the Lightning cable.',
+          pros: ['Excellent performance', 'Great camera system', 'Premium materials'],
+          cons: ['Very expensive', 'Need new cables'],
+          is_verified: false,
+          is_approved: true,
+          helpful_count: 8,
+          review_date: new Date('2024-12-01'),
+        },
+
+        // MacBook Pro 16 Reviews (ID: 550e8400-e29b-41d4-a716-446655440061)
+        {
+          id: 'review-macbook-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440061',
+          customer_id: 'customer-1',
+          rating: 5,
+          title: 'Perfect for professional work',
+          comment: 'As a video editor, this MacBook Pro handles 4K editing like a breeze. The M3 chip is incredibly fast and the battery life is amazing for such a powerful machine.',
+          pros: ['Incredible performance', 'Long battery life', 'Beautiful display', 'Quiet operation'],
+          cons: ['Heavy', 'Expensive'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 42,
+          review_date: new Date('2024-10-10'),
+        },
+        {
+          id: 'review-macbook-2',
+          product_id: '550e8400-e29b-41d4-a716-446655440061',
+          customer_id: 'customer-4',
+          rating: 5,
+          title: 'Best laptop I have ever owned',
+          comment: 'Coming from a Windows laptop, this MacBook Pro is a game changer. Everything is so smooth and the build quality is exceptional.',
+          pros: ['Smooth macOS experience', 'Excellent build quality', 'Great speakers', 'Fast SSD'],
+          cons: ['Learning curve coming from Windows', 'Price'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 18,
+          review_date: new Date('2024-11-05'),
+        },
+
+        // Samsung Galaxy S24 Ultra Reviews (ID: 550e8400-e29b-41d4-a716-446655440063)
+        {
+          id: 'review-samsung-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440063',
+          customer_id: 'customer-2',
+          rating: 5,
+          title: 'S Pen makes all the difference',
+          comment: 'The S Pen functionality is incredible for taking notes and drawing. The camera zoom is also outstanding - 100x zoom actually works!',
+          pros: ['Amazing S Pen', 'Incredible zoom camera', 'Large beautiful screen', 'Fast charging'],
+          cons: ['Battery drains fast with heavy use', 'Large size'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 31,
+          review_date: new Date('2024-11-12'),
+        },
+        {
+          id: 'review-samsung-2',
+          product_id: '550e8400-e29b-41d4-a716-446655440063',
+          customer_id: 'customer-5',
+          rating: 4,
+          title: 'Great Android flagship',
+          comment: 'Excellent phone with tons of features. The AI features are really helpful and the display is gorgeous. Just wish the battery lasted longer.',
+          pros: ['Beautiful display', 'AI features', 'Versatile cameras', 'Good performance'],
+          cons: ['Battery life could be better', 'Samsung bloatware'],
+          is_verified: false,
+          is_approved: true,
+          helpful_count: 12,
+          review_date: new Date('2024-12-03'),
+        },
+
+        // Dell XPS 13 Reviews (ID: 550e8400-e29b-41d4-a716-446655440064)
+        {
+          id: 'review-dell-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440064',
+          customer_id: 'customer-3',
+          rating: 4,
+          title: 'Great ultrabook for students',
+          comment: 'Perfect size for carrying around campus. Good performance for coding and the battery lasts through long study sessions.',
+          pros: ['Lightweight and portable', 'Good battery life', 'Nice display', 'Fast boot times'],
+          cons: ['Limited ports', 'Fan can get loud', 'Webcam quality'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 9,
+          review_date: new Date('2024-11-18'),
+        },
+
+        // Premium T-Shirt Reviews (ID: 550e8400-e29b-41d4-a716-446655440062)
+        {
+          id: 'review-tshirt-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440062',
+          customer_id: 'customer-4',
+          rating: 4,
+          title: 'Very comfortable and good quality',
+          comment: 'The fabric feels really soft and the fit is perfect. Great for everyday wear and the color hasn\'t faded after multiple washes.',
+          pros: ['Soft comfortable fabric', 'Good fit', 'Color stays vibrant', 'Breathable'],
+          cons: ['A bit pricey for a t-shirt', 'Limited color options'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 7,
+          review_date: new Date('2024-11-25'),
+        },
+        {
+          id: 'review-tshirt-2',
+          product_id: '550e8400-e29b-41d4-a716-446655440062',
+          customer_id: 'customer-5',
+          rating: 5,
+          title: 'Best t-shirt I have bought',
+          comment: 'Amazing quality! The cotton is premium and it fits perfectly. Will definitely buy more colors.',
+          pros: ['Premium cotton', 'Perfect fit', 'Durable', 'Comfortable'],
+          cons: ['Wish there were more colors'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 4,
+          review_date: new Date('2024-12-02'),
+        },
+
+        // Gaming Mouse RGB Reviews (ID: 550e8400-e29b-41d4-a716-446655440065)
+        {
+          id: 'review-mouse-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440065',
+          customer_id: 'customer-1',
+          rating: 5,
+          title: 'Perfect gaming mouse',
+          comment: 'The RGB lighting is customizable and looks amazing. The mouse is very responsive and comfortable for long gaming sessions.',
+          pros: ['Excellent responsiveness', 'Comfortable grip', 'Beautiful RGB', 'Good software'],
+          cons: ['Software can be complex'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 16,
+          review_date: new Date('2024-11-08'),
+        },
+        {
+          id: 'review-mouse-2',
+          product_id: '550e8400-e29b-41d4-a716-446655440065',
+          customer_id: 'customer-3',
+          rating: 4,
+          title: 'Great value for money',
+          comment: 'Good gaming mouse with nice RGB effects. The DPI settings are easy to adjust and it feels solid.',
+          pros: ['Good value', 'Adjustable DPI', 'Nice RGB effects', 'Solid build'],
+          cons: ['Cable could be longer', 'Side buttons feel cheap'],
+          is_verified: false,
+          is_approved: true,
+          helpful_count: 3,
+          review_date: new Date('2024-11-22'),
+        },
+
+        // Leather Wallet Reviews (ID: 550e8400-e29b-41d4-a716-446655440066)
+        {
+          id: 'review-wallet-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440066',
+          customer_id: 'customer-2',
+          rating: 2,
+          title: 'Quality is not as expected',
+          comment: 'The leather feels cheap and started showing wear after just a few weeks. The RFID blocking works but overall disappointed with the quality.',
+          pros: ['RFID protection works', 'Good size'],
+          cons: ['Poor leather quality', 'Shows wear quickly', 'Stitching came loose'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 11,
+          review_date: new Date('2024-11-14'),
+        },
+        {
+          id: 'review-wallet-2',
+          product_id: '550e8400-e29b-41d4-a716-446655440066',
+          customer_id: 'customer-4',
+          rating: 3,
+          title: 'Average wallet',
+          comment: 'It\'s okay for the price but nothing special. The RFID blocking is the main selling point.',
+          pros: ['RFID protection', 'Compact design'],
+          cons: ['Leather quality could be better', 'Limited card slots'],
+          is_verified: false,
+          is_approved: true,
+          helpful_count: 2,
+          review_date: new Date('2024-12-01'),
+        },
+
+        // Noise Cancelling Headphones Reviews (ID: 550e8400-e29b-41d4-a716-446655440067)
+        {
+          id: 'review-headphones-1',
+          product_id: '550e8400-e29b-41d4-a716-446655440067',
+          customer_id: 'customer-5',
+          rating: 5,
+          title: 'Excellent noise cancellation',
+          comment: 'These headphones are amazing for flights and noisy environments. The sound quality is excellent and they\'re very comfortable for long wear.',
+          pros: ['Excellent noise cancellation', 'Great sound quality', 'Comfortable fit', 'Long battery life'],
+          cons: ['A bit bulky', 'Case is large'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 28,
+          review_date: new Date('2024-10-28'),
+        },
+        {
+          id: 'review-headphones-2',
+          product_id: '550e8400-e29b-41d4-a716-446655440067',
+          customer_id: 'customer-1',
+          rating: 4,
+          title: 'Great for work from home',
+          comment: 'Perfect for blocking out distractions while working. The microphone quality is also good for video calls.',
+          pros: ['Good noise cancellation', 'Clear microphone', 'Comfortable', 'Easy controls'],
+          cons: ['Can get warm during long use', 'Touch controls can be sensitive'],
+          is_verified: true,
+          is_approved: true,
+          helpful_count: 6,
+          review_date: new Date('2024-11-30'),
+        }
+      ],
+      skipDuplicates: true,
+    });
+
+    // 8. ✅ UPDATE PRODUCT RATINGS BASED ON REVIEWS
+    console.log('📊 Updating product ratings...');
+    
+    // iPhone 15 Pro: (5+4+4)/3 = 4.33
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440060' },
+      data: { rating: 4.33 }
+    });
+
+    // MacBook Pro 16: (5+5)/2 = 5.0
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440061' },
+      data: { rating: 5.0 }
+    });
+
+    // Samsung Galaxy S24 Ultra: (5+4)/2 = 4.5
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440063' },
+      data: { rating: 4.5 }
+    });
+
+    // Dell XPS 13: 4/1 = 4.0
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440064' },
+      data: { rating: 4.0 }
+    });
+
+    // Premium T-Shirt: (4+5)/2 = 4.5
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440062' },
+      data: { rating: 4.5 }
+    });
+
+    // Gaming Mouse RGB: (5+4)/2 = 4.5
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440065' },
+      data: { rating: 4.5 }
+    });
+
+    // Leather Wallet: (2+3)/2 = 2.5
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440066' },
+      data: { rating: 2.5 }
+    });
+
+    // Noise Cancelling Headphones: (5+4)/2 = 4.5
+    await prisma.product.update({
+      where: { id: '550e8400-e29b-41d4-a716-446655440067' },
+      data: { rating: 4.5 }
+    });
+    
     console.log('✅ Database seeding completed successfully!');
 
     // Log summary
     const userCount = await prisma.user.count();
     const productCount = await prisma.product.count();
     const customerCount = await prisma.customerProfile.count();
+    const reviewCount = await prisma.review.count();
 
-    console.log(`📊 Summary: ${userCount} users, ${productCount} products, ${customerCount} customers created`);
+    console.log(`📊 Summary: ${userCount} users, ${productCount} products, ${customerCount} customers, ${reviewCount} reviews created`);
     console.log('🛒 Test customer created: customer-1 (linked to test@example.com)');
+    console.log('⭐ Reviews with realistic ratings and comments added');
 
   } catch (error) {
     console.error('❌ Error during seeding:', error);

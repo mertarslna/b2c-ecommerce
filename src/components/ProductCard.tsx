@@ -1,4 +1,4 @@
-// ✅ Updated ProductCard.tsx - Keep your beautiful design, just add optimistic wishlist
+// components/ProductCard.tsx - FIXED WITH REAL STAR DATA
 'use client'
 
 import Link from 'next/link'
@@ -6,6 +6,7 @@ import { useState } from 'react'
 import { useCart } from '@/contexts/CartContext'
 import { useWishlist } from '@/contexts/WishlistContext'
 import { Product } from '@/types/product'
+import InteractiveStarRating from './InteractiveStarRating' // 👈 Import the real star component
 
 interface ProductCardProps {
   product: Product
@@ -13,33 +14,16 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart()
-  
-  // ✅ Use the optimistic toggleWishlist method
   const { toggleWishlist, isInWishlist } = useWishlist()
   
   const [isAddingToCart, setIsAddingToCart] = useState(false)
   const [showSuccessToast, setShowSuccessToast] = useState(false)
-  
-  // ✅ Add state for wishlist toggle
   const [isToggling, setIsToggling] = useState(false)
 
   // Calculate discount percentage
   const discountPercentage = product.originalPrice 
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
-
-  // Render stars for rating
-  const renderStars = (rating: number) => {
-    const stars = []
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <span key={i} className={`text-sm ${i <= rating ? 'text-yellow-400' : 'text-gray-300'}`}>
-          ⭐
-        </span>
-      )
-    }
-    return stars
-  }
 
   // Success Toast Component
   const SuccessToast = () => (
@@ -81,10 +65,7 @@ export default function ProductCard({ product }: ProductCardProps) {
     try {
       await addToCart(product, 1)
       
-      // Show success toast
       setShowSuccessToast(true)
-      
-      // Auto hide after 3 seconds
       setTimeout(() => {
         setShowSuccessToast(false)
       }, 3000)
@@ -96,12 +77,12 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   }
 
-  // ✅ Updated wishlist toggle with optimistic updates
+  // Updated wishlist toggle with optimistic updates
   const handleWishlistToggle = async (e: React.MouseEvent) => {
     e.preventDefault()
     e.stopPropagation()
     
-    if (isToggling) return // Prevent double-clicks
+    if (isToggling) return
     
     setIsToggling(true)
     try {
@@ -113,17 +94,15 @@ export default function ProductCard({ product }: ProductCardProps) {
     }
   }
 
-  // ✅ Check if product is in wishlist (ensure string comparison)
   const inWishlist = isInWishlist(product.id.toString())
 
   return (
     <>
-      {/* Success Toast */}
       <SuccessToast />
       
       <div className="group bg-white rounded-2xl shadow-md hover:shadow-2xl transition-all duration-500 overflow-hidden border border-pink-100 hover:border-pink-300 transform hover:-translate-y-2 relative">
         
-        {/* ✅ Updated Wishlist Button with optimistic feedback */}
+        {/* Wishlist Button */}
         <button
           onClick={handleWishlistToggle}
           disabled={isToggling}
@@ -135,7 +114,6 @@ export default function ProductCard({ product }: ProductCardProps) {
               : 'bg-white/80 hover:bg-white'
           }`}
         >
-          {/* ✅ Heart Icon with instant visual feedback */}
           <svg 
             className={`w-6 h-6 transition-all duration-200 ${
               isToggling ? 'animate-pulse' : ''
@@ -169,7 +147,7 @@ export default function ProductCard({ product }: ProductCardProps) {
               }}
             />
             
-            {/* Stock Badge - Only for low stock */}
+            {/* Stock Badge */}
             {product.stock !== undefined && product.stock <= 5 && product.stock > 0 && (
               <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
                 Only {product.stock} left!
@@ -194,11 +172,11 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         </Link>
 
-        {/* Product Info - Rest of your beautiful design stays the same */}
+        {/* Product Info */}
         <div className="p-6">
           {/* Category */}
           <div className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-pink-600 mb-3">
-            {product.category.name}
+            {product.category}
           </div>
 
           {/* Product Name - Clickable */}
@@ -208,20 +186,25 @@ export default function ProductCard({ product }: ProductCardProps) {
             </h3>
           </Link>
 
-          {/* Seller Info (if available) */}
+          {/* Seller Info */}
           {product.seller && (
             <div className="text-sm text-gray-500 mb-2">
               by {product.seller.businessName || product.seller.name}
             </div>
           )}
 
-          {/* Rating and Reviews */}
-          <div className="flex items-center mb-4">
-            <div className="flex items-center mr-3">
-              {renderStars(Math.round(product.rating))}
-            </div>
-            <span className="text-sm text-gray-500">
-              {product.rating.toFixed(1)} ({product.reviews} reviews)
+          {/* 🔧 FIXED: Real Rating with Interactive Stars */}
+          <div className="flex items-center mb-4 gap-2">
+            <InteractiveStarRating 
+              rating={product.rating || 0}
+              size="sm"
+              readonly
+            />
+            <span className="text-sm text-gray-600 font-medium">
+              {(product.rating || 0).toFixed(1)}
+            </span>
+            <span className="text-sm text-gray-400">
+              ({product.reviews || 0} {product.reviews === 1 ? 'review' : 'reviews'})
             </span>
           </div>
 
@@ -251,7 +234,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                 : 'bg-gradient-to-r from-pink-500 to-red-400 text-white hover:from-pink-600 hover:to-red-500'
             }`}
           >
-            {/* Loading spinner for adding state */}
             {isAddingToCart && (
               <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>

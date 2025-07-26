@@ -1,9 +1,10 @@
+// components/ProductInfo.tsx - PROFESSIONAL VERSION WITH 2 BUTTONS: BUY NOW & ADD TO CART
 'use client'
 
 import { useState } from 'react'
 import { DetailedProduct } from '@/types/product'
 import { useCart } from '@/contexts/CartContext'
-import { useWishlist } from '@/contexts/WishlistContext'
+import InteractiveStarRating from './InteractiveStarRating'
 
 interface ProductInfoProps {
   product: DetailedProduct
@@ -13,9 +14,10 @@ export default function ProductInfo({ product }: ProductInfoProps) {
   const [quantity, setQuantity] = useState(1)
   const [selectedSize, setSelectedSize] = useState('')
   const [selectedColor, setSelectedColor] = useState('')
+  const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [isBuyingNow, setIsBuyingNow] = useState(false)
 
   const { addToCart } = useCart()
-  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
 
   // Mock data for variants
   const sizes = ['XS', 'S', 'M', 'L', 'XL', 'XXL']
@@ -32,75 +34,151 @@ export default function ProductInfo({ product }: ProductInfoProps) {
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0
 
-  // Render stars
-  const renderStars = (rating: number) => {
-    return [...Array(5)].map((_, i) => (
-      <span key={i} className={`text-lg ${i < rating ? 'text-yellow-400' : 'text-gray-300'}`}>
-        ⭐
-      </span>
-    ))
-  }
-
   const handleQuantityChange = (change: number) => {
     setQuantity(Math.max(1, Math.min(10, quantity + change)))
   }
 
-  const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.images[0]?.url || '/placeholder.jpg',
-      category: product.category.name, // ✅ استخدام product.category.name
-      rating: product.rating,
-      reviews: product.reviews
-    }, quantity, selectedSize, selectedColor)
+  // 🛒 Add to Cart Function
+  const handleAddToCart = async () => {
+    setIsAddingToCart(true)
+    try {
+      await addToCart({
+        id: product.id,
+        name: product.name,
+        price: product.price,
+        originalPrice: product.originalPrice,
+        image: product.images[0]?.url || '/placeholder.jpg',
+        category: product.category.name,
+        rating: product.rating,
+        reviews: product.reviews
+      }, quantity, selectedSize, selectedColor)
+      
+      showNotification('Added to cart successfully! 🛒', 'success')
+    } catch (error) {
+      showNotification('Failed to add to cart', 'error')
+    } finally {
+      setIsAddingToCart(false)
+    }
   }
 
-  const handleWishlistToggle = () => {
-    const wishlistProduct = {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      originalPrice: product.originalPrice,
-      image: product.images[0]?.url || '/placeholder.jpg',
-      category: product.category.name, // ✅ استخدام product.category.name
-      rating: product.rating,
-      reviews: product.reviews
+  // 🚀 Buy Now Function - Direct to Checkout
+  const handleBuyNow = async () => {
+    setIsBuyingNow(true)
+    try {
+      // Create checkout data with product info
+      const checkoutData = {
+        items: [{
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          originalPrice: product.originalPrice,
+          image: product.images[0]?.url || '/placeholder.jpg',
+          category: product.category.name,
+          rating: product.rating,
+          reviews: product.reviews,
+          quantity: quantity,
+          size: selectedSize,
+          color: selectedColor
+        }],
+        totalAmount: product.price * quantity
+      }
+      
+      // Store checkout data in sessionStorage for checkout page
+      sessionStorage.setItem('checkoutData', JSON.stringify(checkoutData))
+      
+      showNotification('Redirecting to checkout...', 'info')
+      
+      // Direct redirect to checkout without adding to cart
+      setTimeout(() => {
+        window.location.href = '/checkout'
+      }, 800)
+    } catch (error) {
+      showNotification('Failed to process order', 'error')
+    } finally {
+      setIsBuyingNow(false)
     }
+  }
 
-    if (isInWishlist(product.id)) {
-      removeFromWishlist(product.id)
+  // 📋 Scroll to Reviews Function
+  const handleScrollToReviews = () => {
+    const reviewsSection = document.getElementById('reviews')
+    if (reviewsSection) {
+      reviewsSection.scrollIntoView({ 
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      })
     } else {
-      addToWishlist(wishlistProduct)
+      // If reviews section doesn't exist, scroll to bottom of page
+      window.scrollTo({
+        top: document.documentElement.scrollHeight,
+        behavior: 'smooth'
+      })
     }
+    showNotification('Scrolling to reviews...', 'info')
   }
 
-  const inWishlist = isInWishlist(product.id)
+  // Notification helper
+  const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+    const colors = {
+      success: 'bg-green-500',
+      error: 'bg-red-500',
+      info: 'bg-blue-500'
+    }
+
+    const notification = document.createElement('div')
+    notification.textContent = message
+    notification.className = `fixed top-4 right-4 ${colors[type]} text-white px-6 py-3 rounded-xl shadow-lg z-50 transform translate-x-full transition-transform duration-300`
+    
+    document.body.appendChild(notification)
+    
+    setTimeout(() => {
+      notification.style.transform = 'translateX(0)'
+    }, 100)
+    
+    setTimeout(() => {
+      notification.style.transform = 'translateX(100%)'
+      setTimeout(() => {
+        if (document.body.contains(notification)) {
+          document.body.removeChild(notification)
+        }
+      }, 300)
+    }, 3000)
+  }
+
+  const isOutOfStock = product.stock === 0
 
   return (
     <div className="space-y-8">
       {/* Product Title & Category */}
       <div>
         <div className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-pink-100 to-purple-100 text-pink-600 mb-4">
-          {product.category.name} {/* ✅ استخدام product.category.name */}
+          {product.category.name}
         </div>
         <h1 className="text-4xl font-bold text-gray-900 leading-tight mb-4">
           {product.name}
         </h1>
         
-        {/* Rating & Reviews */}
+        {/* Rating & Reviews - WITH SCROLL TO REVIEWS FUNCTIONALITY */}
         <div className="flex items-center gap-4 mb-6">
           <div className="flex items-center gap-2">
-            <div className="flex">{renderStars(Math.round(product.rating))}</div>
-            <span className="text-lg font-semibold text-gray-700">{product.rating}</span>
+            <InteractiveStarRating 
+              rating={product.rating || 0}
+              size="md"
+              readonly
+            />
+            <span className="text-lg font-semibold text-gray-700">
+              {(product.rating || 0).toFixed(1)}
+            </span>
           </div>
           <div className="text-gray-500">
-            ({product.reviews.toLocaleString()} reviews)
+            ({(product.reviews || 0).toLocaleString()} reviews)
           </div>
-          <button className="text-pink-600 hover:text-pink-700 font-medium transition-colors">
-            See all reviews
+          <button 
+            onClick={handleScrollToReviews}
+            className="text-pink-600 hover:text-pink-700 font-medium transition-colors duration-200 hover:underline focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-opacity-50 rounded px-2 py-1"
+          >
+            See all reviews ⬇️
           </button>
         </div>
       </div>
@@ -122,6 +200,19 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         )}
       </div>
 
+      {/* Stock Status */}
+      <div className="flex items-center gap-2">
+        <div className={`w-3 h-3 rounded-full ${isOutOfStock ? 'bg-red-500' : 'bg-green-500'}`}></div>
+        <span className={`font-medium ${isOutOfStock ? 'text-red-600' : 'text-green-600'}`}>
+          {isOutOfStock 
+            ? 'Out of Stock' 
+            : product.stock <= 5 
+              ? `Only ${product.stock} left in stock!` 
+              : 'In Stock'
+          }
+        </span>
+      </div>
+
       {/* Product Description */}
       <div>
         <h3 className="text-xl font-bold text-gray-900 mb-4">Description</h3>
@@ -130,7 +221,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
         </div>
       </div>
 
-      {/* Size Selection - ✅ Fixed the condition */}
+      {/* Size Selection */}
       {product.category.name.toLowerCase().includes('clothing') && (
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Size</h3>
@@ -206,7 +297,7 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             <button
               onClick={() => handleQuantityChange(1)}
               className="p-4 hover:bg-pink-100 hover:text-pink-600 rounded-2xl transition-colors"
-              disabled={quantity >= 10}
+              disabled={quantity >= 10 || quantity >= product.stock}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -214,48 +305,69 @@ export default function ProductInfo({ product }: ProductInfoProps) {
             </button>
           </div>
           <div className="text-sm text-gray-500">
-            {product.stock > 0 ? `${product.stock} items left in stock` : 'Out of stock'}
+            {product.stock > 0 ? `${product.stock} items available` : 'Out of stock'}
           </div>
         </div>
       </div>
 
-      {/* Action Buttons */}
-      <div className="space-y-4 pt-6">
+      {/* 🎯 MAIN ACTION BUTTONS - PROFESSIONAL 2 BUTTONS LAYOUT */}
+      <div className="space-y-4 pt-8">
+        
+        {/* Primary Action: Add to Cart */}
         <button 
           onClick={handleAddToCart}
-          disabled={product.stock === 0}
-          className={`w-full py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-95 ${
-            product.stock === 0
+          disabled={isOutOfStock || isAddingToCart}
+          className={`w-full py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-95 relative overflow-hidden ${
+            isOutOfStock
               ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : isAddingToCart
+              ? 'bg-pink-400 text-white cursor-wait'
               : 'bg-gradient-to-r from-pink-500 to-red-400 text-white hover:from-pink-600 hover:to-red-500'
           }`}
         >
-          {product.stock === 0 ? 'Out of Stock' : `Add to Cart - $${(product.price * quantity).toFixed(2)}`}
+          {isAddingToCart && (
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
+          
+          <span className={isAddingToCart ? 'opacity-0' : 'opacity-100'}>
+            {isOutOfStock 
+              ? 'Out of Stock' 
+              : isAddingToCart 
+              ? 'Adding to Cart...' 
+              : `🛒 Add to Cart - $${(product.price * quantity).toFixed(2)}`
+            }
+          </span>
         </button>
         
-        <div className="grid grid-cols-2 gap-4">
-          <button 
-            disabled={product.stock === 0}
-            className={`py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-95 ${
-              product.stock === 0
-                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700'
-            }`}
-          >
-            Buy Now
-          </button>
+        {/* Secondary Action: Buy Now */}
+        <button 
+          onClick={handleBuyNow}
+          disabled={isOutOfStock || isBuyingNow}
+          className={`w-full py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 relative overflow-hidden ${
+            isOutOfStock
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : isBuyingNow
+              ? 'bg-purple-400 text-white cursor-wait'
+              : 'bg-gradient-to-r from-purple-600 to-pink-600 text-white hover:from-purple-700 hover:to-pink-700'
+          }`}
+        >
+          {isBuyingNow && (
+            <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
+              <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </div>
+          )}
           
-          <button
-            onClick={handleWishlistToggle}
-            className={`py-5 px-8 rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl hover:shadow-2xl transform hover:scale-[1.02] active:scale-95 ${
-              inWishlist
-                ? 'bg-red-100 text-red-600 hover:bg-red-200'
-                : 'bg-gray-100 text-gray-700 hover:bg-pink-100 hover:text-pink-600'
-            }`}
-          >
-            {inWishlist ? '💖 In Wishlist' : '🤍 Add to Wishlist'}
-          </button>
-        </div>
+          <span className={isBuyingNow ? 'opacity-0' : 'opacity-100'}>
+            {isOutOfStock 
+              ? 'Out of Stock' 
+              : isBuyingNow 
+              ? 'Processing...' 
+              : `🚀 Buy Now - $${(product.price * quantity).toFixed(2)}`
+            }
+          </span>
+        </button>
       </div>
 
       {/* Features */}

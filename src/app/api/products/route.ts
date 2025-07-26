@@ -1,6 +1,8 @@
-// app/api/products/route.ts
+// app/api/products/route.ts - FIXED WITH REAL REVIEW DATA
 import { NextRequest, NextResponse } from 'next/server'
-import { prisma } from '@/lib/prisma'
+import { PrismaClient } from '@prisma/client'
+
+const prisma = new PrismaClient()
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,15 +17,19 @@ export async function GET(request: NextRequest) {
     const sortBy = searchParams.get('sortBy') || 'created_at'
     const sortOrder = searchParams.get('sortOrder') || 'desc'
 
+    console.log('🔍 Products API - Filters:', {
+      category, minPrice, maxPrice, rating, search, sortBy, sortOrder
+    })
+
     // Calculate skip for pagination
     const skip = (page - 1) * limit
 
     // Build where clause
     const where: any = {
-      is_approved: true, // Only approved products
+      is_approved: true,
     }
 
-    // Category filter - ✅ Search in parent and children categories
+    // Category filter
     if (category && category !== 'all') {
       where.category = {
         OR: [
@@ -52,7 +58,7 @@ export async function GET(request: NextRequest) {
       if (maxPrice) where.price.lte = parseFloat(maxPrice)
     }
 
-    // Rating filter
+    // Rating filter - 🔧 استخدام التقييم الفعلي من قاعدة البيانات
     if (rating) {
       where.rating = {
         gte: parseInt(rating)
@@ -89,7 +95,7 @@ export async function GET(request: NextRequest) {
       orderBy.created_at = sortOrder
     }
 
-    // Fetch products with related data
+    // 🔧 FIXED: Fetch products with REAL review data
     const [products, totalCount] = await Promise.all([
       prisma.product.findMany({
         where,
@@ -111,8 +117,13 @@ export async function GET(request: NextRequest) {
               path: true
             }
           },
+          // 🔧 CRITICAL: Include actual reviews with rating calculation
           reviews: {
+            where: {
+              is_approved: true
+            },
             select: {
+              id: true,
               rating: true
             }
           },
@@ -131,22 +142,35 @@ export async function GET(request: NextRequest) {
       prisma.product.count({ where })
     ])
 
-    // Transform data to match frontend interface
+    console.log('📊 Fetched products:', products.length)
+
+    // 🔧 FIXED: Transform data with REAL ratings and review counts
     const transformedProducts = products.map(product => {
-      // Calculate average rating and review count
-      const reviewCount = product.reviews.length
-      const avgRating = reviewCount > 0 
-        ? product.reviews.reduce((sum, review) => sum + review.rating, 0) / reviewCount
-        : parseFloat(product.rating?.toString() || '0')
+      // Calculate REAL average rating and review count
+      const approvedReviews = product.reviews.filter(r => r.rating != null)
+      const reviewCount = approvedReviews.length
+      
+      let avgRating = 0
+      if (reviewCount > 0) {
+        // Calculate from actual reviews
+        avgRating = approvedReviews.reduce((sum, review) => sum + review.rating, 0) / reviewCount
+      } else {
+        // Fallback to product rating if no reviews
+        avgRating = parseFloat(product.rating?.toString() || '0')
+      }
+
+      console.log(`📊 Product ${product.name}: ${reviewCount} reviews, avg rating: ${avgRating.toFixed(1)}`)
 
       return {
         id: product.id,
         name: product.name,
         price: parseFloat(product.price.toString()),
-        originalPrice: null, // You can add this field to schema if needed
-        image: product.images[0]?.path || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=300&fit=crop',
+        originalPrice: null,
+        image: product.images[0]?.path || 'https://images.unsplash.com/photo-1560472354-b33ff0c44a43?w=400&h=400&fit=crop',
         category: product.category.name,
-        rating: Math.round(avgRating * 10) / 10, // Round to 1 decimal
+        // 🔧 REAL rating rounded to 1 decimal place
+        rating: Math.round(avgRating * 10) / 10,
+        // 🔧 REAL review count
         reviews: reviewCount,
         description: product.description,
         stock: product.stock,
@@ -161,6 +185,13 @@ export async function GET(request: NextRequest) {
     const totalPages = Math.ceil(totalCount / limit)
     const hasNextPage = page < totalPages
     const hasPrevPage = page > 1
+
+    console.log('✅ Products API - Success:', {
+      productsCount: transformedProducts.length,
+      totalCount,
+      currentPage: page,
+      totalPages
+    })
 
     return NextResponse.json({
       success: true,
@@ -178,19 +209,19 @@ export async function GET(request: NextRequest) {
     })
 
   } catch (error) {
-    console.error('Products API Error:', error)
+    console.error('❌ Products API Error:', error)
     return NextResponse.json(
       { 
         success: false, 
         error: 'Failed to fetch products',
-        message: process.env.NODE_ENV === 'development' ? error : 'Internal server error'
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
       },
       { status: 500 }
     )
   }
 }
 
-// POST - Create new product (for sellers)
+// POST - Create new product (same as before)
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
@@ -224,7 +255,7 @@ export async function POST(request: NextRequest) {
         stock: parseInt(stock) || 0,
         category_id,
         seller_id,
-        is_approved: false, // Requires admin approval
+        is_approved: false,
       },
       include: {
         category: true,
@@ -244,7 +275,7 @@ export async function POST(request: NextRequest) {
           path: image.path,
           size: image.size || null,
           format: image.format || null,
-          is_main: index === 0, // First image is main
+          is_main: index === 0,
         }))
       })
     }
@@ -256,12 +287,12 @@ export async function POST(request: NextRequest) {
     }, { status: 201 })
 
   } catch (error) {
-    console.error('Create Product Error:', error)
+    console.error('❌ Create Product Error:', error)
     return NextResponse.json(
       { 
         success: false, 
         error: 'Failed to create product',
-        message: process.env.NODE_ENV === 'development' ? error : 'Internal server error'
+        message: process.env.NODE_ENV === 'development' ? error.message : 'Internal server error'
       },
       { status: 500 }
     )
