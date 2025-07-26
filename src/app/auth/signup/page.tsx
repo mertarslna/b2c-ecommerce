@@ -60,7 +60,7 @@ export default function SignUpPage() {
       }, 100)
       
       setTimeout(() => {
-        router.push('/login')
+        router.push('/auth/login')
       }, 1000)
       
       setTimeout(() => {
