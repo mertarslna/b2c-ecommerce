@@ -412,7 +412,7 @@ async function main() {
           price: 999.99,
           stock: 50,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0',
+          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0', // Smartphones
           is_approved: true,
           rating: 4.5
         },
@@ -423,7 +423,7 @@ async function main() {
           price: 1099.99,
           stock: 45,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0',
+          category_id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0', // Smartphones
           is_approved: true,
           rating: 4.6
         },
@@ -434,7 +434,7 @@ async function main() {
           price: 2499.99,
           stock: 25,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01',
+          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01', // Laptops
           is_approved: true,
           rating: 4.8
         },
@@ -445,7 +445,7 @@ async function main() {
           price: 1399.99,
           stock: 30,
           seller_id: '550e8400-e29b-41d4-a716-446655440030',
-          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01',
+          category_id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01', // Laptops
           is_approved: true,
           rating: 4.4
         },
@@ -456,7 +456,7 @@ async function main() {
           price: 29.99,
           stock: 100,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
+          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789', // Men's Apparel
           is_approved: true,
           rating: 4.2
         },
@@ -467,7 +467,7 @@ async function main() {
           price: 49.99,
           stock: 150,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.7
         },
@@ -478,7 +478,7 @@ async function main() {
           price: 39.99,
           stock: 75,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
+          category_id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789', // Men's Apparel
           is_approved: true,
           rating: 2.3
         },
@@ -489,7 +489,7 @@ async function main() {
           price: 199.99,
           stock: 60,
           seller_id: '550e8400-e29b-41d4-a716-446655440031',
-          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          category_id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef', // Electronics
           is_approved: true,
           rating: 4.6
         }

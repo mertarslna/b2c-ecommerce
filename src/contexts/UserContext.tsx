@@ -5,17 +5,20 @@ import React, { createContext, useContext, useState, useEffect } from 'react'
 
 export interface User {
   id: string
-  name: string
+  first_name: string
+  last_name: string
   email: string
-  avatar?: string
-  role: 'user' | 'admin'
-  createdAt: string
+  phone?: string
+  role: 'ADMIN' | 'CUSTOMER' | 'SELLER'
+  is_active: boolean
+  created_at: string
+  updated_at: string
 }
 
 interface UserContextType {
   user: User | null
   login: (email: string, password: string) => Promise<boolean>
-  register: (name: string, email: string, password: string) => Promise<boolean>
+  register: (first_name: string, last_name: string, email: string, password: string, phone?: string) => Promise<boolean>
   logout: () => void
   isAuthenticated: boolean
   isLoading: boolean
@@ -61,78 +64,87 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (email: string, password: string): Promise<boolean> => {
     try {
-      // Mock authentication - replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+      })
 
-      if (email === 'test@example.com' && password === 'password123') {
-        const mockUser: User = {
-          id: '1',
-          name: 'John Doe',
-          email: email,
-          avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
-          role: 'user',
-          createdAt: new Date().toISOString()
-        }
-        setUser(mockUser)
-        
-        // Show success notification
-        showNotification('🎉 Welcome back! Login successful', 'success')
+      const data = await response.json()
+
+      if (response.ok) {
+        setUser(data.user)
+        showNotification('🎉 Hoş geldiniz! Giriş başarılı', 'success')
         return true
       } else {
-        showNotification('❌ Invalid email or password', 'error')
+        showNotification(data.error || '❌ Giriş başarısız', 'error')
         return false
       }
     } catch (error) {
       console.error('Login error:', error)
-      showNotification('❌ Login failed. Please try again.', 'error')
+      showNotification('❌ Giriş başarısız. Lütfen tekrar deneyin.', 'error')
       return false
     }
   }
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const register = async (first_name: string, last_name: string, email: string, password: string, phone?: string): Promise<boolean> => {
     try {
-      // Mock registration - replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const response = await fetch('/api/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ first_name, last_name, email, password, phone }),
+      })
 
-      const mockUser: User = {
-        id: Date.now().toString(),
-        name: name,
-        email: email,
-        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=ff6b9d&color=fff&size=150`,
-        role: 'user',
-        createdAt: new Date().toISOString()
+      const data = await response.json()
+
+      if (response.ok) {
+        showNotification('🎉 Hesap başarıyla oluşturuldu! Lütfen giriş yapın.', 'success')
+        return true
+      } else {
+        showNotification(data.error || '❌ Kayıt başarısız', 'error')
+        return false
       }
-      
-      // Don't auto-login after registration
-      showNotification('🎉 Account created successfully! Please login.', 'success')
-      return true
     } catch (error) {
       console.error('Registration error:', error)
-      showNotification('❌ Registration failed. Please try again.', 'error')
+      showNotification('❌ Kayıt başarısız. Lütfen tekrar deneyin.', 'error')
       return false
     }
   }
 
   const logout = () => {
     setUser(null)
-    showNotification('👋 Logged out successfully', 'info')
+    showNotification('👋 Başarıyla çıkış yapıldı', 'info')
   }
 
   const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
     try {
       if (!user) return false
 
-      // Mock profile update - replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      const response = await fetch('/api/auth/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(userData),
+      })
 
-      const updatedUser = { ...user, ...userData }
-      setUser(updatedUser)
-      
-      showNotification('✅ Profile updated successfully', 'success')
-      return true
+      const data = await response.json()
+
+      if (response.ok) {
+        setUser(data.user)
+        showNotification('✅ Profil başarıyla güncellendi', 'success')
+        return true
+      } else {
+        showNotification(data.error || '❌ Profil güncellenemedi', 'error')
+        return false
+      }
     } catch (error) {
       console.error('Profile update error:', error)
-      showNotification('❌ Failed to update profile', 'error')
+      showNotification('❌ Profil güncellenemedi', 'error')
       return false
     }
   }

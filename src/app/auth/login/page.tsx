@@ -19,15 +19,13 @@ export default function LoginPage() {
     setError('')
 
     if (!email || !password) {
-      setError('Email and password are required.')
+      setError('Email ve şifre zorunludur.')
       return
     }
 
     const success = await login(email, password)
     if (success) {
       router.push('/')
-    } else {
-      setError('Invalid email or password.')
     }
   }
 
@@ -101,9 +99,9 @@ export default function LoginPage() {
 
           <div className="text-center space-y-4 mt-8">
             <p className="text-gray-600 text-lg">
-              Don't have an account?{' '}
+                Don't have an account?{' '}
               <Link href="/auth/signup" className="text-pink-600 font-semibold hover:text-pink-700 hover:underline transition-colors duration-200">
-                Sign Up
+                  Sign Up
               </Link>
             </p>
             <p className="text-gray-500">
@@ -111,13 +109,6 @@ export default function LoginPage() {
                 Forgot Password?
               </Link>
             </p>
-          </div>
-
-          {/* Demo Credentials */}
-          <div className="mt-8 p-4 bg-gradient-to-r from-pink-50 to-purple-50 rounded-xl border border-pink-200">
-            <h4 className="text-sm font-semibold text-gray-700 mb-2">Demo Credentials:</h4>
-            <p className="text-sm text-gray-600">Email: test@example.com</p>
-            <p className="text-sm text-gray-600">Password: password123</p>
           </div>
         </div>
       </div>
