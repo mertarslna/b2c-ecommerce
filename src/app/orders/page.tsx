@@ -151,7 +151,7 @@ export default function OrdersPage() {
               My Orders
             </h1>
             <p className="text-xl text-gray-600">
-              {orders.length} {orders.length === 1 ? 'order' : 'orders'} • Total: ${Number(orders.reduce((sum, order) => sum + (order.total_amount ?? 0), 0)).toFixed(2)}
+              {orders.length} {orders.length === 1 ? 'order' : 'orders'} • Total: ${orders.reduce((sum, order) => sum + Number(order.total_amount ?? 0), 0).toFixed(2)}
             </p>
           </div>
         </div>
