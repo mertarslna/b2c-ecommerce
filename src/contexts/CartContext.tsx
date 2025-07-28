@@ -12,7 +12,7 @@ export interface CartItem {
   quantity: number
   selectedSize?: string
   selectedColor?: string
-  cartItemId?: string // ID of cart item in database
+  cartItemId?: string
 }
 
 interface CartContextType {
@@ -43,7 +43,7 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [items, setItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
 
-  // Mock customer ID - في الإنتاج، هتجيب من Authentication
+  // Mock customer ID
   const customerId = "550e8400-e29b-41d4-a716-446655440040" // John Doe customer from seed
 
   // Load cart from database on component mount

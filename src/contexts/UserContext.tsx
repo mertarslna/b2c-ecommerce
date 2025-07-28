@@ -76,15 +76,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (response.ok) {
         setUser(data.user)
-        showNotification('🎉 Hoş geldiniz! Giriş başarılı', 'success')
+        showNotification('🎉 Welcome! Login successful!', 'success')
         return true
       } else {
-        showNotification(data.error || '❌ Giriş başarısız', 'error')
+        showNotification(data.error || '❌ Login failed', 'error')
         return false
       }
     } catch (error) {
       console.error('Login error:', error)
-      showNotification('❌ Giriş başarısız. Lütfen tekrar deneyin.', 'error')
+      showNotification('❌ Login failed. Please try again.', 'error')
       return false
     }
   }
@@ -102,22 +102,22 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const data = await response.json()
 
       if (response.ok) {
-        showNotification('🎉 Hesap başarıyla oluşturuldu! Lütfen giriş yapın.', 'success')
+        showNotification('🎉 Account created successfully! Please log in.', 'success')
         return true
       } else {
-        showNotification(data.error || '❌ Kayıt başarısız', 'error')
+        showNotification(data.error || '❌ Registration failed', 'error')
         return false
       }
     } catch (error) {
       console.error('Registration error:', error)
-      showNotification('❌ Kayıt başarısız. Lütfen tekrar deneyin.', 'error')
+      showNotification('❌ Registration failed. Please try again.', 'error')
       return false
     }
   }
 
   const logout = () => {
     setUser(null)
-    showNotification('👋 Başarıyla çıkış yapıldı', 'info')
+    showNotification('👋 Successfully logged out', 'info')
   }
 
   const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
@@ -136,15 +136,15 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (response.ok) {
         setUser(data.user)
-        showNotification('✅ Profil başarıyla güncellendi', 'success')
+        showNotification('✅ Profile updated successfully', 'success')
         return true
       } else {
-        showNotification(data.error || '❌ Profil güncellenemedi', 'error')
+        showNotification(data.error || '❌ Profile could not be updated', 'error')
         return false
       }
     } catch (error) {
       console.error('Profile update error:', error)
-      showNotification('❌ Profil güncellenemedi', 'error')
+      showNotification('❌ Profile could not be updated', 'error')
       return false
     }
   }
