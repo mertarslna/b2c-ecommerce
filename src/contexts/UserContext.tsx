@@ -60,36 +60,47 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user])
 
   const login = async (email: string, password: string): Promise<boolean> => {
+    setIsLoading(true)
+    console.log('[UserContext] login called', { email, password })
+    console.log('[UserContext] login başlıyor, isLoading:', true)
     try {
       // Mock authentication - replace with real API call
       await new Promise(resolve => setTimeout(resolve, 1500))
 
       if (email === 'test@example.com' && password === 'password123') {
+        console.log('[UserContext] login demo credentials eşleşti')
         const mockUser: User = {
-          id: '1',
-          name: 'John Doe',
+          id: 'user-1', // Gerçek test kullanıcısının id'si
+          name: 'Test User',
           email: email,
           avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face',
           role: 'user',
           createdAt: new Date().toISOString()
         }
         setUser(mockUser)
-        
-        // Show success notification
+        console.log('[UserContext] login success, user set:', mockUser)
         showNotification('🎉 Welcome back! Login successful', 'success')
+        console.log('[UserContext] login return true')
         return true
       } else {
+        console.warn('[UserContext] login failed: invalid credentials')
         showNotification('❌ Invalid email or password', 'error')
+        console.log('[UserContext] login return false')
         return false
       }
     } catch (error) {
-      console.error('Login error:', error)
+      console.error('[UserContext] Login error:', error)
       showNotification('❌ Login failed. Please try again.', 'error')
+      console.log('[UserContext] login catch return false')
       return false
+    } finally {
+      setIsLoading(false)
+      console.log('[UserContext] login finished, isLoading set to false, user:', user)
     }
   }
 
   const register = async (name: string, email: string, password: string): Promise<boolean> => {
+    setIsLoading(true)
     try {
       // Mock registration - replace with real API call
       await new Promise(resolve => setTimeout(resolve, 1500))
@@ -102,7 +113,6 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
         role: 'user',
         createdAt: new Date().toISOString()
       }
-      
       // Don't auto-login after registration
       showNotification('🎉 Account created successfully! Please login.', 'success')
       return true
@@ -110,6 +120,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
       console.error('Registration error:', error)
       showNotification('❌ Registration failed. Please try again.', 'error')
       return false
+    } finally {
+      setIsLoading(false)
     }
   }
 

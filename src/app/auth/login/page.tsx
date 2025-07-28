@@ -23,11 +23,16 @@ export default function LoginPage() {
       return
     }
 
+    console.log('[LoginPage] login fonksiyonu çağrılıyor')
     const success = await login(email, password)
+    console.log('[LoginPage] login fonksiyonu döndü, success:', success)
     if (success) {
+      console.log('[LoginPage] router.push çağrılıyor')
       router.push('/')
+      console.log('[LoginPage] router.push sonrası')
     } else {
       setError('Invalid email or password.')
+      console.log('[LoginPage] Hatalı giriş, error set edildi')
     }
   }
 

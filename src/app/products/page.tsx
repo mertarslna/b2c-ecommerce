@@ -82,8 +82,26 @@ export default function ProductsPage() {
   }
 
   // Fetch data using hooks
-  const { products, pagination, loading: productsLoading, error: productsError, refetch } = useProducts(filters)
+  const { products: apiProducts, pagination, loading: productsLoading, error: productsError, refetch } = useProducts(filters)
   const { categories, loading: categoriesLoading } = useCategories(true, true)
+
+  // Geçici test ürünü
+  const tempProduct = {
+    id: 'test-urun-1',
+    name: 'Test Ürünü (Geçici)',
+    price: 1999,
+    originalPrice: 2499,
+    image: 'https://images.unsplash.com/photo-1513708927688-890a1e2b6b33?w=400&h=400&fit=crop',
+    category: { id: 'test', name: 'Test', description: 'Test kategorisi' },
+    rating: 5,
+    reviews: 12,
+    description: 'Bu ürün test amaçlı eklenmiştir. Güvenle ödeme testi yapabilirsiniz.',
+    stock: 10,
+    seller: { name: 'Test Satıcı', businessName: 'Test Ltd.' }
+  }
+
+  // Test ürünü + API ürünleri
+  const products = [tempProduct, ...apiProducts]
 
   // Debug logging
   useEffect(() => {

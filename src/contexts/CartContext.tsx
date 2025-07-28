@@ -10,6 +10,7 @@ export interface CartItem {
   image: string
   category: string
   quantity: number
+  currency: string // ürünün para birimi (zorunlu)
   selectedSize?: string
   selectedColor?: string
   cartItemId?: string // ID of cart item in database
@@ -58,7 +59,17 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const result = await response.json()
 
       if (result.success) {
-        setItems(result.data.items)
+        // Her ürünün currency'si zorunlu, yoksa USD olarak ata (geliştirici uyarısı için log ekle)
+        const itemsWithCurrency = result.data.items.map((item: any) => {
+          if (!item.currency) {
+            console.warn('Üründe currency eksik, USD atanıyor:', item)
+          }
+          return {
+            ...item,
+            currency: item.currency || 'USD'
+          }
+        })
+        setItems(itemsWithCurrency)
       } else {
         console.error('Failed to load cart:', result.error)
         showNotification('❌ Failed to load cart', 'error')
@@ -83,7 +94,8 @@ export const CartProvider: React.FC<{ children: React.ReactNode }> = ({ children
           productId: product.id,
           quantity,
           selectedSize: size,
-          selectedColor: color
+          selectedColor: color,
+          currency: product.currency || 'USD'
         })
       })
 

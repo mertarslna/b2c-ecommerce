@@ -1,3 +1,4 @@
+
 version: '3.8'
 
 services:
@@ -60,6 +61,26 @@ services:
     ports:
       - "8081:8081"
     depends_on:
+      - redis
+    networks:
+      - ecommerce_network
+
+  # Next.js/Node.js Backend
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: ecommerce_app_dev
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+      # Diğer environment değişkenleri buraya eklenebilir
+    depends_on:
+      - postgres
       - redis
     networks:
       - ecommerce_network

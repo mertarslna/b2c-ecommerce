@@ -228,112 +228,34 @@ async function main() {
       skipDuplicates: true,
     });
 
-    // 4. Create categories
+    // 4. Create categories (ürünlerden önce eklenmeli)
     console.log('📂 Creating categories...');
     await prisma.category.createMany({
       data: [
         {
-          id: "a1b2c3d4-e5f6-7890-1234-567890abcdef",
-          name: "Electronics",
-          description: "Electronic devices and gadgets for all your needs"
+          id: 'b2c3d4e5-f6a7-8901-2345-67890abcdef0',
+          name: 'Phones & Tablets',
+          description: 'Akıllı telefonlar ve tabletler'
         },
         {
-          id: "b2c3d4e5-f6a7-8901-2345-67890abcdef0",
-          name: "Smartphones",
-          description: "Latest mobile phones and accessories",
-          parent_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+          id: 'c3d4e5f6-a7b8-9012-3456-7890abcdef01',
+          name: 'Computers',
+          description: 'Bilgisayarlar ve aksesuarları'
         },
         {
-          id: "c3d4e5f6-a7b8-9012-3456-7890abcdef01",
-          name: "Laptops",
-          description: "Portable computers and essential accessories",
-          parent_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+          id: 'e1f2a3b4-c5d6-7890-1234-ef0123456789',
+          name: 'Apparel',
+          description: 'Giyim ve moda ürünleri'
         },
         {
-          id: "d4e5f6a7-b8c9-0123-4567-890abcdef012",
-          name: "Tablets",
-          description: "Versatile tablets for work and entertainment",
-          parent_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+          id: 'a1b2c3d4-e5f6-7890-1234-567890abcdef',
+          name: 'Electronics',
+          description: 'Elektronik ürünler'
         },
         {
-          id: "e5f6a7b8-c9d0-1234-5678-90abcdef0123",
-          name: "Televisions & Audio",
-          description: "TVs, sound systems, and home entertainment",
-          parent_id: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
-        },
-        {
-          id: "f6a7b8c9-d0e1-2345-6789-0abcdef01234",
-          name: "Home & Living",
-          description: "Everything for your home and daily life"
-        },
-        {
-          id: "a7b8c9d0-e1f2-3456-7890-abcdef012345",
-          name: "Furniture",
-          description: "Stylish and functional furniture for every room",
-          parent_id: "f6a7b8c9-d0e1-2345-6789-0abcdef01234"
-        },
-        {
-          id: "b8c9d0e1-f2a3-4567-8901-bcdef0123456",
-          name: "Kitchenware",
-          description: "Cooking tools, dinnerware, and kitchen essentials",
-          parent_id: "f6a7b8c9-d0e1-2345-6789-0abcdef01234"
-        },
-        {
-          id: "c9d0e1f2-a3b4-5678-9012-cdef01234567",
-          name: "Apparel & Fashion",
-          description: "Trendy clothing and accessories for all ages"
-        },
-        {
-          id: "d0e1f2a3-b4c5-6789-0123-def012345678",
-          name: "Women's Apparel",
-          description: "Fashionable clothing for women",
-          parent_id: "c9d0e1f2-a3b4-5678-9012-cdef01234567"
-        },
-        {
-          id: "e1f2a3b4-c5d6-7890-1234-ef0123456789",
-          name: "Men's Apparel",
-          description: "Stylish clothing for men",
-          parent_id: "c9d0e1f2-a3b4-5678-9012-cdef01234567"
-        },
-        {
-          id: "f2a3b4c5-d6e7-8901-2345-f0123456789a",
-          name: "Kids' & Baby Apparel",
-          description: "Cute and comfortable clothing for kids and babies",
-          parent_id: "c9d0e1f2-a3b4-5678-9012-cdef01234567"
-        },
-        {
-          id: "a3b4c5d6-e7f8-9012-3456-0123456789ab",
-          name: "Health & Beauty",
-          description: "Products for personal care and well-being"
-        },
-        {
-          id: "b4c5d6e7-f8a9-0123-4567-123456789abc",
-          name: "Skincare",
-          description: "Products for healthy and radiant skin",
-          parent_id: "a3b4c5d6-e7f8-9012-3456-0123456789ab"
-        },
-        {
-          id: "c5d6e7f8-a9b0-1234-5678-23456789abcd",
-          name: "Makeup",
-          description: "Cosmetics for enhancing your beauty",
-          parent_id: "a3b4c5d6-e7f8-9012-3456-0123456789ab"
-        },
-        {
-          id: "d6e7f8a9-b0c1-2345-6789-3456789abcde",
-          name: "Sports & Outdoors",
-          description: "Gear and apparel for an active lifestyle"
-        },
-        {
-          id: "e7f8a9b0-c1d2-3456-7890-456789abcdef",
-          name: "Fitness Equipment",
-          description: "Equipment for home and gym workouts",
-          parent_id: "d6e7f8a9-b0c1-2345-6789-3456789abcde"
-        },
-        {
-          id: "f8a9b0c1-d2e3-4567-8901-56789abcdef0",
-          name: "Outdoor Gear",
-          description: "Camping, hiking, and outdoor adventure essentials",
-          parent_id: "d6e7f8a9-b0c1-2345-6789-3456789abcde"
+          id: 'f6a7b8c9-d0e1-2345-6789-0abcdef01234',
+          name: 'Home & Living',
+          description: 'Ev ve yaşam ürünleri'
         }
       ],
       skipDuplicates: true,

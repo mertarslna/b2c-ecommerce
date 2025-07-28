@@ -7,119 +7,10 @@ import { useUser } from '@/contexts/UserContext'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 
-// Mock orders data - , this will come from an backend
-const mockOrders = [
-  {
-    id: "ORD-2024-001",
-    date: "2024-07-20",
-    status: "delivered",
-    total: 449.98,
-    items: [
-      {
-        id: 1,
-        name: "Premium Wireless Headphones",
-        price: 299.99,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=150&h=150&fit=crop"
-      },
-      {
-        id: 2,
-        name: "USB-C Fast Charger",
-        price: 39.99,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1583863788434-e58a36330cf0?w=150&h=150&fit=crop"
-      }
-    ],
-    shipping: {
-      method: "Express Delivery",
-      cost: 15.00,
-      address: "123 Main St, New York, NY 10001"
-    },
-    payment: {
-      method: "Credit Card",
-      last4: "4242"
-    },
-    tracking: {
-      number: "TRK123456789",
-      updates: [
-        { date: "2024-07-20", status: "Delivered", description: "Package delivered successfully" },
-        { date: "2024-07-19", status: "Out for delivery", description: "Package is out for delivery" },
-        { date: "2024-07-18", status: "In transit", description: "Package is in transit" },
-        { date: "2024-07-17", status: "Processing", description: "Order is being processed" }
-      ]
-    }
-  },
-  {
-    id: "ORD-2024-002",
-    date: "2024-07-15",
-    status: "shipped",
-    total: 289.97,
-    items: [
-      {
-        id: 3,
-        name: "Smart Fitness Watch",
-        price: 199.99,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=150&h=150&fit=crop"
-      },
-      {
-        id: 4,
-        name: "Wireless Gaming Mouse",
-        price: 89.99,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1527814050087-3793815479db?w=150&h=150&fit=crop"
-      }
-    ],
-    shipping: {
-      method: "Standard Delivery",
-      cost: 0.00,
-      address: "456 Oak Ave, Los Angeles, CA 90210"
-    },
-    payment: {
-      method: "PayPal",
-      last4: ""
-    },
-    tracking: {
-      number: "TRK987654321",
-      updates: [
-        { date: "2024-07-16", status: "Shipped", description: "Package has been shipped" },
-        { date: "2024-07-15", status: "Processing", description: "Order is being prepared" }
-      ]
-    }
-  },
-  {
-    id: "ORD-2024-003",
-    date: "2024-07-10",
-    status: "processing",
-    total: 179.99,
-    items: [
-      {
-        id: 5,
-        name: "Bluetooth Speaker Pro",
-        price: 149.99,
-        quantity: 1,
-        image: "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=150&h=150&fit=crop"
-      }
-    ],
-    shipping: {
-      method: "Express Delivery", 
-      cost: 15.00,
-      address: "789 Pine Rd, Chicago, IL 60601"
-    },
-    payment: {
-      method: "Credit Card",
-      last4: "1234"
-    },
-    tracking: {
-      number: "TRK555666777",
-      updates: [
-        { date: "2024-07-10", status: "Processing", description: "Order received and being processed" }
-      ]
-    }
-  }
-]
+// Artık mockOrders yok, API'den çekilecek
 
 const statusColors = {
+  PENDING: { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-200' },
   processing: { bg: 'bg-yellow-100', text: 'text-yellow-700', border: 'border-yellow-200' },
   shipped: { bg: 'bg-blue-100', text: 'text-blue-700', border: 'border-blue-200' },
   delivered: { bg: 'bg-green-100', text: 'text-green-700', border: 'border-green-200' },
@@ -127,54 +18,63 @@ const statusColors = {
 }
 
 const statusIcons = {
+  PENDING: '⏳',
   processing: '⏳',
   shipped: '🚚',
   delivered: '✅',
   cancelled: '❌'
 }
 
+
 export default function OrdersPage() {
-  const { user, isAuthenticated, isLoading } = useUser()
-  const router = useRouter()
-  const [orders, setOrders] = useState(mockOrders)
-  const [selectedOrder, setSelectedOrder] = useState<any>(null)
-  const [showTrackingModal, setShowTrackingModal] = useState(false)
+  const { user, isAuthenticated, isLoading } = useUser();
+  const router = useRouter();
+  const [orders, setOrders] = useState<any[]>([]);
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
+  const [showTrackingModal, setShowTrackingModal] = useState(false);
 
   // Redirect if not authenticated
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      router.push('/auth/login')
+      router.push('/auth/login');
     }
-  }, [isAuthenticated, isLoading, router])
+  }, [isAuthenticated, isLoading, router]);
+
+  // Siparişleri API'den çek
+  useEffect(() => {
+    const fetchOrders = async () => {
+      if (!user) return;
+      try {
+        const res = await fetch(`/api/orders?userId=${user.id}`);
+        const data = await res.json();
+        if (data.success) {
+          setOrders(data.data);
+        }
+      } catch (e) {
+        // Hata yönetimi eklenebilir
+      }
+    };
+    fetchOrders();
+  }, [user]);
 
   const handleReorder = (order: any) => {
-    // Add all items from the order back to cart
-    console.log('Reordering:', order)
-    // Show success message
-    const notification = document.createElement('div')
-    notification.textContent = `🛒 ${order.items.length} items added to cart!`
-    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 transform translate-x-full transition-transform duration-300'
-    
-    document.body.appendChild(notification)
-    
+    // ...aynı kod...
+    console.log('Reordering:', order);
+    const notification = document.createElement('div');
+    notification.textContent = `🛒 ${order.items.length} items added to cart!`;
+    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-xl shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+    document.body.appendChild(notification);
+    setTimeout(() => { notification.style.transform = 'translateX(0)'; }, 100);
     setTimeout(() => {
-      notification.style.transform = 'translateX(0)'
-    }, 100)
-    
-    setTimeout(() => {
-      notification.style.transform = 'translateX(100%)'
-      setTimeout(() => {
-        if (document.body.contains(notification)) {
-          document.body.removeChild(notification)
-        }
-      }, 300)
-    }, 3000)
-  }
+      notification.style.transform = 'translateX(100%)';
+      setTimeout(() => { if (document.body.contains(notification)) { document.body.removeChild(notification); } }, 300);
+    }, 3000);
+  };
 
   const openTrackingModal = (order: any) => {
-    setSelectedOrder(order)
-    setShowTrackingModal(true)
-  }
+    setSelectedOrder(order);
+    setShowTrackingModal(true);
+  };
 
   if (isLoading) {
     return (
@@ -251,7 +151,7 @@ export default function OrdersPage() {
               My Orders
             </h1>
             <p className="text-xl text-gray-600">
-              {orders.length} {orders.length === 1 ? 'order' : 'orders'} • Total: ${orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+              {orders.length} {orders.length === 1 ? 'order' : 'orders'} • Total: ${Number(orders.reduce((sum, order) => sum + (order.total_amount ?? 0), 0)).toFixed(2)}
             </p>
           </div>
         </div>
@@ -279,7 +179,7 @@ export default function OrdersPage() {
                       {order.status}
                     </span>
                     <span className="text-2xl font-bold bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">
-                      ${order.total.toFixed(2)}
+                      {Number(order.total_amount ?? 0).toFixed(2)}
                     </span>
                   </div>
                 </div>
@@ -287,25 +187,25 @@ export default function OrdersPage() {
 
               {/* Order Items */}
               <div className="p-6">
-                <h4 className="font-semibold text-gray-900 mb-4">Items ({order.items.length})</h4>
+                <h4 className="font-semibold text-gray-900 mb-4">Items ({order.items?.length || 0})</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-                  {order.items.map((item) => (
+                  {(order.items ?? []).map((item) => (
                     <div key={item.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl">
-                      <Link href={`/product-details/${item.id}`}>
+                      <Link href={`/product-details/${item.product?.id ?? ''}`}>
                         <img
-                          src={item.image}
-                          alt={item.name}
+                          src={item.product?.images?.[0]?.path || '/no-image.png'}
+                          alt={item.product?.name}
                           className="w-16 h-16 object-cover rounded-lg cursor-pointer hover:scale-105 transition-transform"
                         />
                       </Link>
                       <div className="flex-1">
-                        <Link href={`/product-details/${item.id}`}>
+                        <Link href={`/product-details/${item.product?.id ?? ''}`}>
                           <h5 className="font-semibold text-gray-900 hover:text-pink-600 cursor-pointer transition-colors line-clamp-2">
-                            {item.name}
+                            {item.product?.name}
                           </h5>
                         </Link>
                         <p className="text-gray-600 text-sm">Qty: {item.quantity}</p>
-                        <p className="font-semibold text-pink-600">${item.price}</p>
+                        <p className="font-semibold text-pink-600">${item.product?.price ?? item.price}</p>
                       </div>
                     </div>
                   ))}
@@ -356,7 +256,7 @@ export default function OrdersPage() {
             <div className="text-4xl mb-4">💰</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Total Spent</h3>
             <p className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">
-              ${orders.reduce((sum, order) => sum + order.total, 0).toFixed(2)}
+              ${Number(orders.reduce((sum, order) => sum + Number(order.total_amount ?? 0), 0)).toFixed(2)}
             </p>
           </div>
           
@@ -364,7 +264,7 @@ export default function OrdersPage() {
             <div className="text-4xl mb-4">🏆</div>
             <h3 className="text-2xl font-bold text-gray-900 mb-2">Items Purchased</h3>
             <p className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-red-500 bg-clip-text text-transparent">
-              {orders.reduce((sum, order) => sum + order.items.reduce((itemSum, item) => itemSum + item.quantity, 0), 0)}
+              {orders.reduce((sum, order) => sum + (order.items ?? []).reduce((itemSum, item) => itemSum + item.quantity, 0), 0)}
             </p>
           </div>
         </div>
