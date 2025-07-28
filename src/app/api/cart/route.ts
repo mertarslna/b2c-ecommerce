@@ -90,7 +90,7 @@ image: item.product.images[0]?.path || 'https://images.unsplash.com/photo-156047
     } catch (error) {
         console.error('Get Cart Error:', error)
         return NextResponse.json(
-            {
+            { 
                 success: false,
                 error: 'Failed to fetch cart',
                 message: process.env.NODE_ENV === 'development' ? error : 'Internal server error'

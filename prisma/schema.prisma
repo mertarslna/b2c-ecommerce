@@ -65,6 +65,19 @@ model User {
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 
+  // OTP verification fields
+  is_verified             Boolean   @default(false)
+  otp_code                String?   
+  otp_expires_at          DateTime?
+  otp_attempts            Int       @default(0)
+
+  // Password reset fields  
+  password_reset_otp      String?   
+  password_reset_expires_at DateTime?
+
+  // Last login tracking
+  last_login_at           DateTime?
+
   // Relations based on role
   admin_profile    AdminProfile?    @relation("UserAdmin")
   customer_profile CustomerProfile? @relation("UserCustomer") 
@@ -74,8 +87,10 @@ model User {
   addresses Address[]
 
   @@index([email])
+  @@index([otp_code])
   @@map("users")
 }
+
 
 // Separate profiles for different user types
 model AdminProfile {

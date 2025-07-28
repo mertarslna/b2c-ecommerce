@@ -23,6 +23,7 @@ interface UserContextType {
   isAuthenticated: boolean
   isLoading: boolean
   updateProfile: (userData: Partial<User>) => Promise<boolean>
+  getCustomerProfileId: () => Promise<string | null> // ✅ Updated to async function
 }
 
 const UserContext = createContext<UserContextType | undefined>(undefined)
@@ -149,6 +150,43 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
+  // ✅ Added this function to get customer profile ID
+  const getCustomerProfileId = async (): Promise<string | null> => {
+    if (!user) {
+      console.warn('⚠️ getCustomerProfileId: No user logged in')
+      return null
+    }
+    
+    if (user.role !== 'CUSTOMER') {
+      console.warn('⚠️ getCustomerProfileId: User is not a customer, role:', user.role)
+      return null
+    }
+    
+    try {
+      // Fetch customer profile ID from database using user ID
+      const response = await fetch(`/api/customer/profile?userId=${user.id}`)
+      
+      // Debug: Log response details
+      console.log('🔍 API Response Status:', response.status)
+      console.log('🔍 API Response OK:', response.ok)
+      
+      const data = await response.json()
+      console.log('🔍 API Response Data:', data)
+      
+      if (data.success && data.customerProfile) {
+        console.log('✅ getCustomerProfileId: Customer Profile ID:', data.customerProfile.id)
+        return data.customerProfile.id
+      } else {
+        console.error('❌ API Error:', data.error || 'Unknown error')
+        console.error('❌ Customer profile not found for user:', user.id)
+        return null
+      }
+    } catch (error) {
+      console.error('❌ Error fetching customer profile:', error)
+      return null
+    }
+  }
+
   // Simple notification function
   const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
     const colors = {
@@ -186,7 +224,8 @@ export const UserProvider: React.FC<{ children: React.ReactNode }> = ({ children
     logout,
     isAuthenticated: !!user,
     isLoading,
-    updateProfile
+    updateProfile,
+    getCustomerProfileId // ✅ Added to the context value
   }
 
   return <UserContext.Provider value={value}>{children}</UserContext.Provider>
